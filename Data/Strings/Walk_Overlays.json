@@ -1,0 +1,12 @@
+{
+    "overlay": {
+        "default": [
+            "Humans_Militia",
+            "Humans_Tired",
+            "Humans_Mage",
+            "Humans_Arrogance",
+            "Humans_Relaxed"
+        ],
+        "custom": []
+    }
+}
