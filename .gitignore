@@ -1,4 +1,5 @@
 Experimental/
 __pychache__/
+build/
 
 *.png
