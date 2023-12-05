@@ -36,7 +36,7 @@ class EditWindow(Frame):
             'Stats': '784x512',
             'Inventory': '1280x800',
             'Routine': '1040x768',
-            'Settings': '768x768'
+            'Settings': '768x512'
         }
         for n, i in enumerate(list(self.tab_names.keys())):
             self.tabs[n] = Radiobutton(
@@ -59,11 +59,8 @@ class EditWindow(Frame):
         self.menus['Visual'] = VisualMenu(self.frame_menu, self.root)
         self.menus['Stats'] = StatsMenu(self.frame_menu)
         self.menus['Inventory'] = InventoryMenu(self.frame_menu)
-        self.menus['Routine'] = RoutineMenu(
-            self.frame_menu,
-            self.menus['Main']
-        )
-        self.menus['Settings'] = SettingsMenu(self.frame_menu)
+        self.menus['Routine'] = RoutineMenu(self.frame_menu, self)
+        self.menus['Settings'] = SettingsMenu(self.frame_menu, self)
     
     def widgets_pack(self):
         self.frame_tabs.pack(fill='x', padx=5, pady=5, anchor='n')

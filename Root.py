@@ -1,4 +1,4 @@
-from ttkbootstrap import Window, Style
+from ttkbootstrap import Window
 
 from ProfileManager import ProfileManager
 from EditWindow import EditWindow
@@ -11,10 +11,6 @@ class Root(Window):
         theme,
         **kwargs
     ):
-        if not isinstance(resolution, (tuple, list)) or len(resolution) != 2:
-            raise ValueError(
-                "Resolution must be a tuple or list with exactly two elements."
-            )
         super().__init__(themename=theme, title=title, **kwargs)
         pos_x = (self.winfo_screenwidth()//2) - (resolution[0]//2)
         pos_y = (self.winfo_screenheight()//2) - (resolution[1]//2)

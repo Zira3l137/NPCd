@@ -19,9 +19,9 @@ from MiscUtils import (
 )
 
 class RoutineMenu(Frame):
-    def __init__(self, parent, main_menu):
+    def __init__(self, parent, edit_window):
         super().__init__(parent)
-        self.main_menu = main_menu
+        self.modules = edit_window.menus
         self.paths = MainPaths()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
@@ -34,7 +34,7 @@ class RoutineMenu(Frame):
         self.forget()
 
     def get_npc_id(self):
-        id = self.main_menu.var_entry_id.get()
+        id = self.modules['Main'].var_entry_id.get()
         if id:
             self.var_entry_routine_id.set(f'_{id}')
         else:
@@ -54,7 +54,7 @@ class RoutineMenu(Frame):
             'write',
             lambda *_: self.unlock_widgets()
         )
-        self.main_menu.var_entry_id.trace_add(
+        self.modules['Main'].var_entry_id.trace_add(
             'write',
             lambda *_: self.update_npc_id()
         )
@@ -503,7 +503,7 @@ class RoutineMenu(Frame):
         return f'Rtn_{name}{id}'
 
     def update_npc_id(self):
-        main_id = self.main_menu.var_entry_id.get()
+        main_id = self.modules['Main'].var_entry_id.get()
         local_id = self.var_entry_routine_id.get()
         if True in (not main_id, not main_id.isdigit()):
             self.var_entry_routine_id.set('_{NPC ID}')

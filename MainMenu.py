@@ -38,29 +38,20 @@ class MainMenu(Frame):
         self.var_combo_guild = StringVar()
         self.var_combo_voice = StringVar()
         self.var_radio_flag = StringVar()
-        self.var_option_type = StringVar()
+        self.var_combo_type = StringVar()
         self.radio_flag = dict()
         self.combo_guild_list = [i for i in
-            self.paths.get_globals()['NPC']['guild']['default']+
-            self.paths.get_globals()['NPC']['guild']['custom']
+            self.paths.get_globals()['NPC']['guild']['default']
         ]
-        self.combo_voice_list = [i for i in
-            self.paths.get_globals()['NPC']['voice']['default']+
-            self.paths.get_globals()['NPC']['voice']['custom']
-        ]
+        self.combo_voice_list = self.paths.get_globals()['NPC']['voice']['default']
         self.flag_names_list = [
             i for i in self.paths.get_globals()['NPC']['flag']
         ]
-        self.option_type_list = [i for i in
-            self.paths.get_globals()['NPC']['guild']['default']+
-            self.paths.get_globals()['NPC']['guild']['custom']
-        ]
+        self.combo_type_list = self.paths.get_globals()['NPC']['type']['default']
         self.names_database = [
             i.lower() for i in self.paths.get_globals()['NPC']['name']
         ]
-        self.ids_database = [
-            i for i in self.paths.get_globals()['NPC']['id']
-        ]
+        self.ids_database = self.paths.get_globals()['NPC']['id']
 
         for i in self.main_frame_names:
             self.main_frames[i] = Frame(self)
@@ -138,12 +129,12 @@ class MainMenu(Frame):
             textvariable = self.var_combo_voice
         )
         self.label_type = Label(self.main_frames['type'], text = 'NPC Type:')
-        self.option_type = Combobox(
+        self.combo_type = Combobox(
             self.main_frames['type'],
             bootstyle = 'light',
             width = 31,
-            values = self.option_type_list,
-            textvariable = self.var_option_type
+            values = self.combo_type_list,
+            textvariable = self.var_combo_type
         )
         for i in self.flag_names_list:
             self.radio_flag[i] = Radiobutton(
@@ -200,7 +191,7 @@ class MainMenu(Frame):
         self.label_type.pack(
             side = 'left', padx = 5, pady = 5, anchor = 'w', expand = True
         )
-        self.option_type.pack(
+        self.combo_type.pack(
             side = 'left', padx = 5, pady = 5, anchor = 'e'
         )
 

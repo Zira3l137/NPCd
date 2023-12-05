@@ -997,7 +997,6 @@
         "guild": {
             "default": [
                 "GIL_NONE",
-                "GIL_HUMAN",
                 "GIL_PAL",
                 "GIL_MIL",
                 "GIL_VLK",

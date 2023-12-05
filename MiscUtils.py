@@ -137,11 +137,46 @@ class Profile():
         '''
         remove(paths.SOLUTIONS_PATH / f'{name}.json')  
 
+
 class NPC():
-    '''
-    A class containing all the necessary methods for script parsing and NPC
-    data fetching.
-    '''
+    """
+    The `NPC` class provides methods for parsing and manipulating NPC data, such as guilds, voices, types, outfits, overlays, head meshes, and skin textures.
+
+    Example Usage:
+        npc = NPC()
+        npc.get_guilds(constants_path)  # Returns a dictionary with default and custom guilds\n
+        npc.get_voices(svm_path)  # Returns a dictionary with default and custom voices\n
+        npc.get_types(ai_constants_path)  # Returns a dictionary with default and custom types\n
+        npc.get_outfits(items_path)  # Updates Globals.json with custom outfits\n
+        npc.add_overlay(name)  # Adds an overlay to Walk_Overlays.json\n
+        npc.delete_overlay(name)  # Removes an overlay from Walk_Overlays.json\n
+        npc.add_head_mesh(name, gender)  # Adds a head mesh to Globals.json\n
+        npc.remove_head_mesh(name, gender)  # Removes a head mesh from Globals.json\n
+        npc.add_skin_tex(name, gender)  # Adds a skin texture to Globals.json\n
+        npc.remove_skin_tex(name, gender)  # Removes a skin texture from Globals.json\n
+        npc.create_routine(activity, start_time, end_time, waypoint)  # Returns a dictionary representing an NPC routine solution
+
+    Main functionalities:
+    - Parsing and dumping NPC data into Globals.json
+    - Updating Globals.json with custom NPC data
+    - Creating NPC routine solutions
+
+    Methods:
+    - get_guilds(constants_path: str) -> dict: Parses Constants.d and updates Globals.json with fetched guild data
+    - get_voices(svm_path: str) -> dict: Parses SVM.d and updates Globals.json with fetched voice data
+    - get_types(ai_constants_path: str) -> dict: Parses AI_Constants.d and updates Globals.json with fetched type data
+    - get_outfits(items_path: str): Parses IT_Armor.d and IT_Addon_Armor.d and updates Globals.json with fetched outfit data
+    - add_overlay(name: str): Adds an overlay with a specified name to Walk_Overlays.json
+    - delete_overlay(name: str): Removes an overlay with a specified name from Walk_Overlays.json
+    - add_head_mesh(name: str, gender: int): Adds a head mesh with a specified name to Globals.json
+    - remove_head_mesh(name: str, gender: int): Removes a head mesh with a specified name from Globals.json
+    - add_skin_tex(name: str, gender: int): Adds a skin texture with a specified name to Globals.json
+    - remove_skin_tex(name: str, gender: int): Removes a skin texture with a specified name from Globals.json
+    - create_routine(activity: str, start_time: str, end_time: str, waypoint: str) -> dict: Constructs an NPC routine solution as a dictionary with specified parameters
+
+    Fields:
+    - No significant fields in the `NPC` class
+    """
     def __init__(self):
         pass       
     
@@ -154,6 +189,9 @@ class NPC():
         
         Returns dict type object with fetched and default data.
         '''
+        if not constants_path or not Path(constants_path).is_dir():
+            return
+        
         path = Path(constants_path) / 'Constants.d'
         guilds : list = list()
 
@@ -166,6 +204,8 @@ class NPC():
             for line in lines:
                 if 'GIL_EMPTY_D' in line:
                     break
+                if 'GIL_HUMAN' in line:
+                    continue
                 if 'const int GIL_' in line:
                     guilds.append(line.split()[2])
         buffer : dict = paths.get_globals()
@@ -194,6 +234,9 @@ class NPC():
         
         Returns dict type object with fetched and default data.
         '''
+        if not svm_path or not Path(svm_path).is_dir():
+            return
+        
         path = Path(svm_path) / 'SVM.d'
         voices : list = list()
 
@@ -235,6 +278,9 @@ class NPC():
         
         Returns dict type object with fetched and default data.
         '''
+        if not ai_constants_path or not Path(ai_constants_path).is_dir():
+            return
+        
         path = Path(ai_constants_path) / 'AI_Constants.d'
         types: list = list()
         buffer : dict = paths.get_globals()
@@ -273,6 +319,9 @@ class NPC():
         items_path : str - A path to a directory containing
         IT_Armor.d and IT_Addon_Armor.d.
         '''
+        if not items_path or not Path(items_path).is_dir():
+            return
+
         path1 = Path(items_path) / 'IT_Armor.d'
         path2 = Path(items_path) / 'IT_Addon_Armor.d'
         buffer : dict = paths.get_globals()
