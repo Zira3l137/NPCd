@@ -87,9 +87,6 @@ class VisualMenu(Frame):
             +self.paths.get_overlays()['overlay']['custom']
         ]
         empty_image = Image.open(self.paths.FACES_PATH.joinpath('Empty.png'))
-        empty_image = empty_image.resize(
-            (empty_image.width//2, empty_image.height//2)
-        )
         self.image_face = ImageTk.PhotoImage(empty_image)
 
         for i in self.visual_frame_names:
