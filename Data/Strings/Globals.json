@@ -1341,8 +1341,14 @@
                 ]
             },
             "custom": {
-                "male": [],
-                "female": []
+                "male": [
+                    "ITAR_DJG1_BABE",
+                    "ITAR_DJG2_BABE"
+                ],
+                "female": [
+                    "ITAR_DJG1_BABE",
+                    "ITAR_DJG2_BABE"
+                ]
             }
         },
         "fight_tactic": {

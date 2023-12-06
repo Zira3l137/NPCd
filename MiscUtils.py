@@ -311,13 +311,15 @@ class NPC():
         return {'default': default_types, 'custom': custom_types}
     
     @classmethod
-    def get_outfits(self, items_path: str):
+    def get_outfits(self, items_path: str) -> dict:
         '''
         Parse IT_Armor.d and IT_Addon_Armor.d and dump
         fetched data into Globals.json.
 
         items_path : str - A path to a directory containing
         IT_Armor.d and IT_Addon_Armor.d.
+
+        Returns default and custom outfits as a dictionary.
         '''
         if not items_path or not Path(items_path).is_dir():
             return
@@ -345,6 +347,8 @@ class NPC():
                 ] and True in [
                     '(C_ITEM)' in line,
                     '(C_Item)' in line
+                ] and False in [
+                    'ITAR_DJG_BABE' in line
                 ]:
                     outfit = line.split()[1].replace('(C_ITEM)','')
                     outfit = outfit.replace('(C_Item)','')
@@ -375,6 +379,17 @@ class NPC():
 
         with open(paths.GLOBALS_PATH, 'w') as globals:
             dump(buffer, globals, indent=4)
+        
+        return {
+            'default': (
+                    paths.get_globals()['NPC']['outfit']['default']['male'],
+                    paths.get_globals()['NPC']['outfit']['default']['female']
+                ),
+            'custom': (
+                    custom['male'],
+                    custom['female']
+                )
+            }
     
     @classmethod
     def add_overlay(cls, name: str):

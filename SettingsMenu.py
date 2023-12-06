@@ -25,7 +25,12 @@ class SettingsMenu(Frame):
         self.forget()
 
     def widgets_init(self):
-        KEYS = ['guild', 'voice', 'type']
+        KEYS = [
+            'guild',
+            'voice',
+            'type',
+            'outfit'
+        ]
         self.vars_checks_main : dict = {
             key: BooleanVar(value=False) for key in KEYS
         }
@@ -110,6 +115,12 @@ class SettingsMenu(Frame):
                 if dir:
                     return 'Scripts/Content/AI/AI_Intern/'
                 return 'AI_Intern/AI_Constants.d'
+            case 'outfit':
+                if stem:
+                    return ('IT_Armor.d','IT_Addon_Armor.d')
+                if dir:
+                    return 'Scripts/Content/Items/'
+                return ('Items/IT_Armor.d','IT_Addon_Armor.d')
     
     def toggle_custom_dir(self, caller: str):
         condition = self.vars_checks_main[caller].get()
@@ -157,6 +168,28 @@ class SettingsMenu(Frame):
                         self.modules['Main'].combo_type.configure(
                             values = self.modules['Main'].combo_type_list
                         )
+                case 'outfit':
+                    gender = self.modules['Visual'].var_radio_gender.get()
+                    if NPC.get_outfits(directory):
+                        match gender:
+                            case 0:
+                                self.modules['Visual'].combo_outfit_list_m = [
+                                    i for i in 
+                                    self.paths.get_globals()['NPC']['outfit']['default']['male']
+                                    +self.paths.get_globals()['NPC']['outfit']['custom']['male']
+                                ]
+                                self.modules['Visual'].combo_outfit.configure(
+                                    values = self.modules['Visual'].combo_outfit_list_m
+                                )
+                            case 1:
+                                self.modules['Visual'].combo_outfit_list_f = [
+                                    i for i in 
+                                    self.paths.get_globals()['NPC']['outfit']['default']['female']
+                                    +self.paths.get_globals()['NPC']['outfit']['custom']['female']
+                                ]
+                                self.modules['Visual'].combo_outfit.configure(
+                                    values = self.modules['Visual'].combo_outfit_list_f
+                                )
         else:
             match caller:
                 case 'guild':
@@ -180,6 +213,25 @@ class SettingsMenu(Frame):
                     self.modules['Main'].combo_type.configure(
                         values = self.modules['Main'].combo_type_list
                     )
+                case 'outfit':
+                    gender = self.modules['Visual'].var_radio_gender.get()
+                    match gender:
+                        case 0:
+                            self.modules['Visual'].combo_outfit_list_m = [
+                                i for i in
+                                self.paths.get_globals()['NPC']['outfit']['default']['male']
+                            ]
+                            self.modules['Visual'].combo_outfit.configure(
+                                values = self.modules['Visual'].combo_outfit_list_m
+                            )
+                        case 1:
+                            self.modules['Visual'].combo_outfit_list_f = [
+                                i for i in
+                                self.paths.get_globals()['NPC']['outfit']['default']['female']
+                            ]
+                            self.modules['Visual'].combo_outfit.configure(
+                                values = self.modules['Visual'].combo_outfit_list_f
+                            )
 
 if __name__ == '__main__':
     root = Window(title='Settings Menu', themename='darkly')

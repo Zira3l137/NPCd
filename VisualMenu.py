@@ -11,8 +11,9 @@ from PIL import Image, ImageTk
 from MiscUtils import NPC, MainPaths
 
 class VisualMenu(Frame):
-    def __init__(self, parent, root):
+    def __init__(self, parent, root, edit_window):
         super().__init__(master = parent)
+        self.modules = edit_window.menus
         self.paths = MainPaths()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
@@ -72,14 +73,10 @@ class VisualMenu(Frame):
             +self.paths.get_globals()['NPC']['skin']['female']['custom']
         ]
         self.combo_outfit_list_m = [
-            i for i in 
             self.paths.get_globals()['NPC']['outfit']['default']['male']
-            +self.paths.get_globals()['NPC']['outfit']['custom']['male']
         ]
         self.combo_outfit_list_f = [
-            i for i in 
             self.paths.get_globals()['NPC']['outfit']['default']['female']
-            +self.paths.get_globals()['NPC']['outfit']['custom']['female']
         ]
         self.combo_walk_overlay_list = [
             i for i in 
@@ -424,6 +421,7 @@ class VisualMenu(Frame):
                 i.configure(state = 'normal')
         self.combo_walk_overlay.configure(state = 'normal')
         self.reset_scale_value()
+        self.modules['Settings'].refill_data('outfit')
 
     def update_scale_value(self, value):
         if float(value) == 1.0:

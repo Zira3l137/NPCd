@@ -56,7 +56,7 @@ class EditWindow(Frame):
                 )
             )
         self.menus['Main'] = MainMenu(self.frame_menu, self.paths.SOUNDS_PATH)
-        self.menus['Visual'] = VisualMenu(self.frame_menu, self.root)
+        self.menus['Visual'] = VisualMenu(self.frame_menu, self.root, self)
         self.menus['Stats'] = StatsMenu(self.frame_menu)
         self.menus['Inventory'] = InventoryMenu(self.frame_menu)
         self.menus['Routine'] = RoutineMenu(self.frame_menu, self)
