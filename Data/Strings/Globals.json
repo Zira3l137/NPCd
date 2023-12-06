@@ -1342,12 +1342,8 @@
             },
             "custom": {
                 "male": [
-                    "ITAR_DJG1_BABE",
-                    "ITAR_DJG2_BABE"
                 ],
                 "female": [
-                    "ITAR_DJG1_BABE",
-                    "ITAR_DJG2_BABE"
                 ]
             }
         },
