@@ -407,7 +407,7 @@ class NPC():
         path = Path(ai_constants_path) / 'AI_Constants.d'
         fight_tactics: list = list()
         buffer : dict = paths.get_globals()
-        default_fight_tactics : list = buffer['NPC']['fight_tactics']['default']
+        default_fight_tactics : list = buffer['NPC']['fight_tactic']['default']
         custom_fight_tactics : list = list()
 
         with open(
@@ -426,7 +426,7 @@ class NPC():
             else:
                 custom_fight_tactics.append(fight_tactic)
 
-        buffer['NPC']['fight_tactics']['custom'] = custom_fight_tactics
+        buffer['NPC']['fight_tactic']['custom'] = custom_fight_tactics
 
         with open(paths.GLOBALS_PATH, 'w') as globals:
             dump(buffer, globals, indent=4)
