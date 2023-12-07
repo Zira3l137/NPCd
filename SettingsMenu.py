@@ -208,8 +208,8 @@ class SettingsMenu(Frame):
                             self.paths.get_globals()['NPC']['fight_tactic']['default']
                             +self.paths.get_globals()['NPC']['fight_tactic']['custom']
                         ]
-                        self.modules['Main'].combo_fight_tactic.configure(
-                            values = self.modules['Main'].combo_fight_tactic_list
+                        self.modules['Stats'].combo_fight_tactic.configure(
+                            values = self.modules['Stats'].combo_fight_tactic_list
                         )
                     
         else:
