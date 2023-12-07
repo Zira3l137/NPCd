@@ -390,6 +390,48 @@ class NPC():
                     custom['female']
                 )
             }
+
+    @classmethod
+    def get_fight_tactics(self, ai_constants_path: str) -> dict:
+        '''
+        Parse AI_Constants.d and dump fetched data into Globals.json.
+
+        ai_constants_path : str - A path to a directory containing
+        AI_Constants.d
+        
+        Returns dict type object with fetched and default data.
+        '''
+        if not ai_constants_path or not Path(ai_constants_path).is_dir():
+            return
+
+        path = Path(ai_constants_path) / 'AI_Constants.d'
+        fight_tactics: list = list()
+        buffer : dict = paths.get_globals()
+        default_fight_tactics : list = buffer['NPC']['fight_tactics']['default']
+        custom_fight_tactics : list = list()
+
+        with open(
+            path,
+            'rt',
+            encoding='Windows-1252'
+        ) as ai_constants:
+            lines = ai_constants.readlines()
+            for line in lines:
+                if 'const int FAI_HUMAN_' in line:
+                    types.append(line.split()[2])
+
+        for fight_tactic in fight_tactics:
+            if fight_tactic in default_fight_tactics:
+                continue
+            else:
+                custom_fight_tactics.append(fight_tactic)
+
+        buffer['NPC']['fight_tactics']['custom'] = custom_fight_tactics
+
+        with open(paths.GLOBALS_PATH, 'w') as globals:
+            dump(buffer, globals, indent=4)
+
+        return {'default': default_fight_tactics, 'custom': custom_fight_tactics}
     
     @classmethod
     def add_overlay(cls, name: str):
