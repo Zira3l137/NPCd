@@ -255,11 +255,11 @@ class SettingsMenu(Frame):
                                 values = self.modules['Visual'].combo_outfit_list_f
                             )
                 case 'fight_tactic':
-                    self.modules['Main'].combo_fight_tactic_list = [i for i in
+                    self.modules['Stats'].combo_fight_tactic_list = [i for i in
                         self.paths.get_globals()['NPC']['fight_tactic']['default']
                     ]
-                    self.modules['Main'].combo_fight_tactic.configure(
-                        values = self.modules['Main'].combo_fight_tactic_list
+                    self.modules['Stats'].combo_fight_tactic.configure(
+                        values = self.modules['Stats'].combo_fight_tactic_list
                     )
 
 if __name__ == '__main__':
