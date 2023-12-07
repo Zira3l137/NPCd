@@ -29,7 +29,8 @@ class SettingsMenu(Frame):
             'guild',
             'voice',
             'type',
-            'outfit'
+            'outfit',
+            'fight_tactic'
         ]
         self.vars_checks_main : dict = {
             key: BooleanVar(value=False) for key in KEYS
@@ -121,6 +122,12 @@ class SettingsMenu(Frame):
                 if dir:
                     return 'Scripts/Content/Items/'
                 return ('Items/IT_Armor.d','IT_Addon_Armor.d')
+            case 'fight_tactic':
+                if stem:
+                    return 'AI_Constants.d'
+                if dir:
+                    return 'Scripts/Content/AI/AI_Intern/'
+                return 'AI_Intern/AI_Constants.d'
     
     def toggle_custom_dir(self, caller: str):
         condition = self.vars_checks_main[caller].get()
@@ -128,8 +135,13 @@ class SettingsMenu(Frame):
         source_file = self.get_source_name(caller=caller, dir=True)
 
         self.entries_main[caller].configure(state=state)
-        self.vars_entries_main[caller].set(f'path/to/{source_file}')
-        
+        if caller == 'fight_tactics' and not self.vars_checks_main['type'].get():
+            self.vars_entries_main[caller].set(f'path/to/{source_file}')
+        elif caller == 'fight_tactics' and self.vars_checks_main['type'].get():
+            self.vars_entries_main[caller].set(self.vars_entries_main['type'].get())
+        else
+            self.vars_entries_main[caller].set(f'path/to/{source_file}')
+            
         self.buttons_main[caller].configure(state=state)
 
     def load_custom_dir(self, caller: str):
@@ -190,6 +202,16 @@ class SettingsMenu(Frame):
                                 self.modules['Visual'].combo_outfit.configure(
                                     values = self.modules['Visual'].combo_outfit_list_f
                                 )
+                case 'fight_tactic':
+                    if NPC.get_fight_tactics(directory):
+                        self.modules['Stats'].combo_fight_tactic_list = [i for i in
+                            self.paths.get_globals()['NPC']['fight_tactic']['default']
+                            +self.paths.get_globals()['NPC']['fight_tactic']['custom']
+                        ]
+                        self.modules['Main'].combo_fight_tactic.configure(
+                            values = self.modules['Main'].combo_fight_tactic_list
+                        )
+                    
         else:
             match caller:
                 case 'guild':
@@ -232,6 +254,13 @@ class SettingsMenu(Frame):
                             self.modules['Visual'].combo_outfit.configure(
                                 values = self.modules['Visual'].combo_outfit_list_f
                             )
+                case 'fight_tactic':
+                    self.modules['Main'].combo_fight_tactic_list = [i for i in
+                        self.paths.get_globals()['NPC']['fight_tactic']['default']
+                    ]
+                    self.modules['Main'].combo_fight_tactic.configure(
+                        values = self.modules['Main'].combo_fight_tactic_list
+                    )
 
 if __name__ == '__main__':
     root = Window(title='Settings Menu', themename='darkly')
