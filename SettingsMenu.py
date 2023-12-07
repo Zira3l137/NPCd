@@ -139,7 +139,7 @@ class SettingsMenu(Frame):
             self.vars_entries_main[caller].set(f'path/to/{source_file}')
         elif caller == 'fight_tactics' and self.vars_checks_main['type'].get():
             self.vars_entries_main[caller].set(self.vars_entries_main['type'].get())
-        else
+        else:
             self.vars_entries_main[caller].set(f'path/to/{source_file}')
             
         self.buttons_main[caller].configure(state=state)
