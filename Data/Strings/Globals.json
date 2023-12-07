@@ -1347,18 +1347,13 @@
             }
         },
         "fight_tactic": {
-            "Coward": {
-                "FAI_HUMAN_COWARD": "2"
-            },
-            "Normal": {
-                "FAI_HUMAN_NORMAL": "42"
-            },
-            "Strong": {
-                "FAI_HUMAN_STRONG": "3"
-            },
-            "Master": {
-                "FAI_HUMAN_MASTER": "4"
-            }
+            "default": [
+                "FAI_HUMAN_COWARD",
+                "FAI_HUMAN_NORMAL",
+                "FAI_HUMAN_STRONG",
+                "FAI_HUMAN_MASTER"
+            ],
+            "custom": []
         }
     },
     "items": {
