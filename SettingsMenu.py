@@ -135,9 +135,9 @@ class SettingsMenu(Frame):
         source_file = self.get_source_name(caller=caller, dir=True)
 
         self.entries_main[caller].configure(state=state)
-        if caller == 'fight_tactics' and not self.vars_checks_main['type'].get():
+        if caller == 'fight_tactic' and not self.vars_checks_main['type'].get():
             self.vars_entries_main[caller].set(f'path/to/{source_file}')
-        elif caller == 'fight_tactics' and self.vars_checks_main['type'].get():
+        elif caller == 'fight_tactic' and self.vars_checks_main['type'].get():
             self.vars_entries_main[caller].set(self.vars_entries_main['type'].get())
         else:
             self.vars_entries_main[caller].set(f'path/to/{source_file}')
