@@ -34,7 +34,7 @@ class StatsMenu(Frame):
         self.label_stats_value = dict()
         self.button_stats_stat = dict()
         self.combo_fight_tactic_list = [
-            i for i in self.paths.get_globals()['NPC']['fight_tactic']
+            i for i in self.paths.get_globals()['NPC']['fight_tactic']['default']
         ]
         self.label_stats_stat_text = {
             'Set Max HP:': 'danger',
