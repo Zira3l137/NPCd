@@ -2,7 +2,7 @@ from ttkbootstrap import (
     StringVar, Window,
     Frame, Entry,
     Checkbutton, Button,
-    BooleanVar, END
+    BooleanVar
 )
 
 from MiscUtils import NPC, MainPaths
@@ -55,7 +55,7 @@ class SettingsMenu(Frame):
         self.checks_main : dict = {
             key: Checkbutton(
                 self.frames_main[key],
-                text=f'Custom directory for {key}s',
+                text=f'Custom directory for {key.capitalize()}s',
                 variable=self.vars_checks_main[key],
                 offvalue=False,
                 onvalue=True,

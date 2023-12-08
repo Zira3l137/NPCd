@@ -418,7 +418,7 @@ class NPC():
             lines = ai_constants.readlines()
             for line in lines:
                 if 'const int FAI_HUMAN_' in line:
-                    types.append(line.split()[2])
+                    fight_tactics.append(line.split()[2])
 
         for fight_tactic in fight_tactics:
             if fight_tactic in default_fight_tactics:
