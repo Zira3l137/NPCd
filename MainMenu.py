@@ -44,9 +44,7 @@ class MainMenu(Frame):
             self.paths.get_globals()['NPC']['guild']['default']
         ]
         self.combo_voice_list = self.paths.get_globals()['NPC']['voice']['default']
-        self.flag_names_list = [
-            i for i in self.paths.get_globals()['NPC']['flag']
-        ]
+        self.flag_names_list = self.paths.get_globals()['NPC']['flag']
         self.combo_type_list = self.paths.get_globals()['NPC']['type']['default']
         self.names_database = [
             i.lower() for i in self.paths.get_globals()['NPC']['name']

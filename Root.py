@@ -15,9 +15,13 @@ class Root(Window):
         pos_x = (self.winfo_screenwidth()//2) - (resolution[0]//2)
         pos_y = (self.winfo_screenheight()//2) - (resolution[1]//2)
         self.geometry(f'{resolution[0]}x{resolution[1]}+{pos_x}+{pos_y}')
-        self.profile_manager = ProfileManager(self)
         self.edit_window = EditWindow(self, self)
-        self.mainloop()   
+        self.profile_manager = ProfileManager(self, self.get_edit_menus())
+        self.edit_window.show()
+        self.mainloop()
+
+    def get_edit_menus(self):
+        return self.edit_window.menus
 
 if __name__ == '__main__':
     root =  Root((768,512), 'Root', 'darkly')

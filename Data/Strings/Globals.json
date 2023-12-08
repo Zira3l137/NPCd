@@ -1035,17 +1035,11 @@
             ],
             "custom": []
         },
-        "flag": {
-            "None": {
-                "0": "0"
-            },
-            "Immortal": {
-                "NPC_FLAG_IMMORTAL": "2"
-            },
-            "Ghost": {
-                "NPC_FLAG_GHOST": "4"
-            }
-        },
+        "flag": [
+            "0",
+            "NPC_FLAG_IMMORTAL",
+            "NPC_FLAG_GHOST"
+        ],
         "type": {
             "default": [
                 "NPCTYPE_AMBIENT",

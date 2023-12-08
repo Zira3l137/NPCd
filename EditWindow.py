@@ -22,8 +22,13 @@ class EditWindow(Frame):
         self.widgets_init()
         self.widgets_pack()
         self.switch_tab(list(self.tab_names.keys())[0])
-        self.pack(fill='both', padx=5, pady=5, expand=True)
 
+    def show(self):
+        self.pack(expand = True, fill = 'both', padx = 5, pady = 5)
+
+    def hide(self):
+        self.forget()
+    
     def widgets_init(self):
         self.frame_tabs = Frame(self)
         self.var_tabs = StringVar()

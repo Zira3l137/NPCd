@@ -266,7 +266,7 @@ class VisualMenu(Frame):
         )
         self.listbox_face = Listbox(
             self.visual_frames['face'],
-            listvariable = self.var_listbox_face,
+            listvariable = '',
             width = 30,
             height = 15,
             selectmode = 'single',
@@ -457,6 +457,11 @@ class VisualMenu(Frame):
             (512//2), (256//2),
             anchor = 'center',
             image = self.image_face
+        )
+        self.var_listbox_face.set(
+            face_image_name.
+            split('_')[2].
+            replace('V', '')
         )
 
     def walk_overlay_manage(self, action, name):

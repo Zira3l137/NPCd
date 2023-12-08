@@ -1,0 +1,9 @@
+1. Expand inventory module:
+	Add GUI for B_CreateAmbientInv
+	
+2. Expand stats module:
+	Add GUI for B_SetAttributesToChapter
+	Add GUI for Npc_SetTalentSkill
+	
+3. Expand settings module:
+	Add GUI for custom routine TA functions parsing

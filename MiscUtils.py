@@ -117,16 +117,15 @@ class Profile():
         '''
         return [i.stem for i in paths.SOLUTIONS_PATH.iterdir() if '.json' in str(i)]
 
-    @classmethod
-    #TODO: implement data dumping into NPC solution file. 
+    @classmethod 
     def create_profile(cls, name: str):
         '''
-        Create a new NPC solution file and dump all the available data into it.
+        Create a new NPC solution file.
 
         name : str - NPC solution name.
         '''
         with open(paths.SOLUTIONS_PATH / f'{name}.json', 'w') as profile:
-            dump('Data', profile)
+            dump('', profile)
 
     @classmethod
     def delete_profile(cls, name: str):
@@ -137,6 +136,62 @@ class Profile():
         '''
         remove(paths.SOLUTIONS_PATH / f'{name}.json')  
 
+    @classmethod
+    def extract_data(cls, widget: dict) -> dict:
+        '''
+        '''
+        solution_info = dict()
+
+        solution_info['id'] = widget['Main'].var_entry_id.get()
+        solution_info['name'] = widget['Main'].var_entry_name.get()
+        solution_info['guild'] = widget['Main'].var_combo_guild.get()
+        solution_info['voice'] = widget['Main'].var_combo_voice.get().replace('SVM_','')
+        solution_info['flags'] = widget['Main'].var_radio_flag.get()
+        solution_info['npctype'] = widget['Main'].var_combo_type.get()
+        
+        visual_params = list()
+        visual_params.append(widget['Visual'].var_radio_gender.get())
+        visual_params.append(widget['Visual'].var_combo_head.get())
+        visual_params.append(widget['Visual'].var_listbox_face.get())
+        visual_params.append(widget['Visual'].var_combo_skin.get())
+        visual = ', '.join(map(str, visual_params))
+
+        solution_info['B_SetNpcVisual'] = visual
+
+        solution_info['Mdl_SetModelFatness'] = round(widget['Visual'].var_scale_fatness.get(), 2)
+        solution_info['Mdl_ApplyOverlayMds'] = widget['Visual'].var_combo_walk_overlay.get()
+
+        solution_info['fight_tactic'] = widget['Stats'].var_combo_fight_tactic.get() 
+        solution_info['B_GiveNpcTalents'] = widget['Stats'].var_check_talents.get()
+        solution_info['B_SetFightSkills'] = widget['Stats'].var_entry_fightskill.get()
+
+
+        solution_info['ATR_HITPOINTS_MAX'] = widget['Stats'].var_current_stat[4].get()
+        solution_info['ATR_MANA_MAX'] = widget['Stats'].var_current_stat[5].get()
+        solution_info['ATR_STRENGTH'] = widget['Stats'].var_current_stat[6].get()
+        solution_info['ATR_DEXTERITY'] = widget['Stats'].var_current_stat[7].get()
+
+        melee = widget['Inventory'].var_label_equipped_melee.get()
+        ranged = widget['Inventory'].var_label_equipped_ranged.get().split()[1]
+        solution_info['EquipItem'] = [
+            melee,
+            ranged
+        ]
+
+        item_ids = widget['Inventory'].treeview_inv.get_children('')
+        items = list()
+        for item_id in item_ids:
+            items.append(
+                [
+                    widget['Inventory'].treeview_inv.item(item_id)['values'][1],
+                    widget['Inventory'].treeview_inv.item(item_id)['values'][2]
+                ]
+            )
+
+        solution_info['CreateInvItems'] = items
+
+        for item in solution_info.items():
+            print(item)
 
 class NPC():
     """
@@ -226,7 +281,7 @@ class NPC():
         return {'default': default_guilds, 'custom': custom_guilds}
     
     @classmethod
-    def get_voices(self, svm_path: str) -> dict:
+    def get_voices(cls, svm_path: str) -> dict:
         '''
         Parse SVM.d and dump fetched data into Globals.json.
 
@@ -311,7 +366,7 @@ class NPC():
         return {'default': default_types, 'custom': custom_types}
     
     @classmethod
-    def get_outfits(self, items_path: str) -> dict:
+    def get_outfits(cls, items_path: str) -> dict:
         '''
         Parse IT_Armor.d and IT_Addon_Armor.d and dump
         fetched data into Globals.json.
@@ -392,7 +447,7 @@ class NPC():
             }
 
     @classmethod
-    def get_fight_tactics(self, ai_constants_path: str) -> dict:
+    def get_fight_tactics(cls, ai_constants_path: str) -> dict:
         '''
         Parse AI_Constants.d and dump fetched data into Globals.json.
 
