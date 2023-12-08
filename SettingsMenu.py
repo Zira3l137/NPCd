@@ -2,12 +2,14 @@ from ttkbootstrap import (
     StringVar, Window,
     Frame, Entry,
     Checkbutton, Button,
-    BooleanVar
+    BooleanVar, END
 )
 
 from MiscUtils import NPC, MainPaths
 
 from tkinter.filedialog import askdirectory
+
+from pathlib import Path
 
 class SettingsMenu(Frame):
     def __init__(self, parent, edit_window):
@@ -30,7 +32,8 @@ class SettingsMenu(Frame):
             'voice',
             'type',
             'outfit',
-            'fight_tactic'
+            'fight_tactic',
+            'face'
         ]
         self.vars_checks_main : dict = {
             key: BooleanVar(value=False) for key in KEYS
@@ -128,6 +131,8 @@ class SettingsMenu(Frame):
                 if dir:
                     return 'Scripts/Content/AI/AI_Intern/'
                 return 'AI_Intern/AI_Constants.d'
+            case 'face':
+                return 'Textures/Faces/'
     
     def toggle_custom_dir(self, caller: str):
         condition = self.vars_checks_main[caller].get()
@@ -211,7 +216,39 @@ class SettingsMenu(Frame):
                         self.modules['Stats'].combo_fight_tactic.configure(
                             values = self.modules['Stats'].combo_fight_tactic_list
                         )
-                    
+                case 'face':
+                    gender = self.modules['Visual'].var_radio_gender.get()
+                    faces_dir = Path(directory) if Path(directory).is_dir() else None
+                    if faces_dir:
+                        match gender:
+                            case 0:
+                                faces = [
+                                    face.stem for face in faces_dir.iterdir()
+                                    if face.stem.startswith('HUM_HEAD_')
+                                    or face.stem.startswith('Hum_Head_')
+                                    or face.stem.startswith('hum_head_')
+                                ]
+                                self.modules['Visual'].listbox_face_list_m.set(
+                                    faces
+                                )
+                                self.modules['Visual'].listbox_face.configure(
+                                    listvariable=self.modules['Visual'].listbox_face_list_m
+                                )
+                                self.modules['Visual'].listbox_face_custom_dir = directory
+                            case 1:
+                                faces = [
+                                    face.stem for face in faces_dir.iterdir()
+                                    if face.stem.startswith('HUM_HEAD_')
+                                    or face.stem.startswith('Hum_Head_')
+                                    or face.stem.startswith('hum_head_')
+                                ]
+                                self.modules['Visual'].listbox_face_list_f.set(
+                                    faces
+                                )
+                                self.modules['Visual'].listbox_face.configure(
+                                    listvariable=self.modules['Visual'].listbox_face_list_f
+                                )
+                                self.modules['Visual'].listbox_face_custom_dir = directory           
         else:
             match caller:
                 case 'guild':
@@ -261,6 +298,27 @@ class SettingsMenu(Frame):
                     self.modules['Stats'].combo_fight_tactic.configure(
                         values = self.modules['Stats'].combo_fight_tactic_list
                     )
+                case 'face':
+                    gender = self.modules['Visual'].var_radio_gender.get()
+                    match gender:
+                        case 0:
+                            self.modules['Visual'].listbox_face_list_m.set(
+                                self.paths.get_globals()['NPC']['face']['male']
+                            )
+                            self.modules['Visual'].listbox_face.configure(
+                                listvariable=self.modules['Visual'].listbox_face_list_m
+                            )
+                            self.modules['Visual'].listbox_face_custom_dir = None
+                        case 1:
+                            self.modules['Visual'].listbox_face_list_f.set(
+                                self.paths.get_globals()['NPC']['face']['female']
+                            )
+                            self.modules['Visual'].listbox_face.configure(
+                                listvariable=self.modules['Visual'].listbox_face_list_f
+                            )
+                            self.modules['Visual'].listbox_face_custom_dir = None
+
+                            
 
 if __name__ == '__main__':
     root = Window(title='Settings Menu', themename='darkly')

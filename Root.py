@@ -17,8 +17,7 @@ class Root(Window):
         self.geometry(f'{resolution[0]}x{resolution[1]}+{pos_x}+{pos_y}')
         self.profile_manager = ProfileManager(self)
         self.edit_window = EditWindow(self, self)
-        self.mainloop()
-        
+        self.mainloop()   
 
 if __name__ == '__main__':
     root =  Root((768,512), 'Root', 'darkly')

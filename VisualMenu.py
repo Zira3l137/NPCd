@@ -6,9 +6,12 @@ from ttkbootstrap import (
     Label, Combobox, Radiobutton,
     Scale, Scrollbar, Canvas
 )
+
 from PIL import Image, ImageTk
 
 from MiscUtils import NPC, MainPaths
+
+from pathlib import Path
 
 class VisualMenu(Frame):
     def __init__(self, parent, root, edit_window):
@@ -43,6 +46,7 @@ class VisualMenu(Frame):
         self.var_combo_outfit = StringVar()
         self.var_combo_walk_overlay = StringVar()
         self.var_listbox_face = StringVar()
+        self.listbox_face_custom_dir = None
         self.var_radio_gender = IntVar(value = 2)
         self.var_scale_fatness = DoubleVar(value = 1.0)
         self.var_scale_fatness_label = StringVar(value = '1.0 (Default)')
@@ -270,7 +274,12 @@ class VisualMenu(Frame):
         )
         self.listbox_face.bind(
             '<ButtonRelease-1>',
-            lambda *_: self.view_face_image()
+            lambda *_:
+                self.view_face_image()
+                if self.listbox_face_custom_dir is None
+                else self.view_face_image(
+                    face_dir=self.listbox_face_custom_dir
+                )
         )
         self.scrollbar_listbox_face = Scrollbar(
             self.visual_frames['face'],
@@ -422,6 +431,7 @@ class VisualMenu(Frame):
         self.combo_walk_overlay.configure(state = 'normal')
         self.reset_scale_value()
         self.modules['Settings'].refill_data('outfit')
+        self.modules['Settings'].refill_data('face')
 
     def update_scale_value(self, value):
         if float(value) == 1.0:
@@ -432,11 +442,14 @@ class VisualMenu(Frame):
     def reset_scale_value(self):
         self.scale_fatness.set(1.0)
 
-    def view_face_image(self):
+    def view_face_image(self, face_dir=None):
         face_image_name = self.listbox_face.get(
             *self.listbox_face.curselection()
         )
-        face = Image.open(self.paths.FACES_PATH.joinpath(f'{face_image_name}.png'))
+        if face_dir is not None:
+            face = Image.open(Path(face_dir) / f'{face_image_name}.png')
+        else:
+            face = Image.open(self.paths.FACES_PATH / f'{face_image_name}.png')
         face = face.resize((face.width*2, face.height*2))
         self.image_face = ImageTk.PhotoImage(face)
         self.canvas_image_face.delete('all')
