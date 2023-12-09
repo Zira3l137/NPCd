@@ -1,9 +1,17 @@
-1. Expand inventory module:
-	Add GUI for B_CreateAmbientInv
-	
+1. Expand main module:
+	For flags, change radio button to dropdown list as for rest of C_NPC properties
+	Add GUI for level
+	Automatically filling NPC ID input with first, free ID
+    
 2. Expand stats module:
 	Add GUI for B_SetAttributesToChapter
 	Add GUI for Npc_SetTalentSkill
-	
-3. Expand settings module:
+    
+3. Expand inventory module:
+	Add GUI for B_CreateAmbientInv
+	Add GUI for searching items by regular expressions like in Spacer.net
+	Add tooltips for symbols of items
+	Add error box, when user equips item, for which NPC hasn't enough attribute (count also fitted items with bonuses)
+		
+4. Expand settings module:
 	Add GUI for custom routine TA functions parsing
