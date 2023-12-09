@@ -688,8 +688,7 @@ class ExtractWaypoints():
         Returns: dict type object with ZEN filenames as keys and waypoint lists
         as values.
         '''
-        if not paths.STRINGS_PATH / 'Waypoints.json':
-            self._write()
+        self._write()
         return load(open(paths.STRINGS_PATH / 'Waypoints.json'))
 
     def _write(self):

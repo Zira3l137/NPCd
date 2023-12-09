@@ -2,7 +2,8 @@ from ttkbootstrap import (
     Window, StringVar, IntVar,
     BooleanVar, Button, Frame,
     Label, Spinbox, Radiobutton,
-    Treeview, Scrollbar, END
+    Treeview, Scrollbar, END,
+    Checkbutton
 )
 from PIL import Image, ImageTk
 
@@ -41,6 +42,7 @@ class InventoryMenu(Frame):
         self.var_label_equipped_ranged = StringVar()
         self.var_selection_empty = BooleanVar(value = True)
         self.var_spinbox_quantity = IntVar(value = 1)
+        self.var_check_add_amb_inv = BooleanVar(value=False)
         
         self.frame_items = Frame(self)
         self.frame_items_cats = Frame(self.frame_items, bootstyle = 'dark')
@@ -184,6 +186,13 @@ class InventoryMenu(Frame):
             command = lambda *_: self.remove_from_inv('all'),
             bootstyle = 'danger'
         )
+        self.check_add_amb_inv = Checkbutton(
+            self.frame_items_manage_inventory,
+            onvalue=True,
+            offvalue=False,
+            text='Add ambient inventory',
+            variable=self.var_check_add_amb_inv
+        )
 
         self.frame_inventory = Frame(self)
         self.frame_inventory_inv = Frame(
@@ -265,6 +274,9 @@ class InventoryMenu(Frame):
         )
         self.button_clear_inv.pack(
             side = 'left', padx = 5, pady = 5, expand = True, anchor = 'center'
+        )
+        self.check_add_amb_inv.pack(
+            fill = 'x', padx = 5, pady = 5, expand=True
         )
 
         self.frame_inventory.pack(
