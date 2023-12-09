@@ -264,7 +264,7 @@ class RoutineMenu(Frame):
         self.button_extract = Button(
             self.frame_waypoints_world,
             text = 'Extract Waypoints',
-            width = 15,
+            width = 17,
             command = lambda *_: self.extract_waypoints(),
             state = 'disabled'
         )

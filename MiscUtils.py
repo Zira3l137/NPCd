@@ -680,6 +680,7 @@ class ExtractWaypoints():
         self._zen_files : dict = dict()
         self._zen_wps : dict = dict()
         self._worlds_path : Path = Path(path)
+        print(f'used path: {str(self._worlds_path)}')
 
     def load(self) -> dict:
         '''
@@ -692,7 +693,7 @@ class ExtractWaypoints():
         return load(open(paths.STRINGS_PATH / 'Waypoints.json'))
 
     def _write(self):
-        if not self._worlds_path:
+        if self._worlds_path == paths.WORLDS_PATH:
             if not paths.WORLDS_PATH.iterdir():
                 raise FileNotFoundError
             for i in paths.WORLDS_PATH.iterdir():
