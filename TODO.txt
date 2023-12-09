@@ -12,6 +12,11 @@
 	Add GUI for searching items by regular expressions like in Spacer.net
 	Add tooltips for symbols of items
 	Add error box, when user equips item, for which NPC hasn't enough attribute (count also fitted items with bonuses)
+    
+4. Expand routine module:
+	Sort waypoints alphabetically after extracting them
+	If user remove activity from routine, select should go to next entry, if exist.
+	When user add activity, input for start time period for next activity, should be automatically changed to end time of already added activity
 		
-4. Expand settings module:
+5. Expand settings module:
 	Add GUI for custom routine TA functions parsing
