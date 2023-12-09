@@ -525,6 +525,7 @@ class RoutineMenu(Frame):
         worlds = ExtractWaypoints(self.var_entry_directory.get())
         self.wps = worlds.load()
         self.combo_worlds_list = [i for i in self.wps]
+        print(self.combo_worlds_list)
         self.combo_worlds.configure(values = self.combo_worlds_list)
         self.combo_worlds.set(self.combo_worlds_list[0])
         self.var_listbox_waypoints.set(

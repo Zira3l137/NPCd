@@ -703,17 +703,14 @@ class ExtractWaypoints():
             if not self._worlds_path.iterdir():
                 raise FileNotFoundError
             for i in self._worlds_path.iterdir():
-                if '.zen' or '.ZEN' in i:
+                if i.suffix.lower() == '.zen':
                     self._zen_files[i.stem] = self._worlds_path / i
-        self.__extract(self._zen_files, paths.STRINGS_PATH)
+        self.__extract(self._zen_files)
 
-    def __extract(self, zen_dir, save_dir):
+    def __extract(self, zen_dir):
         for file in zen_dir:
-            if False in (
-                Path(zen_dir[file]).is_file(),
-                Path(save_dir).is_dir()
-            ):
-                raise FileNotFoundError
+            if Path(zen_dir[file]).is_dir():
+                continue
             with open(zen_dir[file], 'rt', encoding='Windows-1252') as zen:
                 waypoints = list()
                 for line in zen.readlines():
@@ -723,5 +720,9 @@ class ExtractWaypoints():
                         name = line.lstrip('\t').rstrip('\t\n').split(':')[1]
                         waypoints.append(name)
             self._zen_wps[file] = waypoints
+            self._zen_wps = {
+                key: value for key, value
+                in sorted(self._zen_wps.items())
+            }
         with open(paths.STRINGS_PATH / 'Waypoints.json', 'w') as file:
             dump(self._zen_wps, file, indent=4)
