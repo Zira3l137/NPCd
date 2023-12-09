@@ -713,12 +713,15 @@ class ExtractWaypoints():
                 continue
             with open(zen_dir[file], 'rt', encoding='Windows-1252') as zen:
                 waypoints = list()
-                for line in zen.readlines():
-                    if 'MeshAndBsp' in line:
-                        raise KeyError
-                    if 'wpName=string:' in line:
-                        name = line.lstrip('\t').rstrip('\t\n').split(':')[1]
-                        waypoints.append(name)
+                try:
+                    for line in zen.readlines():
+                        if 'MeshAndBsp' in line:
+                            raise KeyError('Compiled ZEN files were found!')
+                        if 'wpName=string:' in line:
+                            name = line.lstrip('\t').rstrip('\t\n').split(':')[1]
+                            waypoints.append(name)
+                except UnicodeDecodeError:
+                    continue
             self._zen_wps[file] = waypoints
             self._zen_wps = {
                 key: value for key, value
