@@ -1,22 +1,28 @@
 1. Expand main module:
-	For flags, change radio button to dropdown list as for rest of C_NPC properties
-	Add GUI for level
-	Automatically filling NPC ID input with first, free ID
+    For flags, change radio button to dropdown list as for rest of C_NPC properties
+    Add GUI for level
+    Automatically filling NPC ID input with first, free ID
     
 2. Expand stats module:
-	Add GUI for B_SetAttributesToChapter
-	Add GUI for Npc_SetTalentSkill
+    Add GUI for B_SetAttributesToChapter
+    Add GUI for Npc_SetTalentSkill
     
 3. Expand inventory module:
-	Add GUI for B_CreateAmbientInv
-	Add GUI for searching items by regular expressions like in Spacer.net
-	Add tooltips for symbols of items
-	Add error box, when user equips item, for which NPC hasn't enough attribute (count also fitted items with bonuses)
+    Add GUI for B_CreateAmbientInv
+    Add GUI for searching items by regular expressions like in Spacer.net
+    Add tooltips for symbols of items
+    Add error box, when user equips item, for which NPC hasn't enough attribute (count also fitted items with bonuses)
     
 4. Expand routine module:
-	Sort waypoints alphabetically after extracting them
-	If user remove activity from routine, select should go to next entry, if exist.
-	When user add activity, input for start time period for next activity, should be automatically changed to end time of already added activity
-		
+    Sort waypoints alphabetically after extracting them
+    If user remove activity from routine, select should go to next entry, if exist.
+    When user add activity, input for start time period for next activity, should be automatically changed to end time of already added activity
+    Ignore compiled ZENs
+    implement time management for routines in routine module (copy-paste activities with automatic time shifting and checking, how many time of 24 hours is used)
+        
 5. Expand settings module:
-	Add GUI for custom routine TA functions parsing
+    Add GUI for custom routine TA functions parsing
+
+6. Any dropdown list:
+    Allow to select entry by clicking any place in dropdown list, not only arrow
+    
