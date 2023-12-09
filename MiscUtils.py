@@ -41,7 +41,6 @@ class MainPaths():
     - GLOBALS_PATH: Represents the path to the 'Globals.json' file.
     - OVERLAYS_PATH: Represents the path to the 'Walk_Overlays.json' file.
     - ACTIVITIES_PATH: Represents the path to the 'Activities.json' file.
-    - WAYPOINTS_PATH: Represents the path to the 'Waypoints.json' file.
     '''
 
     def __init__(self):
@@ -65,7 +64,6 @@ class MainPaths():
         self.GLOBALS_PATH: Path = self.STRINGS_PATH / 'Globals.json'
         self.OVERLAYS_PATH: Path = self.STRINGS_PATH / 'Walk_Overlays.json'
         self.ACTIVITIES_PATH: Path = self.STRINGS_PATH / 'Activities.json'
-        self.WAYPOINTS_PATH: Path = self.STRINGS_PATH / 'Waypoints.json'
 
     def _get_current_path(self) -> Path:
         '''
@@ -669,63 +667,105 @@ class NPC():
     
 
 class ExtractWaypoints():
-    '''
-    Parse uncompiled ZEN files from a specified directory,
-    fetch all waypoints from them and store them into dictionaries.
+    """
+    A class for extracting waypoints from uncompiled ZEN files.
 
-    path : str - Path to a directory containing ZEN files
-    '''
+    Attributes:
+        worlds_path (Path): The path to the directory containing the ZEN files.
+        zen_files (list): The list of valid ZEN files.
+        zen_filenames (list): The filenames of the valid ZEN files.
+        zen_wps (dict): The extracted waypoints from the ZEN files, stored in a dictionary.
+    """
 
     def __init__(self, path: str):
-        self._zen_files : dict = dict()
-        self._zen_wps : dict = dict()
-        self._worlds_path : Path = Path(path)
-        print(f'used path: {str(self._worlds_path)}')
+        """
+        Initializes an instance of ExtractWaypoints.
 
-    def load(self) -> dict:
-        '''
-        Load waypoints from Waypoints.json.
+        Args:
+            path (str): The path to the directory containing the ZEN files.
+        """
+        self.worlds_path = Path(path)
+        
+        self.zen_files : list = self.check_files(self.worlds_path)['files']
+        self.zen_filenames : list = self.check_files(self.worlds_path)['filenames']
 
-        Returns: dict type object with ZEN filenames as keys and waypoint lists
-        as values.
-        '''
-        self._write()
-        return load(open(paths.STRINGS_PATH / 'Waypoints.json'))
+        self.zen_wps : dict = self.extract_waypoints(
+            self.zen_files, self.zen_filenames
+        )
 
-    def _write(self):
-        if self._worlds_path == paths.WORLDS_PATH:
-            if not paths.WORLDS_PATH.iterdir():
-                raise FileNotFoundError
-            for i in paths.WORLDS_PATH.iterdir():
-                if '.zen' or '.ZEN' in i:
-                    self._zen_files[i.stem] = paths.WORLDS_PATH / i
-        else:
-            if not self._worlds_path.iterdir():
-                raise FileNotFoundError
-            for i in self._worlds_path.iterdir():
-                if i.suffix.lower() == '.zen':
-                    self._zen_files[i.stem] = self._worlds_path / i
-        self.__extract(self._zen_files)
+    def check_files(self, file_path: Path) -> dict:
+        """
+        Checks for valid ZEN files in the given directory and returns a
+        dictionary containing the list of files and their filenames.
 
-    def __extract(self, zen_dir):
-        for file in zen_dir:
-            if Path(zen_dir[file]).is_dir():
+        Args:
+            file_path (Path): The path to the directory containing
+            the ZEN files.
+
+        Returns:
+            dict: A dictionary containing the list of files and their
+            filenames.
+        """
+        file_paths = file_path.iterdir()
+        uncompiled_zens : list[Path] = list()
+        for file_path in file_paths:
+            if file_path.is_dir():
                 continue
-            with open(zen_dir[file], 'rt', encoding='Windows-1252') as zen:
-                waypoints = list()
+            if file_path.suffix.lower() == '.zen':
                 try:
-                    for line in zen.readlines():
-                        if 'MeshAndBsp' in line:
-                            raise KeyError('Compiled ZEN files were found!')
+                    with open(
+                        file_path,
+                        'rt',
+                        encoding='windows-1252'
+                    ) as file:
+                        file.readlines()
+                except UnicodeDecodeError:
+                    continue
+                else:
+                    with open(
+                        file_path,
+                        'rt',
+                        encoding='windows-1252'
+                    ) as file:
+                        data = file.read()
+                        if not 'wpName=string:' in data:
+                            continue
+                        uncompiled_zens.append(file_path)
+        return {
+            'files': uncompiled_zens,
+            'filenames': [
+                file.stem for file in uncompiled_zens
+            ]
+        }
+    
+    def extract_waypoints(self, files: list[Path], filenames: list[str]) -> dict:
+        """
+        Reads the ZEN files and extracts the waypoints from them,
+        storing them in a dictionary.
+
+        Args:
+            files (list[Path]): The list of valid ZEN files.
+            filenames (list[str]): The filenames of the valid ZEN files.
+
+        Returns:
+            dict: A dictionary containing the extracted waypoints
+            from the ZEN files.
+        """
+        wps = dict()
+        for file, filename in zip(files, filenames):
+            with open(file, 'rt', encoding='windows-1252') as zen:
+                waypoints = list()
+                lines = zen.readlines()
+
+                for line in lines:
                         if 'wpName=string:' in line:
                             name = line.lstrip('\t').rstrip('\t\n').split(':')[1]
                             waypoints.append(name)
-                except UnicodeDecodeError:
-                    continue
-            self._zen_wps[file] = waypoints
-            self._zen_wps = {
-                key: value for key, value
-                in sorted(self._zen_wps.items())
-            }
-        with open(paths.STRINGS_PATH / 'Waypoints.json', 'w') as file:
-            dump(self._zen_wps, file, indent=4)
+                waypoints = sorted(waypoints)
+                wps[filename] = waypoints
+
+        wps = {
+            key: value for key, value
+            in sorted(wps.items())
+        }
+        return wps
