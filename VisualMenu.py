@@ -119,7 +119,7 @@ class VisualMenu(Frame):
             bootstyle = 'secondary',
             width = 30,
             textvariable = self.var_combo_outfit,
-            state = 'disabled'
+            state = 'disabled',
         )
         self.label_head = Label(
             self.visual_frames['head'],
@@ -422,7 +422,10 @@ class VisualMenu(Frame):
         }
         for i in widget_pairs:
             if isinstance(i, Combobox):
-                i.configure(state = 'normal', values = widget_pairs[i][gender])
+                if i is self.combo_outfit:
+                    i.configure(state='readonly')
+                else:
+                    i.configure(state = 'normal', values = widget_pairs[i][gender])
                 i.delete(0,END)
             elif isinstance(i, Listbox):
                 i.configure(listvariable = widget_pairs[i][gender])

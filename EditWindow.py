@@ -36,7 +36,7 @@ class EditWindow(Frame):
         self.tabs = dict()
         self.menus = dict()
         self.tab_names = {
-            'Main': '768x512',
+            'Main': '768x640',
             'Visual': '768x780',
             'Stats': '784x512',
             'Inventory': '1280x800',
@@ -60,7 +60,10 @@ class EditWindow(Frame):
                     self.var_current_tab.get()
                 )
             )
-        self.menus['Main'] = MainMenu(self.frame_menu, self.paths.SOUNDS_PATH)
+        self.menus['Main'] = MainMenu(
+            self.frame_menu,
+            self.paths.SOUNDS_PATH,
+        )
         self.menus['Visual'] = VisualMenu(self.frame_menu, self.root, self)
         self.menus['Stats'] = StatsMenu(self.frame_menu)
         self.menus['Inventory'] = InventoryMenu(self.frame_menu)

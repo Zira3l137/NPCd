@@ -1,11 +1,12 @@
 from pathlib import Path
 from winsound import PlaySound, SND_ALIAS
+from random import choice
 
 from ttkbootstrap import (
     StringVar, Window,
     Frame, Label,
     Entry, Combobox,
-    Radiobutton, Button
+    Button
 )
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
@@ -18,7 +19,8 @@ class MainMenu(Frame):
         self.paths = MainPaths()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
-        self.widgets_pack() 
+        self.widgets_pack()
+        self.fill_id()
 
     def show(self):
         self.pack(expand = True, fill = 'both', padx = 5, pady = 5)
@@ -29,22 +31,24 @@ class MainMenu(Frame):
     def widgets_init(self):
         self.main_frames = dict()
         self.main_frame_names = [
+            'lvl',
             'id', 'name',
             'guild', 'voice',
             'type', 'flag'
         ]
+        self.var_entry_lvl = StringVar()
         self.var_entry_id = StringVar()
         self.var_entry_name = StringVar()
         self.var_combo_guild = StringVar()
         self.var_combo_voice = StringVar()
-        self.var_radio_flag = StringVar()
+        self.var_combo_flag = StringVar()
         self.var_combo_type = StringVar()
         self.radio_flag = dict()
         self.combo_guild_list = [i for i in
             self.paths.get_globals()['NPC']['guild']['default']
         ]
         self.combo_voice_list = self.paths.get_globals()['NPC']['voice']['default']
-        self.flag_names_list = self.paths.get_globals()['NPC']['flag']
+        self.combo_flags_list = self.paths.get_globals()['NPC']['flag']
         self.combo_type_list = self.paths.get_globals()['NPC']['type']['default']
         self.names_database = [
             i.lower() for i in self.paths.get_globals()['NPC']['name']
@@ -53,6 +57,19 @@ class MainMenu(Frame):
 
         for i in self.main_frame_names:
             self.main_frames[i] = Frame(self)
+
+        self.label_lvl = Label(
+            self.main_frames['lvl'],
+            text='NPC Level:'
+        )
+        self.entry_lvl = Entry(
+            self.main_frames['lvl'],
+            bootstyle = 'danger',
+            width = 10,
+            justify='center',
+            textvariable = self.var_entry_lvl
+        )
+
         self.label_id = Label(self.main_frames['id'], text = 'Unique NPC ID:')
         self.frame_label_warning_id = Frame(self.main_frames['id'])
         self.label_warning_id = Label(
@@ -63,7 +80,8 @@ class MainMenu(Frame):
         self.entry_id = Entry(
             self.main_frames['id'],
             bootstyle = 'danger',
-            width = 33,
+            width = 10,
+            justify='center',
             textvariable = self.var_entry_id
         )
         self.var_entry_id.trace_add(
@@ -84,7 +102,8 @@ class MainMenu(Frame):
         self.entry_name = Entry(
             self.main_frames['name'],
             bootstyle = 'success',
-            width = 33,
+            width = 10,
+            justify='center',
             textvariable = self.var_entry_name
         )
         self.var_entry_name.trace_add(
@@ -104,7 +123,8 @@ class MainMenu(Frame):
             bootstyle = 'info',
             width = 31,
             values = self.combo_guild_list,
-            textvariable = self.var_combo_guild
+            textvariable = self.var_combo_guild,
+            state='readonly'
         )
         self.label_voice = Label(
             self.main_frames['voice'],
@@ -124,7 +144,8 @@ class MainMenu(Frame):
             bootstyle = 'warning',
             width = 31,
             values = self.combo_voice_list,
-            textvariable = self.var_combo_voice
+            textvariable = self.var_combo_voice,
+            state='readonly'
         )
         self.label_type = Label(self.main_frames['type'], text = 'NPC Type:')
         self.combo_type = Combobox(
@@ -132,16 +153,21 @@ class MainMenu(Frame):
             bootstyle = 'light',
             width = 31,
             values = self.combo_type_list,
-            textvariable = self.var_combo_type
+            textvariable = self.var_combo_type,
+            state='readonly'
         )
-        for i in self.flag_names_list:
-            self.radio_flag[i] = Radiobutton(
-                master = self.main_frames['flag'],
-                variable = self.var_radio_flag,
-                value = i,
-                text = i,
-                bootstyle = 'info'
-            )
+        self.label_flags = Label(
+            self.main_frames['flag'],
+            text='Flags:'
+        )
+        self.combo_flags = Combobox(
+            self.main_frames['flag'],
+            textvariable=self.var_combo_flag,
+            values=self.combo_flags_list,
+            width= 31,
+            bootstyle = 'light',
+            state='readonly'
+        )
 
     def widgets_pack(self):
         for i in self.main_frames:
@@ -149,6 +175,13 @@ class MainMenu(Frame):
                 fill = 'both', padx = 5, pady = 5, expand = True
             )
 
+        self.label_lvl.pack(
+            side = 'left', padx = 5, pady = 5, anchor = 'w', expand = True
+        )
+        self.entry_lvl.pack(
+            side = 'left', padx = 5, pady = 5, anchor = 'e'
+        )
+        
         self.label_id.pack(
             side = 'left', padx = 5, pady = 5, anchor = 'w', expand = True
         )
@@ -193,10 +226,12 @@ class MainMenu(Frame):
             side = 'left', padx = 5, pady = 5, anchor = 'e'
         )
 
-        for i in self.radio_flag:
-            self.radio_flag[i].pack(
-                side = 'left', fill = 'x', expand = True, padx = 5, pady = 5
-            )
+        self.label_flags.pack(
+            side = 'left', padx = 5, pady = 5, anchor = 'w', expand = True
+        )
+        self.combo_flags.pack(
+            side = 'left', padx = 5, pady = 5, anchor = 'e'
+        )
 
     def play_voice_sample(self, voice):
         if not voice:
@@ -233,6 +268,13 @@ to choose correct path for custom sound files.''',
                 else:
                     self.label_warning_id.forget()
 
+    def fill_id(self):
+        taken_ids = set(self.paths.get_globals()['NPC']['id'])
+        available_ids = (
+            str(id) for id in range(100,99999)
+            if str(id) not in taken_ids
+        )
+        self.var_entry_id.set(choice(list(available_ids)))
 
 if __name__ == '__main__':
     root = Window(title='test', themename='darkly')

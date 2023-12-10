@@ -26,6 +26,7 @@ class RoutineMenu(Frame):
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
+        self.update_npc_id()
 
     def show(self):
         self.pack(expand = True, fill = 'both', padx = 5, pady = 5)
@@ -94,7 +95,8 @@ class RoutineMenu(Frame):
         self.combo_routines = Combobox(
             self.frame_routine,
             values = list(self.routines.keys()),
-            textvariable = self.var_combo_routines
+            textvariable = self.var_combo_routines,
+            state='readonly'
         )
         self.var_combo_routines.trace_add(
             'write',
@@ -488,13 +490,21 @@ class RoutineMenu(Frame):
                     )
                     self.combo_routines.set(self.get_routine_name())
                     self.var_entry_routine_name.set('')
+                elif not id.isdigit():
+                    Messagebox.show_error(
+                        'Please set a unique ID for your NPC solution!',
+                        'NPC ID is unset!',
+                        self
+                    )
             case '-':
                 selected_routine = self.combo_routines.get()
                 if selected_routine:
                     del self.routines[selected_routine]
+                    self.combo_routines.configure(state='normal')
                     self.combo_routines.delete(0, END)
                     self.combo_routines.configure(
-                        values = list(self.routines.keys())
+                        values = list(self.routines.keys()),
+                        state='readonly'
                     )
 
     def get_routine_name(self):
@@ -625,6 +635,12 @@ class RoutineMenu(Frame):
             self.listbox_waypoints
         ]
         for widget in widgets:
+            if True in [
+                widget is self.combo_activities,
+                widget is self.combo_worlds
+            ]:
+                widget.configure(state='readonly')
+                continue
             widget.configure(state=state)
 
 if __name__ == '__main__':

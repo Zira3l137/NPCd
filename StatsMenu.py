@@ -56,7 +56,8 @@ class StatsMenu(Frame):
         self.combo_fight_tactic = Combobox(
             self.frame_checks,
             textvariable = self.var_combo_fight_tactic,
-            values = self.combo_fight_tactic_list
+            values = self.combo_fight_tactic_list,
+            state='readonly'
         )
         self.check_talents = Checkbutton(
             self.frame_checks,
