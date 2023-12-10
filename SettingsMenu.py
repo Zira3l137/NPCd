@@ -33,7 +33,8 @@ class SettingsMenu(Frame):
             'type',
             'outfit',
             'fight_tactic',
-            'face'
+            'face',
+            'action'
         ]
         self.vars_checks_main : dict = {
             key: BooleanVar(value=False) for key in KEYS
@@ -101,38 +102,40 @@ class SettingsMenu(Frame):
 
     def get_source_name(self, caller: str, stem = False, dir = False) -> str:
         match caller:
+
             case 'guild':
-                if stem:
-                    return 'Constants.d'
-                if dir:
-                    return 'Scripts/Content/_intern/'
+                if stem: return 'Constants.d'
+                if dir: return 'Scripts/Content/_intern/'
                 return '_intern/Constants.d'
+            
             case 'voice':
-                if stem:
-                    return 'SVM.d'
-                if dir:
-                    return 'Scripts/Content/Story/'
+                if stem: return 'SVM.d'
+                if dir: return 'Scripts/Content/Story/'
                 return 'Story/SVM.d'
+            
             case 'type':
-                if stem:
-                    return 'AI_Constants.d'
-                if dir:
-                    return 'Scripts/Content/AI/AI_Intern/'
+                if stem: return 'AI_Constants.d'
+                if dir: return 'Scripts/Content/AI/AI_Intern/'
                 return 'AI_Intern/AI_Constants.d'
+            
             case 'outfit':
-                if stem:
-                    return ('IT_Armor.d','IT_Addon_Armor.d')
-                if dir:
-                    return 'Scripts/Content/Items/'
+                if stem: return ('IT_Armor.d','IT_Addon_Armor.d')
+                if dir: return 'Scripts/Content/Items/'
                 return ('Items/IT_Armor.d','IT_Addon_Armor.d')
+            
             case 'fight_tactic':
-                if stem:
-                    return 'AI_Constants.d'
-                if dir:
-                    return 'Scripts/Content/AI/AI_Intern/'
+                if stem: return 'AI_Constants.d'
+                if dir: return 'Scripts/Content/AI/AI_Intern/'
                 return 'AI_Intern/AI_Constants.d'
+            
             case 'face':
                 return 'Textures/Faces/'
+            
+            case 'action':
+                if stem: return 'TA.d'
+                if dir: return 'Scripts/Content/AI/Human/'
+                return 'Human/TA.d'
+
     
     def toggle_custom_dir(self, caller: str):
         condition = self.vars_checks_main[caller].get()
@@ -248,7 +251,19 @@ class SettingsMenu(Frame):
                                 self.modules['Visual'].listbox_face.configure(
                                     listvariable=self.modules['Visual'].listbox_face_list_f
                                 )
-                                self.modules['Visual'].listbox_face_custom_dir = directory           
+                                self.modules['Visual'].listbox_face_custom_dir = directory
+                case 'action':
+                    if NPC.get_actions(directory):
+                        self.modules['Routine'].combo_activities_list = [
+                            i for i in
+                            self.paths.get_activities()['default']
+                            +self.paths.get_activities()['custom']
+                        ]
+                        self.modules['Routine'].combo_activities.configure(
+                            values = self.modules['Routine'].combo_activities_list
+                        )
+                        
+
         else:
             match caller:
                 case 'guild':
@@ -317,6 +332,14 @@ class SettingsMenu(Frame):
                                 listvariable=self.modules['Visual'].listbox_face_list_f
                             )
                             self.modules['Visual'].listbox_face_custom_dir = None
+                case 'action':
+                    self.modules['Routine'].combo_activities_list = [
+                        i for i in
+                        self.paths.get_activities()['default']
+                    ]
+                    self.modules['Routine'].combo_activities.configure(
+                        values = self.modules['Routine'].combo_activities_list
+                    )
 
                             
 

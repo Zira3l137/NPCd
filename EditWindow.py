@@ -41,7 +41,7 @@ class EditWindow(Frame):
             'Stats': '784x512',
             'Inventory': '1280x800',
             'Routine': '1040x768',
-            'Settings': '768x512'
+            'Settings': '768x640'
         }
         for n, i in enumerate(list(self.tab_names.keys())):
             self.tabs[n] = Radiobutton(

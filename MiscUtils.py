@@ -487,6 +487,41 @@ class NPC():
         return {'default': default_fight_tactics, 'custom': custom_fight_tactics}
     
     @classmethod
+    def get_actions(cls, ta_path: str) -> dict:
+        
+        if not ta_path or not Path(ta_path).is_dir():
+            return
+        
+        path = Path(ta_path) / 'TA.d'
+        activities = list()
+        buffer : dict = paths.get_activities()
+        default_activities : list = buffer['default']
+        custom_activities = list()
+
+        with open(
+            path,
+            'rt',
+            encoding='Windows-1252'
+        ) as ta:
+            lines = ta.readlines()
+            for line in lines:
+                if 'func void TA_' in line:
+                    activities.append(line.split()[2])
+
+        for activity in activities:
+            if activity in default_activities:
+                continue
+            else:
+                custom_activities.append(activity)
+
+        buffer['custom'] = custom_activities
+
+        with open(paths.ACTIVITIES_PATH, 'w') as activities_json:
+            dump(buffer, activities_json, indent=4)
+
+        return {'default': default_activities, 'custom': custom_activities}
+    
+    @classmethod
     def add_overlay(cls, name: str):
         '''
         Add an overlay with a specified name to Walk_Overlays.json.
