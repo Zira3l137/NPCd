@@ -66,7 +66,7 @@ class EditWindow(Frame):
         )
         self.menus['Visual'] = VisualMenu(self.frame_menu, self.root, self)
         self.menus['Stats'] = StatsMenu(self.frame_menu)
-        self.menus['Inventory'] = InventoryMenu(self.frame_menu)
+        self.menus['Inventory'] = InventoryMenu(self.frame_menu, self)
         self.menus['Routine'] = RoutineMenu(self.frame_menu, self)
         self.menus['Settings'] = SettingsMenu(self.frame_menu, self)
     

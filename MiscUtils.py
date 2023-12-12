@@ -1,18 +1,12 @@
 '''
-The MainPaths class is responsible for defining the paths to various
-directories and files used in the program.
 
-The Profile class contains methods for handling NPC solution files.
-
-The NPC class contains methods for script parsing and NPC data fetching.
-
-The ExtractWaypoints class is used to parse uncompiled ZEN files and
-extract waypoints from them.
 '''
 import sys
 from pathlib import Path
 from os import remove
 from json import dump, load
+from random import choice
+from pprint import pprint
 
 class MainPaths():
     '''
@@ -36,11 +30,14 @@ class MainPaths():
     - STRINGS_PATH: Represents the path to the 'Strings' directory.
     - TEXTURES_PATH: Represents the path to the 'Textures' directory.
     - WORLDS_PATH: Represents the path to the 'Worlds' directory.
+
     - FACES_PATH: Represents the path to the 'Faces' directory.
     - ICONS_PATH: Represents the path to the 'Icons' directory.
+
     - GLOBALS_PATH: Represents the path to the 'Globals.json' file.
     - OVERLAYS_PATH: Represents the path to the 'Walk_Overlays.json' file.
     - ACTIVITIES_PATH: Represents the path to the 'Activities.json' file.
+    - AMBIENTINVS_PATH: Represents the path to the 'AmbientInvs.json' file.
     '''
 
     def __init__(self):
@@ -61,9 +58,11 @@ class MainPaths():
 
         self.FACES_PATH: Path = self.TEXTURES_PATH / 'Faces'
         self.ICONS_PATH: Path = self.RESOURCES_PATH / 'Icons'
+
         self.GLOBALS_PATH: Path = self.STRINGS_PATH / 'Globals.json'
         self.OVERLAYS_PATH: Path = self.STRINGS_PATH / 'Walk_Overlays.json'
         self.ACTIVITIES_PATH: Path = self.STRINGS_PATH / 'Activities.json'
+        self.AMBIENTINVS_PATH: Path = self.STRINGS_PATH / 'AmbientInvs.json'
 
     def _get_current_path(self) -> Path:
         '''
@@ -81,6 +80,9 @@ class MainPaths():
     def get_globals(self) -> dict:
         '''
         Return Globals.json as a dictionary.
+
+        Returns:
+        A dictionary representing the contents of the Globals.json file.
         '''
         return load(open(paths.GLOBALS_PATH))
 
@@ -88,6 +90,9 @@ class MainPaths():
     def get_overlays(self) -> dict:
         '''
         Return Walk_Overlays.json as a dictionary.
+
+        Returns:
+        A dictionary representing the contents of the Walk_Overlays.json file.
         '''
         return load(open(paths.OVERLAYS_PATH))
 
@@ -95,6 +100,9 @@ class MainPaths():
     def get_activities(self) -> dict:
         '''
         Return Activities.json as a dictionary.
+
+        Returns:
+        A dictionary representing the contents of the Activities.json file.
         '''
         return load(open(paths.ACTIVITIES_PATH))
         
@@ -102,8 +110,14 @@ paths = MainPaths()
 
 class Profile():
     '''
-    A class containing all the necessary methods for NPC solution handling.
+    The `Profile` class provides methods for creating and deleting NPC solution files.
+
+    Methods:
+    - load_profiles(cls) -> list: Load NPC solutions from paths.SOLUTIONS_PATH as a list of filenames without extensions.
+    - create_profile(cls, name: str): Create a new NPC solution file.
+    - delete_profile(cls, name: str): Delete specified NPC solution file.
     '''
+
     def __init__(self):
         pass
 
@@ -112,6 +126,9 @@ class Profile():
         '''
         Load NPC solutions from paths.SOLUTIONS_PATH as a list of filenames
         without extensions.
+
+        Returns:
+        - A list of filenames without extensions, representing the NPC solution files in the specified directory.
         '''
         return [i.stem for i in paths.SOLUTIONS_PATH.iterdir() if '.json' in str(i)]
 
@@ -120,7 +137,20 @@ class Profile():
         '''
         Create a new NPC solution file.
 
-        name : str - NPC solution name.
+        Args:
+            name (str): The name of the NPC solution file to be created.
+
+        Returns:
+            None
+
+        Example Usage:
+            profile = Profile()
+            profile.create_profile('npc_solution')
+
+        Code Analysis:
+            - Open a file with the specified name and '.json' extension in the specified path using the `open` function.
+            - Use the `dump` function from the `json` module to write an empty string to the file.
+            - Close the file.
         '''
         with open(paths.SOLUTIONS_PATH / f'{name}.json', 'w') as profile:
             dump('', profile)
@@ -130,9 +160,17 @@ class Profile():
         '''
         Delete specified NPC solution file.
 
-        name : str - NPC solution name.
+        Args:
+            name (str): The name of the NPC solution file to be deleted.
+
+        Returns:
+            None
+
+        Example Usage:
+            profile = Profile()
+            profile.delete_profile('npc_solution')
         '''
-        remove(paths.SOLUTIONS_PATH / f'{name}.json')  
+        remove(paths.SOLUTIONS_PATH / f'{name}.json')
 
     @classmethod
     def extract_data(cls, widget: dict) -> dict:
@@ -191,57 +229,107 @@ class Profile():
         for item in solution_info.items():
             print(item)
 
+
 class NPC():
     """
-    The `NPC` class provides methods for parsing and manipulating NPC data, such as guilds, voices, types, outfits, overlays, head meshes, and skin textures.
+    The `NPC` class provides methods for retrieving and manipulating data related to NPCs (non-player characters) in a game. It includes methods for getting guilds, voices, types, outfits, fight tactics, and actions. It also includes methods for adding and removing overlays, head meshes, and skin textures. Additionally, it has a method for creating NPC routines.
 
     Example Usage:
         npc = NPC()
-        npc.get_guilds(constants_path)  # Returns a dictionary with default and custom guilds\n
-        npc.get_voices(svm_path)  # Returns a dictionary with default and custom voices\n
-        npc.get_types(ai_constants_path)  # Returns a dictionary with default and custom types\n
-        npc.get_outfits(items_path)  # Updates Globals.json with custom outfits\n
-        npc.add_overlay(name)  # Adds an overlay to Walk_Overlays.json\n
-        npc.delete_overlay(name)  # Removes an overlay from Walk_Overlays.json\n
-        npc.add_head_mesh(name, gender)  # Adds a head mesh to Globals.json\n
-        npc.remove_head_mesh(name, gender)  # Removes a head mesh from Globals.json\n
-        npc.add_skin_tex(name, gender)  # Adds a skin texture to Globals.json\n
-        npc.remove_skin_tex(name, gender)  # Removes a skin texture from Globals.json\n
-        npc.create_routine(activity, start_time, end_time, waypoint)  # Returns a dictionary representing an NPC routine solution
+
+        # Get the default and custom guilds
+        guilds = npc.get_guilds(constants_path)
+        print(guilds)  # Output: {'default': [...], 'custom': [...]}
+
+        # Get the default and custom voices
+        voices = npc.get_voices(svm_path)
+        print(voices)  # Output: {'default': [...], 'custom': [...]}
+
+        # Get the default and custom types
+        types = npc.get_types(ai_constants_path)
+        print(types)  # Output: {'default': [...], 'custom': [...]}
+
+        # Get the default and custom outfits
+        outfits = npc.get_outfits(items_path)
+        print(outfits)  # Output: {'default': ([...], [...]), 'custom': ([...], [...])}
+
+        # Get the default and custom fight tactics
+        fight_tactics = npc.get_fight_tactics(ai_constants_path)
+        print(fight_tactics)  # Output: {'default': [...], 'custom': [...]}
+
+        # Get the default and custom actions
+        actions = npc.get_actions(ta_path)
+        print(actions)  # Output: {'default': [...], 'custom': [...]}
+
+        # Add an overlay
+        npc.add_overlay(name)
+
+        # Delete an overlay
+        npc.delete_overlay(name)
+
+        # Add a head mesh
+        npc.add_head_mesh(name, gender)
+
+        # Remove a head mesh
+        npc.remove_head_mesh(name, gender)
+
+        # Add a skin texture
+        npc.add_skin_tex(name, gender)
+
+        # Remove a skin texture
+        npc.remove_skin_tex(name, gender)
+
+        # Create an NPC routine
+        routine = npc.create_routine(activity, start_time, end_time, waypoint)
+        print(routine)  # Output: {'activity': ..., 'start_time': ..., 'end_time': ..., 'waypoint': ...}
 
     Main functionalities:
-    - Parsing and dumping NPC data into Globals.json
-    - Updating Globals.json with custom NPC data
-    - Creating NPC routine solutions
+    - Get guilds: Retrieves the default and custom guilds for NPCs.
+    - Get voices: Retrieves the default and custom voices for NPCs.
+    - Get types: Retrieves the default and custom types for NPCs.
+    - Get outfits: Retrieves the default and custom outfits for NPCs.
+    - Get fight tactics: Retrieves the default and custom fight tactics for NPCs.
+    - Get actions: Retrieves the default and custom actions for NPCs.
+    - Add overlay: Adds a custom overlay for NPCs.
+    - Delete overlay: Deletes a custom overlay for NPCs.
+    - Add head mesh: Adds a custom head mesh for NPCs.
+    - Remove head mesh: Removes a custom head mesh for NPCs.
+    - Add skin texture: Adds a custom skin texture for NPCs.
+    - Remove skin texture: Removes a custom skin texture for NPCs.
+    - Create routine: Creates an NPC routine with specified activity, start time, end time, and waypoint.
 
     Methods:
-    - get_guilds(constants_path: str) -> dict: Parses Constants.d and updates Globals.json with fetched guild data
-    - get_voices(svm_path: str) -> dict: Parses SVM.d and updates Globals.json with fetched voice data
-    - get_types(ai_constants_path: str) -> dict: Parses AI_Constants.d and updates Globals.json with fetched type data
-    - get_outfits(items_path: str): Parses IT_Armor.d and IT_Addon_Armor.d and updates Globals.json with fetched outfit data
-    - add_overlay(name: str): Adds an overlay with a specified name to Walk_Overlays.json
-    - delete_overlay(name: str): Removes an overlay with a specified name from Walk_Overlays.json
-    - add_head_mesh(name: str, gender: int): Adds a head mesh with a specified name to Globals.json
-    - remove_head_mesh(name: str, gender: int): Removes a head mesh with a specified name from Globals.json
-    - add_skin_tex(name: str, gender: int): Adds a skin texture with a specified name to Globals.json
-    - remove_skin_tex(name: str, gender: int): Removes a skin texture with a specified name from Globals.json
-    - create_routine(activity: str, start_time: str, end_time: str, waypoint: str) -> dict: Constructs an NPC routine solution as a dictionary with specified parameters
+    - get_guilds(constants_path: str) -> dict: Retrieves the default and custom guilds for NPCs based on the constants file path.
+    - get_voices(svm_path: str) -> dict: Retrieves the default and custom voices for NPCs based on the SVM file path.
+    - get_types(ai_constants_path: str) -> dict: Retrieves the default and custom types for NPCs based on the AI constants file path.
+    - get_outfits(items_path: str) -> dict: Retrieves the default and custom outfits for NPCs based on the items file path.
+    - get_fight_tactics(ai_constants_path: str) -> dict: Retrieves the default and custom fight tactics for NPCs based on the AI constants file path.
+    - get_actions(ta_path: str) -> dict: Retrieves the default and custom actions for NPCs based on the TA file path.
+    - add_overlay(name: str): Adds a custom overlay for NPCs with the specified name.
+    - delete_overlay(name: str): Deletes a custom overlay for NPCs with the specified name.
+    - add_head_mesh(name: str, gender: int): Adds a custom head mesh for NPCs with the specified name and gender.
+    - remove_head_mesh(name: str, gender: int): Removes a custom head mesh for NPCs with the specified name and gender.
+    - add_skin_tex(name: str, gender: int): Adds a custom skin texture for NPCs with the specified name and gender.
+    - remove_skin_tex(name: str, gender: int): Removes a custom skin texture for NPCs with the specified name and gender.
+    - create_routine(activity: str, start_time: str, end_time: str, waypoint: str) -> dict: Creates an NPC routine with the specified activity, start time, end time, and waypoint.
 
     Fields:
-    - No significant fields in the `NPC` class
+    None.
     """
     def __init__(self):
         pass       
     
     @classmethod
     def get_guilds(cls, constants_path: str) -> dict:
-        '''
-        Parse Constants.d and dump fetched data into Globals.json.
+        """
+        Retrieves the default and custom guilds for NPCs based on the constants file path.
 
-        constants_path : str - A path to a directory containing Constants.d
-        
-        Returns dict type object with fetched and default data.
-        '''
+        Args:
+            constants_path (str): The path to the constants file.
+
+        Returns:
+            dict: A dictionary with the default and custom guilds for NPCs.
+        """
         if not constants_path or not Path(constants_path).is_dir():
             return
         
@@ -280,13 +368,15 @@ class NPC():
     
     @classmethod
     def get_voices(cls, svm_path: str) -> dict:
-        '''
-        Parse SVM.d and dump fetched data into Globals.json.
+        """
+        Retrieves the default and custom voices for NPCs based on the SVM file path.
 
-        svm_path : str - A path to a directory containing SVM.d
-        
-        Returns dict type object with fetched and default data.
-        '''
+        Args:
+            svm_path (str): The path to the SVM file.
+
+        Returns:
+            dict: A dictionary with the default and custom voices for NPCs.
+        """
         if not svm_path or not Path(svm_path).is_dir():
             return
         
@@ -323,14 +413,20 @@ class NPC():
     
     @classmethod
     def get_types(cls, ai_constants_path: str) -> dict:
-        '''
-        Parse AI_Constants.d and dump fetched data into Globals.json.
-
-        ai_constants_path : str - A path to a directory containing
-        AI_Constants.d
-        
-        Returns dict type object with fetched and default data.
-        '''
+        """
+        Retrieves the default and custom types for NPCs based on the AI constants file path.
+    
+        Args:
+            ai_constants_path (str): The path to the AI constants file.
+    
+        Returns:
+            dict: A dictionary with the default and custom types for NPCs.
+    
+        Example Usage:
+            npc = NPC()
+            types = npc.get_types(ai_constants_path)
+            print(types)  # Output: {'default': [...], 'custom': [...]}    
+        """
         if not ai_constants_path or not Path(ai_constants_path).is_dir():
             return
         
@@ -365,15 +461,15 @@ class NPC():
     
     @classmethod
     def get_outfits(cls, items_path: str) -> dict:
-        '''
-        Parse IT_Armor.d and IT_Addon_Armor.d and dump
-        fetched data into Globals.json.
+        """
+        Retrieves the default and custom outfits for NPCs based on the items file path.
 
-        items_path : str - A path to a directory containing
-        IT_Armor.d and IT_Addon_Armor.d.
+        Args:
+            items_path (str): The path to the items file.
 
-        Returns default and custom outfits as a dictionary.
-        '''
+        Returns:
+            dict: A dictionary with the default and custom outfits for NPCs. The default outfits are grouped by gender ('male' and 'female'), and the custom outfits are also grouped by gender.
+        """
         if not items_path or not Path(items_path).is_dir():
             return
 
@@ -394,33 +490,35 @@ class NPC():
         ) as data:
             lines = data.readlines()
             for line in lines:
-                if True in [
+                if any(
                     'INSTANCE' in line,
                     'instance' in line
-                ] and True in [
+                ) and any(
                     '(C_ITEM)' in line,
                     '(C_Item)' in line
-                ] and False in [
-                    'ITAR_DJG_BABE' in line
-                ]:
+                ) and not all(
+                    [
+                        'ITAR_DJG_BABE' in line
+                    ]
+                ):
                     outfit = line.split()[1].replace('(C_ITEM)','')
                     outfit = outfit.replace('(C_Item)','')
                     if outfit.lower() not in default:
                         outfits.append(outfit)
-                        
+                    
         with open(
             path2,
             'rt'
         ) as data:
             lines = data.readlines()
             for line in lines:
-                if True in [
+                if any(
                     'INSTANCE' in line,
                     'instance' in line
-                ] and True in [
+                ) and any(
                     '(C_ITEM)' in line,
                     '(C_Item)' in line
-                ]:
+                ):
                     outfit = line.split()[1].replace('(C_ITEM)','')
                     outfit = outfit.replace('(C_Item)','')
                     if outfit.lower() not in default:
@@ -432,7 +530,7 @@ class NPC():
 
         with open(paths.GLOBALS_PATH, 'w') as globals:
             dump(buffer, globals, indent=4)
-        
+    
         return {
             'default': (
                     paths.get_globals()['NPC']['outfit']['default']['male'],
@@ -446,14 +544,15 @@ class NPC():
 
     @classmethod
     def get_fight_tactics(cls, ai_constants_path: str) -> dict:
-        '''
-        Parse AI_Constants.d and dump fetched data into Globals.json.
+        """
+        Retrieves the default and custom fight tactics for NPCs based on the AI constants file path.
 
-        ai_constants_path : str - A path to a directory containing
-        AI_Constants.d
-        
-        Returns dict type object with fetched and default data.
-        '''
+        Args:
+            ai_constants_path (str): The path to the AI constants file.
+
+        Returns:
+            dict: A dictionary with the default and custom fight tactics for NPCs. The dictionary has the keys 'default' and 'custom', and the values are lists of fight tactic names.
+        """
         if not ai_constants_path or not Path(ai_constants_path).is_dir():
             return
 
@@ -488,7 +587,15 @@ class NPC():
     
     @classmethod
     def get_actions(cls, ta_path: str) -> dict:
-        
+        """
+        Retrieves the default and custom actions for NPCs based on the TA file path.
+
+        Args:
+            ta_path (str): The path to the TA file.
+
+        Returns:
+            dict: A dictionary with the default and custom actions for NPCs. The keys are 'default' and 'custom', and the values are lists of activity names.
+        """
         if not ta_path or not Path(ta_path).is_dir():
             return
         
@@ -523,13 +630,16 @@ class NPC():
     
     @classmethod
     def add_overlay(cls, name: str):
-        '''
-        Add an overlay with a specified name to Walk_Overlays.json.
+        """
+        Adds a custom overlay for NPCs by appending the overlay name to the 'custom' list in the 'overlay' dictionary.
+        The updated dictionary is then saved to a JSON file.
 
-        name : str - Overlay name.
-        '''
-        result : dict = dict()
-        buffer : dict = load(
+        :param name: The name of the custom overlay to be added.
+        :type name: str
+        :return: None
+        """
+        result: dict = dict()
+        buffer: dict = load(
             open(paths.STRINGS_PATH / f'Walk_Overlays.json')
         )['overlay']
 
@@ -543,11 +653,15 @@ class NPC():
 
     @classmethod
     def delete_overlay(cls, name: str):
-        '''
-        Remove an overlay with a specified name from Walk_Overlays.json.
+        """
+        Deletes a custom overlay for NPCs.
 
-        name : str - Overlay name.
-        '''
+        Args:
+            name (str): The name of the custom overlay to be deleted.
+
+        Returns:
+            None
+        """
         result : dict = dict()
         buffer : dict = load(
             open(paths.STRINGS_PATH / f'Walk_Overlays.json')
@@ -563,13 +677,17 @@ class NPC():
 
     @classmethod
     def add_head_mesh(cls, name: str, gender: int):
-        '''
-        Add specified head mesh name into a specified gender section in
-        Globals.json.
+        """
+        Add a custom head mesh for NPCs based on the specified name and gender.
 
-        name : str - Head mesh name.
-        gender : int - Gender (0 - Male, 1 - Female)
-        '''
+        Args:
+            name (str): The name of the custom head mesh.
+            gender (int): The gender of the NPCs for which the custom head mesh is being added.
+            0 represents male and 1 represents female.
+
+        Returns:
+            None
+        """
         match gender:
             case 0:
                 buffer : dict = paths.get_globals()
@@ -592,13 +710,21 @@ class NPC():
 
     @classmethod
     def remove_head_mesh(cls, name: str, gender: int):
-        '''
-        Remove specified head mesh name from a specified gender section in
-        Globals.json.
+        """
+        Removes a custom head mesh for NPCs based on the specified name and gender.
 
-        name : str - Head mesh name.
-        gender : int - Gender (0 - Male, 1 - Female)
-        '''
+        Args:
+            name (str): The name of the custom head mesh to be removed.
+            gender (int): The gender of the NPCs for which the custom head mesh should be removed. 
+                          0 represents male NPCs and 1 represents female NPCs.
+
+        Returns:
+            None
+
+        Example Usage:
+            npc = NPC()
+            npc.remove_head_mesh('mesh_name', 0)
+        """
         match gender:
             case 0:
                 buffer : dict = paths.get_globals()
@@ -619,13 +745,21 @@ class NPC():
 
     @classmethod
     def add_skin_tex(cls, name: str, gender: int):
-        '''
-        Add specified skin texture name into a specified gender section in
-        Globals.json.
+        """
+        Adds a custom skin texture for NPCs based on the specified name and gender.
 
-        name : str - Skin texture name.
-        gender : int - Gender (0 - Male, 1 - Female)
-        '''
+        Args:
+            name (str): The name of the custom skin texture to be added.
+            gender (int): The gender of the NPCs for which the custom skin texture should be added. 
+                          0 represents male NPCs and 1 represents female NPCs.
+
+        Returns:
+            None
+
+        Example Usage:
+            npc = NPC()
+            npc.add_skin_tex('custom_skin', 0)
+        """
         match gender:
             case 0:
                 buffer : dict = paths.get_globals()
@@ -648,13 +782,23 @@ class NPC():
 
     @classmethod
     def remove_skin_tex(cls, name: str, gender: int):
-        '''
-        Remove specified skin texture name from a specified gender section in
-        Globals.json.
+        """
+        Remove a custom skin texture for NPCs.
 
-        name : str - Skin texture name.
-        gender : int - Gender (0 - Male, 1 - Female)
-        '''
+        Args:
+            name (str): The name of the skin texture to be removed.
+            gender (int): The gender of the NPC. 0 represents male and 1 represents female.
+
+        Returns:
+            None
+
+        Raises:
+            None
+
+        Example Usage:
+            npc = NPC()
+            npc.remove_skin_tex('skin_texture_1', 0)
+        """
         match gender:
             case 0:
                 buffer : dict = paths.get_globals()
@@ -675,24 +819,21 @@ class NPC():
 
     @classmethod
     def create_routine(
-        cls,
-        activity: str,
-        start_time: str,
-        end_time: str,
-        waypoint: str
+        cls, activity: str, start_time: str, end_time: str, waypoint: str
     ) -> dict:
-        '''
-        Construct an NPC routine solution as a dictionary
-        with specified parameters.
+        """
+        Creates an NPC routine with specified activity, start time, end time, and waypoint.
 
-        activity   : str - Activity name.
-        start_time : str - A string representing activity starting time.
-        end_time   : str - A string representing activity ending time.
-        waypoint   : str - Waypoint name.
-        
-        Returns: dict type NPC solution object.
-        '''
-        cls.routines : dict = {
+        Args:
+            activity (str): The activity for the NPC routine.
+            start_time (str): The start time of the NPC routine.
+            end_time (str): The end time of the NPC routine.
+            waypoint (str): The waypoint for the NPC routine.
+
+        Returns:
+            dict: A dictionary containing the created NPC routine with keys 'activity', 'start_time', 'end_time', and 'waypoint'.
+        """
+        cls.routines: dict = {
             'activity': activity,
             'start_time': start_time,
             'end_time': end_time,

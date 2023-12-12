@@ -1795,12 +1795,7 @@
             "Yellow viol": "ItMi_IEDudelGelb",
             "Harp": "ItMi_IEHarfe",
             "Lute1": "ItMi_IELaute",
-            "Black ore": "ItMi_Zeitspalt_Addon",
-            "Arrow": "ItRw_Arrow",
-            "Bolt": "ItRw_Bolt",
-            "Magic arrow": "ItRw_Addon_MagicArrow",
-            "Fire arrow": "ItRw_Addon_FireArrow",
-            "Magic crossbow bolt": "ItRw_Addon_MagicBolt"
+            "Black ore": "ItMi_Zeitspalt_Addon"
         },
         "Plants": {
             "Weed": "ItPl_Weed",
@@ -1846,7 +1841,12 @@
             "Dragon hunter's crossbow": "ItRw_Crossbow_H_02",
             "Magic bow": "ItRw_Addon_MagicBow",
             "Fire bow": "ItRw_Addon_FireBow",
-            "Magic crossbow": "ItRw_Addon_MagicCrossbow"
+            "Magic crossbow": "ItRw_Addon_MagicCrossbow",
+            "Arrow": "ItRw_Arrow",
+            "Bolt": "ItRw_Bolt",
+            "Magic arrow": "ItRw_Addon_MagicArrow",
+            "Fire arrow": "ItRw_Addon_FireArrow",
+            "Magic crossbow bolt": "ItRw_Addon_MagicBolt"
         },
         "Potions": {
             "Mana Essence": "ItPo_Mana_01",
