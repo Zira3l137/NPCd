@@ -55,16 +55,15 @@ class InventoryMenu(Frame):
         self.frame_items_cats = Frame(self.frame_items, bootstyle = 'dark')
         self.frame_items_cats_switch = Frame(self.frame_items_cats)
         self.radio_item_cat = dict()
-        for cat in self.cat_icons:
-            if cat in self.item_cats:
-                self.radio_item_cat[cat] = Radiobutton(
-                    self.frame_items_cats_switch,
-                    image = self.cat_icons[cat],
-                    value = cat,
-                    variable = self.var_radio_item_cat,
-                    bootstyle = 'toolbutton',
-                    width = 16
-                )
+        for cat in self.item_cats:
+            self.radio_item_cat[cat] = Radiobutton(
+                self.frame_items_cats_switch,
+                image = self.cat_icons[cat],
+                value = cat,
+                variable = self.var_radio_item_cat,
+                bootstyle = 'toolbutton',
+                width = 16
+            )
         for cat_radio in self.radio_item_cat:
             self.radio_item_cat[cat_radio].configure(
                 command = lambda var = cat_radio: self.switch_item_cat(var)
