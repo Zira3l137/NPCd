@@ -24,7 +24,7 @@ class InventoryMenu(Frame):
     def hide(self):
         self.forget()
 
-    def widgets_init(self):
+    def widgets_init(self):       
         cat_names = self.paths.get_globals()['items']
         self.item_cats = {
             cat_name: cat_names[cat_name].keys() for cat_name in cat_names

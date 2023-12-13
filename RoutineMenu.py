@@ -288,9 +288,7 @@ class RoutineMenu(Frame):
         )
         self.listbox_waypoints.bind(
             '<Button1-ButtonRelease>',
-            lambda *_: self.var_label_waypoint_input.set(
-                self.listbox_waypoints.selection_get()
-            )
+            lambda *_: self.select_waypoint()
         )
         self.scrollbar_listbox_waypoints.configure(
             command = self.listbox_waypoints.yview
@@ -546,6 +544,13 @@ class RoutineMenu(Frame):
             [i for i in self.wps[self.var_combo_worlds.get()]]
         )
 
+    def select_waypoint(self):
+        waypoints = self.listbox_waypoints.get(0,END)
+        if waypoints:
+            self.var_label_waypoint_input.set(
+                self.listbox_waypoints.selection_get()
+            )
+
     def add_to_schedule(self):
         activity = self.var_combo_activities.get()
         start_time = (
@@ -589,17 +594,30 @@ class RoutineMenu(Frame):
         )
 
     def remove_from_schedule(self):
-        if self.treeview_schedule.selection():
-            routine_name = self.combo_routines.get()
-            selection = self.treeview_schedule.item(
-                self.treeview_schedule.selection()[0]
-            )['values']
-            for item in self.routines[routine_name]:
-                if list(item.values()) == selection:
-                    self.routines[routine_name].remove(item)
-            self.treeview_schedule.delete(
-                self.treeview_schedule.selection()[0]
-            )
+        selection = self.treeview_schedule.selection()
+        routine_name = self.combo_routines.get()
+        if selection:
+            if len(selection) > 1:
+                items = [
+                    self.treeview_schedule.item(item)['values']
+                    for item in selection
+                ]
+                for routine in self.routines[routine_name]:
+                    if list(routine.values()) in items:
+                        self.routines[routine_name].remove(routine)
+                for selected in selection:
+                    self.treeview_schedule.delete(selected)
+            else:
+                item = self.treeview_schedule.item(selection[0])['values']
+                for routine in self.routines[routine_name]:
+                    if list(routine.values()) == item:
+                        self.routines[routine_name].remove(routine)
+                self.treeview_schedule.delete(selection[0])
+
+                all_items = self.treeview_schedule.get_children('')
+                if all_items:
+                    last_item = all_items[len(all_items)-1]
+                    self.treeview_schedule.selection_set(last_item)
 
     def update_treeview(self):
         routine_name = self.combo_routines.get()

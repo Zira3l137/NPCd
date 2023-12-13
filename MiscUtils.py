@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from os import remove
 from json import dump, load
-from random import choice
+from time import perf_counter
 from pprint import pprint
 
 class MainPaths():
@@ -869,6 +869,8 @@ class ExtractWaypoints():
             self.zen_files, self.zen_filenames
         )
 
+        
+
     def check_files(self, file_path: Path) -> dict:
         """
         Checks for valid ZEN files in the given directory and returns a
@@ -894,19 +896,13 @@ class ExtractWaypoints():
                         'rt',
                         encoding='windows-1252'
                     ) as file:
-                        file.readlines()
+                        data = file.read()
                 except UnicodeDecodeError:
                     continue
                 else:
-                    with open(
-                        file_path,
-                        'rt',
-                        encoding='windows-1252'
-                    ) as file:
-                        data = file.read()
-                        if not 'wpName=string:' in data:
-                            continue
-                        uncompiled_zens.append(file_path)
+                    if not 'wpName=string:' in data:
+                        continue
+                    uncompiled_zens.append(file_path)
         return {
             'files': uncompiled_zens,
             'filenames': [
@@ -931,9 +927,8 @@ class ExtractWaypoints():
         for file, filename in zip(files, filenames):
             with open(file, 'rt', encoding='windows-1252') as zen:
                 waypoints = list()
-                lines = zen.readlines()
 
-                for line in lines:
+                for line in zen:
                         if 'wpName=string:' in line:
                             name = line.lstrip('\t').rstrip('\t\n').split(':')[1]
                             waypoints.append(name)
