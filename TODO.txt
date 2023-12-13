@@ -27,3 +27,5 @@
 
 7. Rewrite extract_data method from Profile class in MiscUtils module
     
+8. Common part of tool for all modules:
+    Add tooltip over `R` button.
