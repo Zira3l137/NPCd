@@ -8,16 +8,16 @@
     Add GUI for Npc_SetTalentSkill
     
 3. Expand inventory module:
-    Add GUI for B_CreateAmbientInv
-    Add GUI for searching items by regular expressions like in Spacer.net
-    Add tooltips for symbols of items
+    +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
+    +[IMPLEMENTED] Add GUI for searching items by regular expressions
+    +[IMPLEMENTED] Add tooltips for symbols of items
     Add error box, when user equips item, for which NPC hasn't enough attribute (count also fitted items with bonuses)
     
 4. Expand routine module:
     +[IMPLEMENTED] Sort waypoints alphabetically after extracting them
     If user remove activity from routine, select should go to next entry, if exist.
     +[IMPLEMENTED] Ignore compiled ZENs
-    implement time management for routines in routine module (copy-paste activities with automatic time shifting and checking, how many time of 24 hours is used)
+    Implement time management for routines in routine module (copy-paste activities with automatic time shifting and checking, how many time of 24 hours is used)
         
 5. Expand settings module:
     +[IMPLEMENTED] Add GUI for custom routine TA functions parsing

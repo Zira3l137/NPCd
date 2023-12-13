@@ -3,8 +3,9 @@ from ttkbootstrap import (
     BooleanVar, Button, Frame,
     Label, Spinbox, Radiobutton,
     Treeview, Scrollbar, END,
-    Checkbutton
+    Checkbutton, Entry
 )
+from ttkbootstrap.tooltip import ToolTip
 from PIL import Image, ImageTk
 
 from MiscUtils import MainPaths
@@ -40,9 +41,15 @@ class InventoryMenu(Frame):
         self.var_radio_item_cat = StringVar()
         self.var_label_equipped_melee = StringVar()
         self.var_label_equipped_ranged = StringVar()
+        self.var_entry_search = StringVar()
         self.var_selection_empty = BooleanVar(value = True)
         self.var_spinbox_quantity = IntVar(value = 1)
         self.var_check_add_amb_inv = BooleanVar(value=False)
+        self.var_current_cat = StringVar()
+
+        self.var_entry_search.trace_add(
+            'write', lambda *_: self.match_to_search()
+        )
         
         self.frame_items = Frame(self)
         self.frame_items_cats = Frame(self.frame_items, bootstyle = 'dark')
@@ -62,6 +69,12 @@ class InventoryMenu(Frame):
             self.radio_item_cat[cat_radio].configure(
                 command = lambda var = cat_radio: self.switch_item_cat(var)
             )
+            ToolTip(
+                self.radio_item_cat[cat_radio],
+                text=cat_radio,
+                bootstyle='info-inverse'
+            )
+
         self.frame_items_cats_treeview = Frame(self.frame_items_cats)
         self.scrollbar_treeview_items = Scrollbar(
             self.frame_items_cats_treeview,
@@ -148,6 +161,15 @@ class InventoryMenu(Frame):
                 if self.var_label_equipped_ranged.get()
                 else self.button_unequip_ranged.configure(state = 'disabled')
             )
+        )
+        self.frame_search = Frame(self.frame_items_manage)
+        self.label_search = Label(
+            self.frame_search,
+            text='Search:'
+        )
+        self.entry_search = Entry(
+            self.frame_search,
+            textvariable=self.var_entry_search
         )
         self.frame_items_manage_inventory = Frame(self.frame_items_manage)
         self.frame_items_manage_inventory_quantity = Frame(
@@ -258,6 +280,9 @@ class InventoryMenu(Frame):
         self.button_equip_ranged.pack(side = 'left', padx = 5, pady = 5)
         self.button_unequip_ranged.pack(side = 'left', padx = 5, pady = 5)
         self.label_equiped_ranged.pack(side = 'left', pady = 5, fill = 'both')
+        self.frame_search.pack(fill = 'x', padx = 5, pady = 5)
+        self.label_search.pack(side='left', padx=5, pady=5)
+        self.entry_search.pack(side='left', padx=5, pady=5, expand=True, fill='x')
         self.frame_items_manage_inventory.pack(fill = 'x', padx = 5, pady = 5)
         self.frame_items_manage_inventory_quantity.pack(
             fill = 'x', padx = 5, pady = 5
@@ -302,6 +327,8 @@ class InventoryMenu(Frame):
             self.treeview_items.insert('', END, values=(item, instance))
         self.button_equip_melee.configure(state='disabled')
         self.button_equip_ranged.configure(state='disabled')
+        if not self.var_current_cat.get() == cat:
+            self.var_current_cat.set(cat)
 
 
     def control_button_state(self):
@@ -402,6 +429,48 @@ class InventoryMenu(Frame):
                 all_items = self.treeview_inv.get_children('')
                 for every_item in all_items:
                     self.treeview_inv.delete(every_item)
+    
+    def validate_request(self, request: str) -> list[(str)]:
+        search_results = list()
+        names = set()
+        instances = set()
+        for category in self.item_cats:
+            names.update(self.item_cats[category])
+            instances.update(self.item_cats_instances[category])
+        for name, instance in zip(names, instances):
+            if not request:
+                break
+            if any(
+                (
+                    request.lower() in name.lower(),
+                    request.lower() in instance.lower()
+                )
+            ):
+                search_results.append((name, instance))
+        return search_results
+
+    
+    def match_to_search(self):
+        category = self.var_current_cat.get()
+        search_request = self.var_entry_search.get()
+        search_result = self.validate_request(search_request)
+        if search_result:
+            self.treeview_items.delete(
+                *self.treeview_items.get_children('')
+            )
+            for values in search_result:
+                self.treeview_items.insert(
+                    '', END,
+                    values=values
+                )
+        else:
+            if category:
+                self.switch_item_cat(category)
+            else:
+                if self.treeview_items.get_children(''):
+                    self.treeview_items.delete(
+                        *self.treeview_items.get_children('')
+                    )
 
 if __name__ == '__main__':
     root = Window(title = 'Test', themename = 'darkly')
