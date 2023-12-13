@@ -8,7 +8,7 @@
     Add GUI for Npc_SetTalentSkill
     
 3. Expand inventory module:
-    Add GUI for B_CreateAmbientInv
+    +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
     Add GUI for searching items by regular expressions like in Spacer.net
     Add tooltips for symbols of items
     Add error box, when user equips item, for which NPC hasn't enough attribute (count also fitted items with bonuses)
