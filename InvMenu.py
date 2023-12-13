@@ -437,20 +437,29 @@ class InventoryMenu(Frame):
         for category in self.item_cats:
             names.update(self.item_cats[category])
             instances.update(self.item_cats_instances[category])
-        for name, instance in zip(names, instances):
+        if '_' in request:
+            if request == '_':
+                return
+            for instance in instances:
+                if request.lower() in instance.lower():
+                    search_results.append(instance)
+        else:
             if not request:
-                break
-            if any(
-                (
-                    request.lower() in name.lower(),
-                    request.lower() in instance.lower()
-                )
-            ):
-                search_results.append((name, instance))
+                return
+            for name in names:
+                if request.lower() in name.lower():
+                    search_results.append(name)
+
         return search_results
 
     
     def match_to_search(self):
+        names = list()
+        instances = list()
+        for category in self.item_cats:
+            names.extend(self.item_cats[category])
+            instances.extend(self.item_cats_instances[category])
+
         category = self.var_current_cat.get()
         search_request = self.var_entry_search.get()
         search_result = self.validate_request(search_request)
@@ -458,11 +467,25 @@ class InventoryMenu(Frame):
             self.treeview_items.delete(
                 *self.treeview_items.get_children('')
             )
-            for values in search_result:
-                self.treeview_items.insert(
-                    '', END,
-                    values=values
-                )
+            for element in search_result:
+                if '_' in element:
+                    index = instances.index(element)
+                    name = names[index]
+                    self.treeview_items.insert(
+                        '', END,
+                        values=(
+                            name, element
+                        )
+                    )
+                else:
+                    index = names.index(element)
+                    instance = instances[index]
+                    self.treeview_items.insert(
+                        '', END,
+                        values=(
+                            element, instance
+                        )
+                    )
         else:
             if category:
                 self.switch_item_cat(category)
