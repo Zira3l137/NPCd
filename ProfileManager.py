@@ -2,8 +2,9 @@ from ttkbootstrap import (
     Window, Frame,
     Label, Entry,
     Button, StringVar,
-    BooleanVar, Combobox,END
+    BooleanVar, Combobox, END
 )
+from ttkbootstrap.tooltip import ToolTip
 
 from MiscUtils import Profile
 
@@ -71,6 +72,11 @@ class ProfileManager(Frame):
             text = 'R',
             width = 2,
             command = lambda: self.refresh_profile_list()
+        )
+        self.tooltip_refresh = ToolTip(
+            self.btn_refresh_list,
+            'Reload NPC solution list',
+            bootstyle='info-inverse'
         )
 
         self.entry_profile.insert(END, '<New NPC Solution>')

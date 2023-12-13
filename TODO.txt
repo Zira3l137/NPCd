@@ -4,8 +4,7 @@
     +[IMPLEMENTED] Automatically filling NPC ID input with first, free ID
     
 2. Expand stats module:
-    Add GUI for B_SetAttributesToChapter
-    Add GUI for Npc_SetTalentSkill
+    +[IMPLEMENTED] Add GUI for B_SetAttributesToChapter
     
 3. Expand inventory module:
     +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
@@ -28,4 +27,4 @@
 7. Rewrite extract_data method from Profile class in MiscUtils module
     
 8. Common part of tool for all modules:
-    Add tooltip over `R` button.
+    +[IMPLEMENTED] Add tooltip over `R` button.

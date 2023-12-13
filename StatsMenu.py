@@ -2,7 +2,7 @@ from ttkbootstrap import (
     Window, IntVar, Button,
     Frame, BooleanVar, Label,
     Checkbutton, Entry, Combobox,
-    StringVar
+    StringVar, Radiobutton, Spinbox
 )
 
 from MiscUtils import MainPaths
@@ -48,6 +48,8 @@ class StatsMenu(Frame):
         }
         labels = list(self.label_stats_stat_text.keys())
         colors = list(self.label_stats_stat_text.values())
+        self.var_radio_option = StringVar(value='auto')
+        self.var_spinbox_chapter = IntVar(value=1)
         
         self.frame_checks = Frame(self)
         self.label_fight_tactic = Label(
@@ -89,6 +91,30 @@ class StatsMenu(Frame):
             lambda *_: self._entry_fightskill_onclick()
         )
 
+        self.frame_options = Frame(self)
+        self.radio_manual = Radiobutton(
+            self.frame_options,
+            value='manual',
+            text='Edit character attributes manually',
+            variable=self.var_radio_option,
+            command=lambda *_: self._option_trace()
+        )
+        self.radio_auto = Radiobutton(
+            self.frame_options,
+            value='auto',
+            text='Set attributes to chapter',
+            variable=self.var_radio_option,
+            command=lambda *_: self._option_trace()
+        )
+        self.spinbox_chapter = Spinbox(
+            self.frame_options,
+            from_=1,
+            to=6,
+            width=3,
+            wrap=True,
+            textvariable=self.var_spinbox_chapter
+        )
+
         self.frame_stats = Frame(self)
         self.frame_stats_set = Frame(self.frame_stats)
         self.frame_stats_display = Frame(self.frame_stats, bootstyle = 'dark')
@@ -128,13 +154,15 @@ class StatsMenu(Frame):
                 textvariable = self.var_entry_stats_stat[i],
                 bootstyle = f'{colors[i]}',
                 justify = 'center',
-                width = 4
+                width = 4,
+                state='disabled'
             )
             self.button_stats_stat[i] = Button(
                 self.frame_stats_stat[i],
                 text = 'Set',
                 width = 4,
-                bootstyle = f'{colors[i]}'
+                bootstyle = f'{colors[i]}',
+                state='disabled'
             )
         for i in range(2):
             self.entry_stats_stat[i].configure(width = 6)
@@ -170,6 +198,22 @@ class StatsMenu(Frame):
         )
         self.entry_fightskill.pack(
             side = 'left', padx = 5, pady = 5, anchor = 'e'
+        )
+
+        self.frame_options.pack(
+            fill = 'both', expand = True, padx = 5, pady = 5, anchor = 'n'
+        )
+        self.radio_manual.pack(
+            side = 'left', fill = 'both', expand = True,
+            padx = 5, pady = 5, anchor = 'w'
+        )
+        self.radio_auto.pack(
+            side = 'left', fill = 'both',
+            padx = 5, pady = 5, anchor = 'e'
+        )
+        self.spinbox_chapter.pack(
+            side = 'left',
+            padx = 5, pady = 5, anchor = 'e'
         )
 
         self.frame_stats.pack(
@@ -218,6 +262,27 @@ class StatsMenu(Frame):
     def _label_set_stat(self, stat, value):
         self.var_current_stat[stat].set(value)
 
+    def _option_trace(self):
+        option = self.var_radio_option.get()
+        match option:
+            case 'auto':
+                for button in self.button_stats_stat:
+                    self.button_stats_stat[button].configure(
+                        state='disabled'
+                    )
+                for entry in self.entry_stats_stat:
+                    self.entry_stats_stat[entry].configure(
+                        state='disabled'
+                    )
+            case 'manual':
+                for button in self.button_stats_stat:
+                    self.button_stats_stat[button].configure(
+                        state='normal'
+                    )
+                for entry in self.entry_stats_stat:
+                    self.entry_stats_stat[entry].configure(
+                        state='normal'
+                    )
 
 if __name__ == '__main__':
     root = Window(title = 'test', themename = 'darkly')

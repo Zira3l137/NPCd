@@ -38,7 +38,7 @@ class EditWindow(Frame):
         self.tab_names = {
             'Main': '768x640',
             'Visual': '768x780',
-            'Stats': '784x512',
+            'Stats': '784x600',
             'Inventory': '1280x800',
             'Routine': '1040x768',
             'Settings': '768x640'
