@@ -781,15 +781,6 @@ class RoutineMenu(Frame):
                     else:
                         if ' ' in var.get():
                             var.set('00')
-        
-        # if not var.get().isdigit():
-        #     var.set('00')
-        # if int(var.get()) > 23:
-        #     var.set('00')
-        # if ' ' in var.get():
-        #     var.set('00')
-        # if len(var.get()) > 2:
-        #     var.set('00')
 
 
 

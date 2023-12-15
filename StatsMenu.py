@@ -26,7 +26,12 @@ class StatsMenu(Frame):
         self.var_combo_fight_tactic = StringVar()
         self.var_check_talents = BooleanVar(value = False)
         self.var_check_fightskill = BooleanVar(value = False)
-        self.var_entry_fightskill = IntVar(value = 10)
+        self.var_entry_fightskill = StringVar(value = 10)
+        self.var_entry_fightskill.trace_add(
+            'write',
+            lambda*_:
+                self.input_validation(self.var_entry_fightskill)
+        )
         self.frame_stats_stat = dict()
         self.label_stats_stat = dict()
         self.var_entry_stats_stat = dict()
@@ -50,7 +55,12 @@ class StatsMenu(Frame):
         labels = list(self.label_stats_stat_text.keys())
         self.colors = list(self.label_stats_stat_text.values())
         self.var_radio_option = StringVar(value='auto')
-        self.var_spinbox_chapter = IntVar(value=1)
+        self.var_spinbox_chapter = StringVar(value=1)
+        self.var_spinbox_chapter.trace_add(
+            'write',
+            lambda*_:
+                self.input_validation(self.var_spinbox_chapter)
+        )
         
         self.frame_checks = Frame(self)
         self.label_fight_tactic = Label(
@@ -300,6 +310,17 @@ class StatsMenu(Frame):
                     self.label_stats_stat[i].configure(
                         bootstyle = f'{self.colors[i]}-inverse'
                     )
+
+    def input_validation(self, var: StringVar|IntVar):
+        if var.get():
+            if not var.get().isdigit():
+                var.set('')
+            else:
+                if var is self.var_spinbox_chapter:
+                    if int(var.get()) > 6:
+                        var.set(1)
+                if ' ' in var.get():
+                    var.set('')
 
 if __name__ == '__main__':
     root = Window(title = 'test', themename = 'darkly')
