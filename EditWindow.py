@@ -11,14 +11,14 @@ from StatsMenu import StatsMenu
 from InvMenu import InventoryMenu
 from RoutineMenu import RoutineMenu
 from SettingsMenu import SettingsMenu
-from MiscUtils import MainPaths
+from MiscUtils import PathConstants
 
 class EditWindow(Frame):
     def __init__(self, parent, root):
         super().__init__(parent)
         self.configure(bootstyle='primary')
         self.root = root
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.widgets_init()
         self.widgets_pack()
         self.switch_tab(list(self.tab_names.keys())[0])

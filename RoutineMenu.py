@@ -7,7 +7,7 @@ from ttkbootstrap import (
     Frame,Label,
     Entry,Combobox,
     Spinbox,Scrollbar,
-    Treeview,END
+    Treeview,END,ImageTk,Image
 )
 
 from ttkbootstrap.dialogs.dialogs import Messagebox
@@ -15,14 +15,14 @@ from ttkbootstrap.dialogs.dialogs import Messagebox
 from MiscUtils import (
     NPC,
     ExtractWaypoints,
-    MainPaths
+    PathConstants
 )
 
 class RoutineMenu(Frame):
     def __init__(self, parent, edit_window):
         super().__init__(parent)
         self.modules = edit_window.menus
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
@@ -77,19 +77,45 @@ class RoutineMenu(Frame):
                 continue
             self.spinbox_values_minutes.append(str(i))
 
-        self.var_spinbox_time_start = (
+        self.var_spinbox_time_start = [
             StringVar(value = '00'),
             StringVar(value = '00')
+        ]
+        self.var_spinbox_time_end = [
+            StringVar(value = '00'),
+            StringVar(value = '00')
+        ]
+        self.var_spinbox_time_start[0].trace_add(
+            'write',
+            lambda *_: 
+                self.time_input_validation(self.var_spinbox_time_start[0])
         )
-        self.var_spinbox_time_end = (
-            StringVar(value = '00'),
-            StringVar(value = '00')
+        self.var_spinbox_time_start[1].trace_add(
+            'write',
+            lambda *_:
+                self.time_input_validation(self.var_spinbox_time_start[1])
+        )
+        self.var_spinbox_time_end[0].trace_add(
+            'write',
+            lambda *_:
+                self.time_input_validation(self.var_spinbox_time_end[0])
+        )
+        self.var_spinbox_time_end[1].trace_add(
+            'write',
+            lambda *_:
+                self.time_input_validation(self.var_spinbox_time_end[1])
         )
         self.var_label_waypoint_input = StringVar(value = 'NONE')
         self.var_entry_directory = StringVar(value = self.paths.WORLDS_PATH)
         self.var_combo_worlds = StringVar()
         self.combo_worlds_list = list()
         self.var_listbox_waypoints = StringVar()
+
+        self.icon_reset = ImageTk.PhotoImage(
+            Image.open(
+                self.paths.ICONS_PATH / 'Reset.png'
+            )
+        )
         
         self.frame_routine = Frame(self)
         self.combo_routines = Combobox(
@@ -234,6 +260,13 @@ class RoutineMenu(Frame):
             textvariable = self.var_spinbox_time_end[1],
             state = 'disabled'
         )
+        self.button_reset_time = Button(
+            self.frame_parameters_params_time,
+            image=self.icon_reset,
+            width=3,
+            command=lambda *_: self.reset_time(),
+            state='disabled'
+        )
         self.frame_parameters_params_waypoint = Frame(
             self.frame_parameters_params
         )
@@ -316,6 +349,11 @@ class RoutineMenu(Frame):
         self.treeview_schedule.heading('wp', text = 'Waypoint')
         self.treeview_schedule.column('wp', width = 50, anchor = 'center')
 
+        self.treeview_schedule.bind(
+            '<Button1-ButtonRelease>',
+            lambda *_: self.adjust_time()
+        )
+
         self.frame_schedule_ctrl = Frame(
             self.frame_schedule,
             bootstyle = 'dark'
@@ -334,7 +372,6 @@ class RoutineMenu(Frame):
             state = 'disabled',
             bootstyle = 'danger'
         )
-        
 
     def widgets_pack(self):
         self.frame_routine.pack(fill='x', padx=5, pady=5)
@@ -420,6 +457,9 @@ class RoutineMenu(Frame):
             side='left', pady=5, padx=5, anchor='e', expand=True
         )
         self.spinbox_time_end_minutes.pack(
+            side='left', pady=5, padx=5, anchor='e', expand=True
+        )
+        self.button_reset_time.pack(
             side='left', pady=5, padx=5, anchor='e', expand=True
         )
         self.frame_parameters_params_waypoint.pack(
@@ -551,21 +591,51 @@ class RoutineMenu(Frame):
                 self.listbox_waypoints.selection_get()
             )
 
+    def convert_value(self, value, value_list):
+        if value not in value_list:
+            value = value_list[int(value)]
+        return value
+    
     def add_to_schedule(self):
         activity = self.var_combo_activities.get()
+
+        start_hours = self.var_spinbox_time_start[0].get()
+        start_minutes = self.var_spinbox_time_start[1].get()
+        end_hours = self.var_spinbox_time_end[0].get()
+        end_minutes = self.var_spinbox_time_end[1].get()
+
+        if '' in (
+            start_hours,
+            start_minutes,
+            end_hours,
+            end_minutes
+        ):
+            Messagebox.show_error(
+                'Please set appropriate values for activity time period!',
+                'Time period values are unset'
+            )
+            return
+
+        start_hours = self.convert_value(start_hours, self.spinbox_values_hours)
+        start_minutes = self.convert_value(start_minutes, self.spinbox_values_minutes)
+        end_hours = self.convert_value(end_hours, self.spinbox_values_hours)
+        end_minutes = self.convert_value(end_minutes, self.spinbox_values_minutes)
+
         start_time = (
-            f"{self.var_spinbox_time_start[0].get()} "
-            f"{self.var_spinbox_time_start[1].get()}"
+            f"{start_hours} "
+            f"{start_minutes}"
         )
         end_time = (
-            f"{self.var_spinbox_time_end[0].get()} "
-            f"{self.var_spinbox_time_end[1].get()}"
+            f"{end_hours} "
+            f"{end_minutes}"
         )
         waypoint = self.var_label_waypoint_input.get()
-        if not '' in [
-            self.var_combo_activities.get(),
-            self.var_label_waypoint_input.get()
-        ]:
+        if all(
+            (
+                self.var_combo_activities.get(),
+                self.var_label_waypoint_input.get()
+            )
+        ):
             routine_name = self.combo_routines.get()
             routine = self.routines[routine_name]
             user_input = NPC.create_routine(
@@ -575,16 +645,19 @@ class RoutineMenu(Frame):
                 waypoint = waypoint
             )
             routine.append(user_input)
-            self.treeview_schedule.insert(
-                '',
-                END,
-                values = (
-                    user_input['activity'],
-                    user_input['start_time'],
-                    user_input['end_time'],
-                    user_input['waypoint']
+            self.treeview_schedule.selection_set(
+                self.treeview_schedule.insert(
+                    '',
+                    END,
+                    values = (
+                        user_input['activity'],
+                        user_input['start_time'],
+                        user_input['end_time'],
+                        user_input['waypoint']
+                    )
                 )
             )
+            self.adjust_time()
             return
         Messagebox.show_error(
             'Waypoint name or activity are unset, ' +
@@ -618,6 +691,7 @@ class RoutineMenu(Frame):
                 if all_items:
                     last_item = all_items[len(all_items)-1]
                     self.treeview_schedule.selection_set(last_item)
+                self.adjust_time()
 
     def update_treeview(self):
         routine_name = self.combo_routines.get()
@@ -637,8 +711,10 @@ class RoutineMenu(Frame):
                     )
                 
     def unlock_widgets(self):
-        state = 'normal' if self.var_combo_routines.get() else 'disabled'
+        not_empty = self.var_combo_routines.get()
+        state = 'normal' if not_empty else 'disabled'
         widgets = [
+            self.button_reset_time,
             self.combo_activities,
             self.combo_worlds,
             self.button_extract,
@@ -657,9 +733,65 @@ class RoutineMenu(Frame):
                 widget is self.combo_activities,
                 widget is self.combo_worlds
             ]:
-                widget.configure(state='readonly')
+                state_ = 'readonly' if not_empty else 'disabled'
+                widget.configure(state=state_)
                 continue
             widget.configure(state=state)
+
+    def check_spinbox_value(self):
+        pass
+
+    
+    def adjust_time(self):
+        if self.treeview_schedule.get_children(''):
+            selection = self.treeview_schedule.selection()[0]
+            selected_item = self.treeview_schedule.item(selection)
+            end_time = [
+                selected_item['values'][2].split()[0],
+                selected_item['values'][2].split()[1]
+            ]
+            self.var_spinbox_time_start[0].set(end_time[0])
+            self.var_spinbox_time_start[1].set(end_time[1])
+            if int(end_time[0]) < 9:
+                self.var_spinbox_time_end[0].set(
+                    f'0{int(end_time[0])+1}'
+                )
+            else:
+                self.var_spinbox_time_end[0].set(
+                    f'{int(end_time[0])+1}'
+                )
+            self.var_spinbox_time_end[1].set('00')
+
+    def reset_time(self):
+        self.var_spinbox_time_start[0].set('00')
+        self.var_spinbox_time_start[1].set('00')
+        self.var_spinbox_time_end[0].set('00')
+        self.var_spinbox_time_end[1].set('00')
+            
+    def time_input_validation(self, var: StringVar):
+        if var.get():
+            if not var.get().isdigit():
+                var.set('00')
+            else:
+                if len(var.get()) > 2:
+                    var.set('00')
+                else:
+                    if int(var.get()) > 23:
+                        var.set('00')
+                    else:
+                        if ' ' in var.get():
+                            var.set('00')
+        
+        # if not var.get().isdigit():
+        #     var.set('00')
+        # if int(var.get()) > 23:
+        #     var.set('00')
+        # if ' ' in var.get():
+        #     var.set('00')
+        # if len(var.get()) > 2:
+        #     var.set('00')
+
+
 
 if __name__ == '__main__':
     root = Window(title = 'Test', themename = 'darkly')

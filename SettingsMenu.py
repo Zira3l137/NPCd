@@ -5,7 +5,7 @@ from ttkbootstrap import (
     BooleanVar, END
 )
 
-from MiscUtils import NPC, MainPaths
+from MiscUtils import NPC, PathConstants
 
 from tkinter.filedialog import askdirectory
 
@@ -15,7 +15,7 @@ class SettingsMenu(Frame):
     def __init__(self, parent, edit_window):
         super().__init__(parent)
         self.modules = edit_window.menus
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack() 

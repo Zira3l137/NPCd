@@ -2,22 +2,30 @@ from ttkbootstrap import (
     Window, Frame,
     Label, Entry,
     Button, StringVar,
-    BooleanVar, Combobox, END
+    BooleanVar, Combobox, END,
+    ImageTk, Image
 )
 from ttkbootstrap.tooltip import ToolTip
 
-from MiscUtils import Profile
+from MiscUtils import Profile, PathConstants
 
 class ProfileManager(Frame):
     def __init__(self, parent, menus):
         super().__init__(master = parent)
         self.configure(bootstyle = 'primary')
+        self.paths = PathConstants()
         self.modules = menus
         self.widgets_init()
         self.widgets_pack()
         self.pack(fill = 'both', padx = 5, pady = 5)
 
     def widgets_init(self):
+        self.icon_reset = ImageTk.PhotoImage(
+            Image.open(
+                self.paths.ICONS_PATH / 'Reset.png'
+            )
+        )
+        
         self.profiles = Profile.load_profiles()
 
         self.var_entry_profile = StringVar()
@@ -69,7 +77,7 @@ class ProfileManager(Frame):
         self.btn_refresh_list = Button(
             self.frame_profile_prof_manage,
             bootstyle = 'primary',
-            text = 'R',
+            image=self.icon_reset,
             width = 2,
             command = lambda: self.refresh_profile_list()
         )

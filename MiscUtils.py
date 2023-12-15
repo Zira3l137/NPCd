@@ -7,8 +7,9 @@ from os import remove
 from json import dump, load
 from time import perf_counter
 from pprint import pprint
+from ttkbootstrap import ImageTk, Image
 
-class MainPaths():
+class PathConstants():
     '''
     The MainPaths class is responsible for defining the paths to various
     directories and files used in the program.
@@ -106,7 +107,7 @@ class MainPaths():
         '''
         return load(open(paths.ACTIVITIES_PATH))
         
-paths = MainPaths()
+paths = PathConstants()
 
 class Profile():
     '''

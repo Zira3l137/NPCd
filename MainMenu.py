@@ -6,17 +6,17 @@ from ttkbootstrap import (
     StringVar, Window,
     Frame, Label,
     Entry, Combobox,
-    Button
+    Button, ImageTk, Image
 )
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
-from MiscUtils import MainPaths
+from MiscUtils import PathConstants
 
 class MainMenu(Frame):
     def __init__(self, parent, snd_path):
         super().__init__(parent)
         self.snd_path : Path = snd_path
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
@@ -54,6 +54,12 @@ class MainMenu(Frame):
             i.lower() for i in self.paths.get_globals()['NPC']['name']
         ]
         self.ids_database = self.paths.get_globals()['NPC']['id']
+
+        self.sound_icon = ImageTk.PhotoImage(
+            Image.open(
+                self.paths.ICONS_PATH / 'Sound.png'
+            )
+        )
 
         for i in self.main_frame_names:
             self.main_frames[i] = Frame(self)
@@ -132,7 +138,7 @@ class MainMenu(Frame):
         )
         self.button_voice = Button(
             self.main_frames['voice'],
-            text = '>',
+            image= self.sound_icon,
             width = 2,
             bootstyle = 'primary-outline',
             command = lambda: self.play_voice_sample(
@@ -279,5 +285,5 @@ to choose correct path for custom sound files.''',
 if __name__ == '__main__':
     root = Window(title='test', themename='darkly')
     root.geometry('536x512')
-    MainMenu(root, MainPaths().SOUNDS_PATH).show()
+    MainMenu(root, PathConstants().SOUNDS_PATH).show()
     root.mainloop()

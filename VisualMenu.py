@@ -9,7 +9,7 @@ from ttkbootstrap import (
 
 from PIL import Image, ImageTk
 
-from MiscUtils import NPC, MainPaths
+from MiscUtils import NPC, PathConstants
 
 from pathlib import Path
 
@@ -17,7 +17,7 @@ class VisualMenu(Frame):
     def __init__(self, parent, root, edit_window):
         super().__init__(master = parent)
         self.modules = edit_window.menus
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
@@ -89,6 +89,12 @@ class VisualMenu(Frame):
         ]
         empty_image = Image.open(self.paths.FACES_PATH.joinpath('Empty.png'))
         self.image_face = ImageTk.PhotoImage(empty_image)
+
+        self.icon_reset = ImageTk.PhotoImage(
+            Image.open(
+                self.paths.ICONS_PATH / 'Reset.png'
+            )
+        )
 
         for i in self.visual_frame_names:
             self.visual_frames[i] = Frame(self)
@@ -249,7 +255,8 @@ class VisualMenu(Frame):
         self.button_fatness_reset = Button(
             self.visual_frames['fatness'],
             bootstyle = ('outline', 'info'),
-            text = 'R', width = 2,
+            image=self.icon_reset,
+            width = 2,
             command = self.reset_scale_value,
             state = 'disabled'
         )

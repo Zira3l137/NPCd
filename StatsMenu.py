@@ -5,15 +5,16 @@ from ttkbootstrap import (
     StringVar, Radiobutton, Spinbox
 )
 
-from MiscUtils import MainPaths
+from MiscUtils import PathConstants
 
 class StatsMenu(Frame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
+        self._option_trace()
 
     def show(self):
         self.pack(expand = True, fill = 'both', padx = 5, pady = 5)
@@ -47,7 +48,7 @@ class StatsMenu(Frame):
             'Current Dexterity:': 'success'
         }
         labels = list(self.label_stats_stat_text.keys())
-        colors = list(self.label_stats_stat_text.values())
+        self.colors = list(self.label_stats_stat_text.values())
         self.var_radio_option = StringVar(value='auto')
         self.var_spinbox_chapter = IntVar(value=1)
         
@@ -133,36 +134,34 @@ class StatsMenu(Frame):
                     text = labels[i],
                     width = 20,
                     justify = 'center',
-                    bootstyle = f'inverse-{colors[i]}'
+                    bootstyle = f'inverse-{self.colors[i]}'
                 )
                 self.var_current_stat[i] = IntVar(value = 10)
                 self.label_stats_value[i] = Label(
                     self.frame_stats_stat[i],
                     textvariable = self.var_current_stat[i],
-                    bootstyle = f'{colors[i]}'
+                    bootstyle = f'{self.colors[i]}'
                 )
                 continue
             self.label_stats_stat[i] = Label(
                 self.frame_stats_stat[i],
                 text = labels[i],
                 width = 13,
-                bootstyle = f'{colors[i]}'
+                bootstyle = f'{self.colors[i]}'
             )
             self.var_entry_stats_stat[i] = IntVar(value = 10)
             self.entry_stats_stat[i] = Entry(
                 self.frame_stats_stat[i],
                 textvariable = self.var_entry_stats_stat[i],
-                bootstyle = f'{colors[i]}',
+                bootstyle = f'{self.colors[i]}',
                 justify = 'center',
-                width = 4,
-                state='disabled'
+                width = 4
             )
             self.button_stats_stat[i] = Button(
                 self.frame_stats_stat[i],
                 text = 'Set',
                 width = 4,
-                bootstyle = f'{colors[i]}',
-                state='disabled'
+                bootstyle = f'{self.colors[i]}'
             )
         for i in range(2):
             self.entry_stats_stat[i].configure(width = 6)
@@ -274,6 +273,15 @@ class StatsMenu(Frame):
                     self.entry_stats_stat[entry].configure(
                         state='disabled'
                     )
+                for i in range(8):
+                    if i < 4:
+                        self.label_stats_stat[i].configure(
+                            bootstyle = 'secondary'
+                        )
+                        continue
+                    self.label_stats_stat[i].configure(
+                        bootstyle = 'secondary-inverse'
+                    )
             case 'manual':
                 for button in self.button_stats_stat:
                     self.button_stats_stat[button].configure(
@@ -282,6 +290,15 @@ class StatsMenu(Frame):
                 for entry in self.entry_stats_stat:
                     self.entry_stats_stat[entry].configure(
                         state='normal'
+                    )
+                for i in range(8):
+                    if i < 4:
+                        self.label_stats_stat[i].configure(
+                            bootstyle = self.colors[i]
+                        )
+                        continue
+                    self.label_stats_stat[i].configure(
+                        bootstyle = f'{self.colors[i]}-inverse'
                     )
 
 if __name__ == '__main__':

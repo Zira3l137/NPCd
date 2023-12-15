@@ -8,12 +8,12 @@ from ttkbootstrap import (
 from ttkbootstrap.tooltip import ToolTip
 from PIL import Image, ImageTk
 
-from MiscUtils import MainPaths
+from MiscUtils import PathConstants
 
 class InventoryMenu(Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        self.paths = MainPaths()
+        self.paths = PathConstants()
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
@@ -37,6 +37,7 @@ class InventoryMenu(Frame):
                 Image.open(str(self.paths.ICONS_PATH.joinpath(file)))
             )
             for file in self.paths.ICONS_PATH.iterdir()
+            if file.stem in cat_names
         }
         self.var_radio_item_cat = StringVar()
         self.var_label_equipped_melee = StringVar()

@@ -17,7 +17,11 @@
     +[IMPLEMENTED] Ignore compiled ZENs
     +[IMPLEMENTED] If user remove activity from routine, select should go to next entry, if exist.
     Implement time management for routines in routine module (copy-paste activities with automatic time shifting and checking, how many time of 24 hours is used)
-        
+        +[IMPLEMENTED] Time change according to newly added routine components
+        +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
+        +[IMPLEMENTED] Time values entry validation
+        24 hours time track for routine system
+
 5. Expand settings module:
     +[IMPLEMENTED] Add GUI for custom routine TA functions parsing
 
