@@ -20,7 +20,7 @@
         +[IMPLEMENTED] Time change according to newly added routine components
         +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
         +[IMPLEMENTED] Time values entry validation
-        24 hours time track for routine system
+        +[IMPLEMENTED] 24 hours time track for routine system
 
 5. Expand settings module:
     +[IMPLEMENTED] Add GUI for custom routine TA functions parsing
@@ -28,7 +28,7 @@
 6. Any dropdown list:
     +[IMPLEMENTED] Allow to select entry by clicking any place in dropdown list, not only arrow
 
-7. Rewrite extract_data method from Profile class in MiscUtils module
-    
-8. Common part of tool for all modules:
+7. Common part of tool for all modules:
     +[IMPLEMENTED] Add tooltip over `R` button.
+
+8. Rewrite extract_data method from Profile class in MiscUtils module
