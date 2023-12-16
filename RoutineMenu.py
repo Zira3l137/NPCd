@@ -200,7 +200,7 @@ class RoutineMenu(Frame):
             self.frame_parameters_params_activity,
             values = self.combo_activities_list,
             textvariable = self.var_combo_activities,
-            width = 31,
+            width = 20,
             state = 'disabled'
         )
         self.frame_parameters_params_time = Frame(self.frame_parameters_params)
@@ -288,7 +288,7 @@ class RoutineMenu(Frame):
         self.combo_worlds = Combobox(
             self.frame_waypoints_world,
             textvariable = self.var_combo_worlds,
-            width = 24,
+            width = 15,
             values = self.combo_worlds_list,
             state = 'disabled'
         )
@@ -298,7 +298,7 @@ class RoutineMenu(Frame):
         )
         self.button_extract = Button(
             self.frame_waypoints_world,
-            text = 'Extract Waypoints',
+            text = '   Extract\nWaypoints',
             width = 17,
             command = lambda *_: self.extract_waypoints(),
             state = 'disabled'
@@ -312,8 +312,8 @@ class RoutineMenu(Frame):
         self.listbox_waypoints = Listbox(
             self.frame_listbox_wps,
             listvariable = self.var_listbox_waypoints,
-            width = 30,
-            height = 15,
+            width = 25,
+            height = 6,
             selectmode = 'single',
             activestyle = 'underline',
             yscrollcommand = self.scrollbar_listbox_waypoints.set,
@@ -341,13 +341,13 @@ class RoutineMenu(Frame):
             bootstyle = 'primary'
         )
         self.treeview_schedule.heading('act', text = 'Activity')
-        self.treeview_schedule.column('act', width = 50, anchor = 'center')
+        self.treeview_schedule.column('act', width = 1, anchor = 'center')
         self.treeview_schedule.heading('start', text = 'Start Time')
-        self.treeview_schedule.column('start', width = 50, anchor = 'center')
+        self.treeview_schedule.column('start', width = 1, anchor = 'center')
         self.treeview_schedule.heading('end', text = 'End Time')
-        self.treeview_schedule.column('end', width = 50, anchor = 'center')
+        self.treeview_schedule.column('end', width = 1, anchor = 'center')
         self.treeview_schedule.heading('wp', text = 'Waypoint')
-        self.treeview_schedule.column('wp', width = 50, anchor = 'center')
+        self.treeview_schedule.column('wp', width = 300, anchor = 'center')
 
         self.treeview_schedule.bind(
             '<Button1-ButtonRelease>',
