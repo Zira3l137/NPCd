@@ -1,5 +1,5 @@
 from ttkbootstrap import (
-    Window, StringVar, IntVar,
+    Window, StringVar,
     BooleanVar, Button, Frame,
     Label, Spinbox, Radiobutton,
     Treeview, Scrollbar, END,
@@ -44,7 +44,12 @@ class InventoryMenu(Frame):
         self.var_label_equipped_ranged = StringVar()
         self.var_entry_search = StringVar()
         self.var_selection_empty = BooleanVar(value = True)
-        self.var_spinbox_quantity = IntVar(value = 1)
+        self.var_spinbox_quantity = StringVar(value = 1)
+        self.var_spinbox_quantity.trace_add(
+            'write',
+            lambda *_:
+                self.quantity_validation()
+        )
         self.var_check_add_amb_inv = BooleanVar(value=False)
         self.var_current_cat = StringVar()
 
@@ -494,6 +499,15 @@ class InventoryMenu(Frame):
                     self.treeview_items.delete(
                         *self.treeview_items.get_children('')
                     )
+
+    def quantity_validation(self):
+        var = self.var_spinbox_quantity
+        if var.get():
+            if not var.get().isdigit():
+                var.set(0)
+            else:
+                if ' ' in var.get():
+                    var.set(0)
 
 if __name__ == '__main__':
     root = Window(title = 'Test', themename = 'darkly')

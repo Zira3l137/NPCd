@@ -37,6 +37,11 @@ class MainMenu(Frame):
             'type', 'flag'
         ]
         self.var_entry_lvl = StringVar()
+        self.var_entry_lvl.trace_add(
+            'write',
+            lambda *_:
+                self.digit_validation(self.var_entry_lvl)
+        )
         self.var_entry_id = StringVar()
         self.var_entry_name = StringVar()
         self.var_combo_guild = StringVar()
@@ -92,7 +97,11 @@ class MainMenu(Frame):
         )
         self.var_entry_id.trace_add(
             'write',
-            lambda *args: self.check_if_exists('id', self.var_entry_id.get())
+            lambda *_: self.check_if_exists('id', self.var_entry_id.get())
+        )
+        self.var_entry_id.trace_add(
+            'write',
+            lambda *_: self.digit_validation(self.var_entry_id)
         )
 
         self.label_name = Label(
@@ -281,6 +290,14 @@ to choose correct path for custom sound files.''',
             if str(id) not in taken_ids
         )
         self.var_entry_id.set(choice(list(available_ids)))
+
+    def digit_validation(self, var):
+        if var.get():
+            if not var.get().isdigit():
+                var.set(0)
+            else:
+                if ' ' in var.get():
+                    var.set(0)
 
 if __name__ == '__main__':
     root = Window(title='test', themename='darkly')

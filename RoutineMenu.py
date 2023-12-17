@@ -626,7 +626,31 @@ class RoutineMenu(Frame):
                 'Time period values are unset'
             )
             return
-
+        
+        existent_time_spans = list()
+        if self.treeview_values():
+            existent_time_spans = [
+                (
+                    values[1].split()[0],
+                    values[1].split()[1],
+                    values[2].split()[0],
+                    values[2].split()[1]
+                )
+                for values in self.treeview_values()
+            ]
+        if (
+            start_hours,
+            start_minutes,
+            end_hours,
+            end_minutes
+        ) in existent_time_spans:
+            Messagebox.show_error(
+                f'''Activity with time span:
+                {start_hours}:{start_minutes} - {end_hours}:{end_minutes}
+                already exists!''',
+                'Invalid activity time span'
+            )
+            return
         try:
             self.calculate_time(
                 start_hours, start_minutes,
@@ -833,25 +857,22 @@ class RoutineMenu(Frame):
         end_h=None, end_m=None,
         remove = False
     ):
-        treeview_children = self.treeview_schedule.get_children('')
-        treeview_elements = [
-            self.treeview_schedule.item(element)['values']
-            for element in treeview_children
-        ]
+        treeview_elements = self.treeview_values()
         treeview_time_sum = 0
         
         if remove:
-            for element in treeview_elements:
-                h1 = element[1].split()[0]
-                m1 = element[1].split()[1]
-                h2 = element[2].split()[0]
-                m2 = element[2].split()[1]
-                start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
-                end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
-                time_span = self.time_difference(start, end)
-                treeview_time_sum += time_span
-            self.overall_time.set(treeview_time_sum)
-            print(self.overall_time.get())
+            if self.treeview_values():
+                for element in treeview_elements:
+                    h1 = element[1].split()[0]
+                    m1 = element[1].split()[1]
+                    h2 = element[2].split()[0]
+                    m2 = element[2].split()[1]
+                    start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
+                    end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
+                    time_span = self.time_difference(start, end)
+                    treeview_time_sum += time_span
+                self.overall_time.set(treeview_time_sum)
+                print(self.overall_time.get())
         else:
             item_start = datetime.strptime(f'{start_h}:{start_m}', '%H:%M')
             item_end = datetime.strptime(f'{end_h}:{end_m}', '%H:%M')
@@ -864,7 +885,7 @@ class RoutineMenu(Frame):
                     )
                 raise KeyError
 
-            if not treeview_children:
+            if not treeview_elements:
                 time_span = self.time_difference(item_start, item_end)
                 self.overall_time.set(time_span)
                 print(time_span)
@@ -890,7 +911,15 @@ class RoutineMenu(Frame):
                         'Time period error'
                     )
                     raise KeyError
-            
+    def treeview_values(self) -> list[tuple] | None:
+        children = self.treeview_schedule.get_children('')
+        if not children:
+            return None
+        values = [
+            self.treeview_schedule.item(child)['values']
+            for child in children
+        ]
+        return values
 
 
 if __name__ == '__main__':
