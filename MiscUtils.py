@@ -5,9 +5,6 @@ import sys
 from pathlib import Path
 from os import remove
 from json import dump, load
-from time import perf_counter
-from pprint import pprint
-from ttkbootstrap import ImageTk, Image
 
 class PathConstants():
     '''
@@ -38,7 +35,6 @@ class PathConstants():
     - GLOBALS_PATH: Represents the path to the 'Globals.json' file.
     - OVERLAYS_PATH: Represents the path to the 'Walk_Overlays.json' file.
     - ACTIVITIES_PATH: Represents the path to the 'Activities.json' file.
-    - AMBIENTINVS_PATH: Represents the path to the 'AmbientInvs.json' file.
     '''
 
     def __init__(self):
@@ -63,7 +59,6 @@ class PathConstants():
         self.GLOBALS_PATH: Path = self.STRINGS_PATH / 'Globals.json'
         self.OVERLAYS_PATH: Path = self.STRINGS_PATH / 'Walk_Overlays.json'
         self.ACTIVITIES_PATH: Path = self.STRINGS_PATH / 'Activities.json'
-        self.AMBIENTINVS_PATH: Path = self.STRINGS_PATH / 'AmbientInvs.json'
 
     def _get_current_path(self) -> Path:
         '''
