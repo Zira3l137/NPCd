@@ -88,7 +88,7 @@ class VisualMenu(Frame):
             +self.paths.get_overlays()['overlay']['custom']
         ]
         empty_image = Image.open(self.paths.FACES_PATH.joinpath('Empty.png'))
-        self.image_face = ImageTk.PhotoImage(empty_image)
+        self.face_image = ImageTk.PhotoImage(empty_image)
 
         self.icon_reset = ImageTk.PhotoImage(
             Image.open(
@@ -303,9 +303,9 @@ class VisualMenu(Frame):
             height = '256'
             )
         self.canvas_image_face.create_image(
-            512//2, 256//2,
+            256, 128,
             anchor = 'center',
-            image = self.image_face
+            image = self.face_image
         )
 
     def widgets_pack(self):
@@ -451,22 +451,38 @@ class VisualMenu(Frame):
 
     def reset_scale_value(self):
         self.scale_fatness.set(1.0)
+    
+    def resize_face_image(self, image: Image):
+        if image.size[0] > 512:
+            scale_factor = image.size[0] // 512
+            return image.resize(
+                image.size[0] // scale_factor,
+                image.size[1] // scale_factor
+            )
+        else:
+            scale_factor = 512 // image.size[0]
+            return image.resize(
+                (
+                    image.size[0] * scale_factor,
+                    image.size[1] * scale_factor
+                )
+            )
 
     def view_face_image(self, face_dir=None):
         face_image_name = self.listbox_face.get(
             *self.listbox_face.curselection()
         )
         if face_dir is not None:
-            face = Image.open(Path(face_dir) / f'{face_image_name}.png')
+            image = Image.open(Path(face_dir) / f'{face_image_name}.png')
         else:
-            face = Image.open(self.paths.FACES_PATH / f'{face_image_name}.png')
-        face = face.resize((face.width*2, face.height*2))
-        self.image_face = ImageTk.PhotoImage(face)
+            image = Image.open(self.paths.FACES_PATH / f'{face_image_name}.png')
+        face = self.resize_face_image(image)
+        self.face_image = ImageTk.PhotoImage(face)
         self.canvas_image_face.delete('all')
         self.canvas_image_face.create_image(
-            (512//2), (256//2),
+            256, 128,
             anchor = 'center',
-            image = self.image_face
+            image = self.face_image
         )
         self.var_listbox_face.set(
             face_image_name.
