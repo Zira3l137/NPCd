@@ -520,6 +520,11 @@ class RoutineMenu(Frame):
             fill = 'both', padx = 5, pady = 5, expand = True
         )
 
+    def get_routine_name(self):
+        name = self.var_entry_routine_name.get()
+        id = self.var_entry_routine_id.get()
+        return f'Rtn_{name}{id}'
+
     def manage_routine(self, condition):
         id = self.var_entry_routine_id.get().strip('_')
         name = self.var_entry_routine_name.get()
@@ -548,11 +553,6 @@ class RoutineMenu(Frame):
                         values = list(self.routines.keys()),
                         state='readonly'
                     )
-
-    def get_routine_name(self):
-        name = self.var_entry_routine_name.get()
-        id = self.var_entry_routine_id.get()
-        return f'Rtn_{name}{id}'
 
     def update_npc_id(self):
         main_id = self.modules['Main'].var_entry_id.get()
@@ -595,41 +595,133 @@ class RoutineMenu(Frame):
                 self.listbox_waypoints.selection_get()
             )
 
+    def time_difference(self, time1: datetime, time2: datetime) -> int:
+        if time1 <= time2:
+            difference: timedelta = time2 - time1
+            minutes = int(difference.total_seconds() / 60)
+        else:
+            time2 += timedelta(1)
+            difference: timedelta = time2 - time1
+            minutes = int(difference.total_seconds() / 60)
+        return minutes
+
+    def calculate_time(
+        self,
+        start_h=None, start_m=None,
+        end_h=None, end_m=None,
+        remove = False
+    ):
+        treeview_elements = self.treeview_values()
+        treeview_time_sum = 0
+        
+        if remove:
+            if self.treeview_values():
+                for element in treeview_elements:
+                    h1, m1, h2, m2 = (
+                        element[1].split()[0],
+                        element[1].split()[1],
+                        element[2].split()[0],
+                        element[2].split()[1]
+                    )
+                    start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
+                    end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
+                    time_span: int = self.time_difference(start, end)
+                    treeview_time_sum += time_span
+                self.overall_time.set(treeview_time_sum)
+                print(self.overall_time.get())
+            else:
+                self.overall_time.set(0)
+        else:
+            item_start = datetime.strptime(f'{start_h}:{start_m}', '%H:%M')
+            item_end = datetime.strptime(f'{end_h}:{end_m}', '%H:%M')
+            item_time_span = 0
+
+            if self.time_difference(item_start, item_end) == 0:
+                Messagebox.show_error(
+                        'Cannot create element with time span 0',
+                        'Time span equals zero'
+                    )
+                raise KeyError
+
+            if not treeview_elements:
+                time_span = self.time_difference(item_start, item_end)
+                self.overall_time.set(time_span)
+                print(time_span)
+            else:
+                for element in treeview_elements:
+                    h1, m1, h2, m2 = (
+                        element[1].split()[0],
+                        element[1].split()[1],
+                        element[2].split()[0],
+                        element[2].split()[1]
+                    )
+                    start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
+                    end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
+                    time_span: int = self.time_difference(start, end)
+                    treeview_time_sum += time_span
+                item_time_span = self.time_difference(item_start, item_end)
+                result = item_time_span+treeview_time_sum
+                if not result > self.TIME_LIMIT:
+                    self.overall_time.set(result)
+                    print(result)
+                else:
+                    Messagebox.show_error(
+                        f'''You are exceeding 24 hours. Excessive time:
+                        {result - self.TIME_LIMIT}''',
+                        'Time period error',
+                        self
+                    )
+                    raise KeyError
+
+    def adjust_time(self):
+        if self.treeview_schedule.get_children(''):
+            selection = self.treeview_schedule.selection()
+            if selection:
+                selected_item = self.treeview_schedule.item(selection[0])
+            else:
+                return
+            end_time = [
+                selected_item['values'][2].split()[0],
+                selected_item['values'][2].split()[1]
+            ]
+            self.var_spinbox_time_start[0].set(end_time[0])
+            self.var_spinbox_time_start[1].set(end_time[1])
+            if int(end_time[0]) < 9:
+                self.var_spinbox_time_end[0].set(
+                    f'0{int(end_time[0])+1}'
+                )
+            elif int(end_time[0]) == 23:
+                self.var_spinbox_time_end[0].set(
+                    '00'
+                )
+            else:
+                self.var_spinbox_time_end[0].set(
+                    f'{int(end_time[0])+1}'
+                )
+            self.var_spinbox_time_end[1].set('00')
+
+    def reset_time(self):
+        self.var_spinbox_time_start[0].set('00')
+        self.var_spinbox_time_start[1].set('00')
+        self.var_spinbox_time_end[0].set('00')
+        self.var_spinbox_time_end[1].set('00')
+
     def convert_value(self, value, value_list):
         if value not in value_list:
             value = value_list[int(value)]
         return value
     
-    def add_to_schedule(self):
-        if self.overall_time.get() == self.TIME_LIMIT:
-            Messagebox.show_error(
-                'You reached 24 hours limit for this routine',
-                'Time period error'
-            )
-            return
-        
-        activity = self.var_combo_activities.get()
+    def spinbox_time_period(self) -> dict:
+        return {
+            'start_h': self.var_spinbox_time_start[0].get(),
+            'start_m': self.var_spinbox_time_start[1].get(),
+            'end_h': self.var_spinbox_time_end[0].get(),
+            'end_m': self.var_spinbox_time_end[1].get()
+        }
 
-        start_hours = self.var_spinbox_time_start[0].get()
-        start_minutes = self.var_spinbox_time_start[1].get()
-        end_hours = self.var_spinbox_time_end[0].get()
-        end_minutes = self.var_spinbox_time_end[1].get()
-
-        if '' in (
-            start_hours,
-            start_minutes,
-            end_hours,
-            end_minutes
-        ):
-            Messagebox.show_error(
-                'Please set appropriate values for activity time period!',
-                'Time period values are unset'
-            )
-            return
-        
-        existent_time_spans = list()
+    def fetch_time_spans(self) -> list:
         if self.treeview_values():
-            existent_time_spans = [
+            return [
                 (
                     values[1].split()[0],
                     values[1].split()[1],
@@ -638,76 +730,114 @@ class RoutineMenu(Frame):
                 )
                 for values in self.treeview_values()
             ]
-        if (
-            start_hours,
-            start_minutes,
-            end_hours,
-            end_minutes
-        ) in existent_time_spans:
+
+    def new_time_period(self, time_period: dict) -> list[str]:
+        return [
+            "{s_h} {s_m}".format(
+                s_h = self.convert_value(
+                    time_period['start_h'], self.spinbox_values_hours
+                ),
+                s_m = self.convert_value(
+                    time_period['start_m'], self.spinbox_values_minutes
+                )
+            ),
+            "{e_h} {e_m}".format(
+                e_h = self.convert_value(
+                    time_period['end_h'], self.spinbox_values_hours
+                ),
+                e_m = self.convert_value(
+                    time_period['end_m'], self.spinbox_values_minutes
+                )
+            )
+        ]
+
+    def add_routine(self, 
+        activity,
+        start_time,
+        end_time,
+        waypoint
+    ):
+        routine_name = self.combo_routines.get()
+        routine = self.routines[routine_name]
+        user_input = NPC.create_routine(
+            activity = activity,
+            start_time = start_time,
+            end_time = end_time,
+            waypoint = waypoint
+        )
+        routine.append(user_input)
+        self.treeview_schedule.selection_set(
+            self.treeview_schedule.insert(
+                '',
+                END,
+                values = (
+                    user_input['activity'],
+                    user_input['start_time'],
+                    user_input['end_time'],
+                    user_input['waypoint']
+                )
+            )
+        )
+
+    def get_waypoint(self) -> str|None:
+        waypoint_chosen = self.var_label_waypoint_input.get()
+        if not waypoint_chosen == 'NONE':
+            return waypoint_chosen
+        else:
+            return None
+    
+    def add_to_schedule(self):
+        spinbox_time_period: dict = self.spinbox_time_period()
+        existent_time_spans: list = self.fetch_time_spans()
+        activity: str = self.var_combo_activities.get()
+        start_time, end_time = self.new_time_period(spinbox_time_period)
+        waypoint: str|None = self.get_waypoint()
+
+        if self.overall_time.get() == self.TIME_LIMIT:
             Messagebox.show_error(
-                f'''Activity with time span:
-                {start_hours}:{start_minutes} - {end_hours}:{end_minutes}
-                already exists!''',
-                'Invalid activity time span'
+                'You reached 24 hours limit for this routine',
+                'Time period error',
+                parent = self
             )
             return
-        try:
-            self.calculate_time(
-                start_hours, start_minutes,
-                end_hours, end_minutes
+        if '' in tuple(spinbox_time_period.values()):
+            Messagebox.show_error(
+                'Please set appropriate values for activity time period!',
+                'Time period values are unset',
+                parent = self
             )
+            return
+        if existent_time_spans:
+            if tuple(spinbox_time_period.values()) in existent_time_spans:
+                Messagebox.show_error(
+                    '''Activity with time span:
+                    {start_h}:{start_m} - {end_h}:{end_m}
+                    already exists!'''.format_map(spinbox_time_period),
+                    'Invalid activity time span',
+                    parent = self
+                )
+                return
+        
+        try:
+            self.calculate_time(*tuple(spinbox_time_period.values()))
         except KeyError:
             return
         else:
             pass
 
-        start_hours = self.convert_value(start_hours, self.spinbox_values_hours)
-        start_minutes = self.convert_value(start_minutes, self.spinbox_values_minutes)
-        end_hours = self.convert_value(end_hours, self.spinbox_values_hours)
-        end_minutes = self.convert_value(end_minutes, self.spinbox_values_minutes)
-
-        start_time = (
-            f"{start_hours} "
-            f"{start_minutes}"
-        )
-        end_time = (
-            f"{end_hours} "
-            f"{end_minutes}"
-        )
-        waypoint = self.var_label_waypoint_input.get()
-        if all(
-            (
-                self.var_combo_activities.get(),
-                self.var_label_waypoint_input.get()
-            )
-        ):
-            routine_name = self.combo_routines.get()
-            routine = self.routines[routine_name]
-            user_input = NPC.create_routine(
-                activity = activity,
-                start_time = start_time,
-                end_time = end_time,
-                waypoint = waypoint
-            )
-            routine.append(user_input)
-            self.treeview_schedule.selection_set(
-                self.treeview_schedule.insert(
-                    '',
-                    END,
-                    values = (
-                        user_input['activity'],
-                        user_input['start_time'],
-                        user_input['end_time'],
-                        user_input['waypoint']
-                    )
-                )
+        if all((activity, start_time, end_time, waypoint)):
+            self.add_routine(
+                activity,
+                start_time,
+                end_time,
+                waypoint
             )
             self.adjust_time()
             return
         Messagebox.show_error(
             'Waypoint name or activity are unset, ' +
             'please set them accordingly before adding a routine!',
-            title = 'Value error',
+            'Value error',
             parent = self
         )
 
@@ -784,39 +914,6 @@ class RoutineMenu(Frame):
                 continue
             widget.configure(state=state)
     
-    def adjust_time(self):
-        if self.treeview_schedule.get_children(''):
-            selection = self.treeview_schedule.selection()
-            if selection:
-                selected_item = self.treeview_schedule.item(selection[0])
-            else:
-                return
-            end_time = [
-                selected_item['values'][2].split()[0],
-                selected_item['values'][2].split()[1]
-            ]
-            self.var_spinbox_time_start[0].set(end_time[0])
-            self.var_spinbox_time_start[1].set(end_time[1])
-            if int(end_time[0]) < 9:
-                self.var_spinbox_time_end[0].set(
-                    f'0{int(end_time[0])+1}'
-                )
-            elif int(end_time[0]) == 23:
-                self.var_spinbox_time_end[0].set(
-                    '00'
-                )
-            else:
-                self.var_spinbox_time_end[0].set(
-                    f'{int(end_time[0])+1}'
-                )
-            self.var_spinbox_time_end[1].set('00')
-
-    def reset_time(self):
-        self.var_spinbox_time_start[0].set('00')
-        self.var_spinbox_time_start[1].set('00')
-        self.var_spinbox_time_end[0].set('00')
-        self.var_spinbox_time_end[1].set('00')
-            
     def time_input_validation(self, var: StringVar):
         if var.get():
             if not var.get().isdigit():
@@ -840,77 +937,7 @@ class RoutineMenu(Frame):
                         else:
                             if ' ' in var.get():
                                 var.set('00')
-    
-    def time_difference(self, time1: datetime, time2: datetime) -> int:
-        if time1 <= time2:
-            difference: timedelta = time2 - time1
-            minutes = int(difference.total_seconds() / 60)
-        else:
-            time2 += timedelta(1)
-            difference: timedelta = time2 - time1
-            minutes = int(difference.total_seconds() / 60)
-        return minutes
-    
-    def calculate_time(
-        self,
-        start_h=None, start_m=None,
-        end_h=None, end_m=None,
-        remove = False
-    ):
-        treeview_elements = self.treeview_values()
-        treeview_time_sum = 0
-        
-        if remove:
-            if self.treeview_values():
-                for element in treeview_elements:
-                    h1 = element[1].split()[0]
-                    m1 = element[1].split()[1]
-                    h2 = element[2].split()[0]
-                    m2 = element[2].split()[1]
-                    start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
-                    end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
-                    time_span = self.time_difference(start, end)
-                    treeview_time_sum += time_span
-                self.overall_time.set(treeview_time_sum)
-                print(self.overall_time.get())
-        else:
-            item_start = datetime.strptime(f'{start_h}:{start_m}', '%H:%M')
-            item_end = datetime.strptime(f'{end_h}:{end_m}', '%H:%M')
-            item_time_span = 0
 
-            if self.time_difference(item_start, item_end) == 0:
-                Messagebox.show_error(
-                        'Cannot create element with time span 0',
-                        'Time span equals zero'
-                    )
-                raise KeyError
-
-            if not treeview_elements:
-                time_span = self.time_difference(item_start, item_end)
-                self.overall_time.set(time_span)
-                print(time_span)
-            else:
-                for element in treeview_elements:
-                    h1 = element[1].split()[0]
-                    m1 = element[1].split()[1]
-                    h2 = element[2].split()[0]
-                    m2 = element[2].split()[1]
-                    start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
-                    end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
-                    time_span = self.time_difference(start, end)
-                    treeview_time_sum += time_span
-                item_time_span = self.time_difference(item_start, item_end)
-                result = item_time_span+treeview_time_sum
-                if not result > self.TIME_LIMIT:
-                    self.overall_time.set(result)
-                    print(result)
-                else:
-                    Messagebox.show_error(
-                        f'''You are exceeding 24 hours. Excessive time:
-                        {result - self.TIME_LIMIT}''',
-                        'Time period error'
-                    )
-                    raise KeyError
     def treeview_values(self) -> list[tuple] | None:
         children = self.treeview_schedule.get_children('')
         if not children:
