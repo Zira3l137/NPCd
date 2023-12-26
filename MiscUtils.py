@@ -169,16 +169,29 @@ class Profile():
         remove(paths.SOLUTIONS_PATH / f'{name}.json')
 
     @classmethod
-    def extract_data(cls, widget: dict) -> dict:
+    def extract_data(cls, widget: dict) -> tuple[dict, dict]:
         '''
         '''
+        attributes_control: str = widget['Stats'].var_radio_option.get()
+        melee_equipped: bool = bool(
+            widget['Inventory'].var_label_equipped_melee.get()
+        )
+        ranged_equipped: bool = bool(
+            widget['Inventory'].var_label_equipped_ranged.get()
+        )
+        
+        routine_exists: bool = bool(
+            widget['Routine'].routines
+        )
+
         solution_info = dict()
 
+        solution_info['level'] = widget['Main'].var_entry_level.get()
         solution_info['id'] = widget['Main'].var_entry_id.get()
         solution_info['name'] = widget['Main'].var_entry_name.get()
         solution_info['guild'] = widget['Main'].var_combo_guild.get()
         solution_info['voice'] = widget['Main'].var_combo_voice.get().replace('SVM_','')
-        solution_info['flags'] = widget['Main'].var_radio_flag.get()
+        solution_info['flags'] = widget['Main'].var_combo_flag.get()
         solution_info['npctype'] = widget['Main'].var_combo_type.get()
         
         visual_params = list()
@@ -186,9 +199,9 @@ class Profile():
         visual_params.append(widget['Visual'].var_combo_head.get())
         visual_params.append(widget['Visual'].var_listbox_face.get())
         visual_params.append(widget['Visual'].var_combo_skin.get())
-        visual = ', '.join(map(str, visual_params))
+        visual_params.append(widget['Visual'].var_combo_outfit.get())
 
-        solution_info['B_SetNpcVisual'] = visual
+        solution_info['B_SetNpcVisual'] = visual_params
 
         solution_info['Mdl_SetModelFatness'] = round(widget['Visual'].var_scale_fatness.get(), 2)
         solution_info['Mdl_ApplyOverlayMds'] = widget['Visual'].var_combo_walk_overlay.get()
@@ -198,17 +211,29 @@ class Profile():
         solution_info['B_SetFightSkills'] = widget['Stats'].var_entry_fightskill.get()
 
 
-        solution_info['ATR_HITPOINTS_MAX'] = widget['Stats'].var_current_stat[4].get()
-        solution_info['ATR_MANA_MAX'] = widget['Stats'].var_current_stat[5].get()
-        solution_info['ATR_STRENGTH'] = widget['Stats'].var_current_stat[6].get()
-        solution_info['ATR_DEXTERITY'] = widget['Stats'].var_current_stat[7].get()
+        match attributes_control:
+            case 'manual':
+                solution_info['ATR_HITPOINTS_MAX'] = widget['Stats'].var_current_stat[4].get()
+                solution_info['ATR_MANA_MAX'] = widget['Stats'].var_current_stat[5].get()
+                solution_info['ATR_STRENGTH'] = widget['Stats'].var_current_stat[6].get()
+                solution_info['ATR_DEXTERITY'] = widget['Stats'].var_current_stat[7].get()
+            case 'auto':
+                solution_info['B_SetAttributesToChapter'] = widget['Stats'].var_spinbox_chapter.get()
 
-        melee = widget['Inventory'].var_label_equipped_melee.get()
-        ranged = widget['Inventory'].var_label_equipped_ranged.get().split()[1]
-        solution_info['EquipItem'] = [
-            melee,
-            ranged
-        ]
+        melee = str()
+        ranged = str()
+        
+        if melee_equipped:
+            melee = ' '.join(widget['Inventory'].var_label_equipped_melee.get().split()[1::])
+            solution_info['EquipItem'] = melee
+        if ranged_equipped:
+            ranged = ' '.join(widget['Inventory'].var_label_equipped_ranged.get().split()[1::])
+            solution_info['EquipItem'] = ranged
+        if melee_equipped and ranged_equipped:
+            solution_info['EquipItem'] = [
+                melee,
+                ranged
+            ]
 
         item_ids = widget['Inventory'].treeview_inv.get_children('')
         items = list()
@@ -221,10 +246,110 @@ class Profile():
             )
 
         solution_info['CreateInvItems'] = items
+        solution_info['B_CreateAmbientInv'] = widget['Inventory'].var_check_add_amb_inv.get()
 
-        for item in solution_info.items():
-            print(item)
+        if routine_exists:
+            for rtn_name in widget['Routine'].routines.keys():
+                if 'start_' in rtn_name.lower():
+                    solution_info['daily_routine'] = rtn_name
 
+        return (solution_info, widget['Routine'].routines)
+    
+    @classmethod
+    def construct_script(cls, data: tuple[dict, dict]) -> str:
+        routines: dict = data[1]
+        solution: dict = data[0]
+
+        strings = list()
+        for data_type in solution:
+            if not any(
+                [
+                    'B_SetAttributesToChapter' in data_type,
+                    'B_GiveNpcTalents' in data_type,
+                    'B_SetFightSkills' in data_type,
+                    'EquipItem' in data_type,
+                    'B_CreateAmbientInv' in data_type,
+                    'Mdl_SetModelFatness' in data_type,
+                    'Mdl_ApplyOverlayMds' in data_type,
+                    'B_SetNpcVisual' in data_type,
+                    'CreateInvItems' in data_type
+                ]
+            ):
+                if 'ATR_' in data_type:
+                    string = f'attribute[{data_type}] = {solution[data_type]};'
+                    strings.append('\t' + string)
+                    continue
+                if data_type == 'name':
+                    string = f'{data_type} = "{solution[data_type]}";'
+                    strings.append('\t' + string)
+                    continue
+                string = f'{data_type} = {solution[data_type]};'
+                strings.append('\t' + string)
+            else:
+                match data_type:
+                    case 'B_SetAttributesToChapter':
+                        string = f'{data_type} (self, {solution[data_type]});'
+                        strings.append('\t' + string)
+                    case 'B_GiveNpcTalents':
+                        if solution[data_type]:
+                            string = f'{data_type} (self);'
+                            strings.append('\t' + string)
+                    case 'B_SetFightSkills':
+                        string = f'{data_type} (self, {solution[data_type]});'
+                        strings.append('\t' + string)
+                    case 'EquipItem':
+                        if isinstance(solution[data_type], list):
+                            for item in solution[data_type]:
+                                string = f'{data_type} (self, {item});'
+                                strings.append('\t' + string)
+                        else:
+                            string = f'{data_type} (self, {solution[data_type]});'
+                            strings.append('\t' + string)
+                    case 'B_CreateAmbientInv':
+                        if solution[data_type]:
+                            string = f'{data_type} (self);'
+                            strings.append('\t' + string)
+                    case 'Mdl_SetModelFatness':
+                        string = f'{data_type} (self, {solution[data_type]});'
+                        strings.append('\t' + string)
+                    case 'Mdl_ApplyOverlayMds':
+                        string = f'{data_type} (self, "{solution[data_type]}.mds");'
+                        strings.append('\t' + string)
+                    case 'B_SetNpcVisual':
+                        string = '{d} (self, {g}, {h}, {f}, {s}, {o});'.format(
+                            d = data_type,
+                            g = solution[data_type][0],
+                            h = solution[data_type][1],
+                            f = solution[data_type][2],
+                            s = solution[data_type][3],
+                            o = solution[data_type][4]
+                        )
+                        strings.append('\t' + string)
+                    case 'CreateInvItems':
+                        for item in solution[data_type]:
+                            string = f'{data_type} (self, {item[0]}, {item[1]});'
+                            strings.append('\t' + string)
+        
+        script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)"
+        script += ' {\n'
+        script += '\n'.join(strings)
+        script += '\n};\n'
+        
+        for routine_name in routines:
+            script += '\n'
+            script += f'func void {routine_name} ()'
+            script += ' {\n'
+            for entry in routines[routine_name]:
+                activity = entry["activity"]
+                start = ', '.join(entry["start_time"].split())
+                end = ', '.join(entry["end_time"].split())
+                waypoint = entry["waypoint"]
+                script += f'\t{activity} ({start}, {end}, "{waypoint}");\n'
+            script += '\n'
+            script += '};\n'
+        
+        print(script)
+        return script
 
 class NPC():
     """

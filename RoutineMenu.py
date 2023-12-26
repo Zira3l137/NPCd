@@ -609,7 +609,7 @@ class RoutineMenu(Frame):
         self,
         start_h=None, start_m=None,
         end_h=None, end_m=None,
-        remove = False
+        remove = False, update = False
     ):
         treeview_elements = self.treeview_values()
         treeview_time_sum = 0
@@ -631,6 +631,24 @@ class RoutineMenu(Frame):
                 print(self.overall_time.get())
             else:
                 self.overall_time.set(0)
+        elif update:
+            if not treeview_elements:
+                self.overall_time.set(0)
+                print(self.overall_time.get())
+            else:
+                for element in treeview_elements:
+                    h1, m1, h2, m2 = (
+                        element[1].split()[0],
+                        element[1].split()[1],
+                        element[2].split()[0],
+                        element[2].split()[1]
+                    )
+                    start = datetime.strptime(f'{h1}:{m1}', '%H:%M')
+                    end = datetime.strptime(f'{h2}:{m2}', '%H:%M')
+                    time_span: int = self.time_difference(start, end)
+                    treeview_time_sum += time_span
+                self.overall_time.set(treeview_time_sum)
+                print(treeview_time_sum)
         else:
             item_start = datetime.strptime(f'{start_h}:{start_m}', '%H:%M')
             item_end = datetime.strptime(f'{end_h}:{end_m}', '%H:%M')
@@ -885,6 +903,7 @@ class RoutineMenu(Frame):
                             item['waypoint']
                         )
                     )
+                self.calculate_time(update=True)
                 
     def unlock_widgets(self):
         not_empty = self.var_combo_routines.get()

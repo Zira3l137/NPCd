@@ -99,12 +99,12 @@ class ProfileManager(Frame):
         self.button_extract_info = Button(
             self.frame_profile_manage,
             text='Write Script',
-            command=lambda *_: Profile.extract_data(self.modules),
+            command=lambda *_: self.write_script(),
             state='disabled'
         )
         self.button_view_info = Button(
             self.frame_profile_manage,
-            text='View Script',
+            text='Preview Script',
             state='disabled'
         )
         self.button_save_file = Button(
@@ -164,7 +164,7 @@ class ProfileManager(Frame):
             fill='x',
             expand = True
         )
-        self.button_save_file.pack(
+        self.button_view_info.pack(
             side = 'left',
             pady = 5,
             padx = 5,
@@ -172,7 +172,7 @@ class ProfileManager(Frame):
             fill='x',
             expand = True
         )
-        self.button_view_info.pack(
+        self.button_save_file.pack(
             side = 'left',
             pady = 5,
             padx = 5,
@@ -201,6 +201,10 @@ class ProfileManager(Frame):
             widget.configure(values = profiles)
             widget.set(profiles[0]) if profiles else widget.set('')
 
+    def write_script(self):
+        data = Profile.extract_data(self.modules)
+        Profile.construct_script(data)
+
     def refresh_profile_list(self):
         self.profiles = Profile.load_profiles()
         self.combo_profiles.configure(values = self.profiles)
@@ -211,6 +215,7 @@ class ProfileManager(Frame):
             self.entry_profile.delete(0, END)
             self.entry_profile.configure(justify = 'left')
             condition.set(True)
+            
 
 if __name__ == '__main__':
     root = Window(title='test',themename='darkly')

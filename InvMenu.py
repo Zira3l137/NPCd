@@ -361,11 +361,11 @@ class InventoryMenu(Frame):
         match wpn:
             case 'ItMw':
                 self.var_label_equipped_melee.set(
-                    f'Equipped: {selection["values"][0]}'
+                    f'Equipped: {selection["values"][1]}'
                 )
             case 'ItRw':
                 self.var_label_equipped_ranged.set(
-                    f'Equipped: {selection["values"][0]}'
+                    f'Equipped: {selection["values"][1]}'
                 )
 
     def set_to_inv(self):

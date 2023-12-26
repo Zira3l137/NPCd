@@ -40,7 +40,7 @@ class EditWindow(Frame):
             'Visual': '768x780',
             'Stats': '784x600',
             'Inventory': '1280x800',
-            'Routine': '848x640',
+            'Routine': '960x640',
             'Settings': '768x640'
         }
         for n, i in enumerate(list(self.tab_names.keys())):

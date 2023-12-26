@@ -36,11 +36,11 @@ class MainMenu(Frame):
             'guild', 'voice',
             'type', 'flag'
         ]
-        self.var_entry_lvl = StringVar()
-        self.var_entry_lvl.trace_add(
+        self.var_entry_level = StringVar()
+        self.var_entry_level.trace_add(
             'write',
             lambda *_:
-                self.digit_validation(self.var_entry_lvl)
+                self.digit_validation(self.var_entry_level)
         )
         self.var_entry_id = StringVar()
         self.var_entry_name = StringVar()
@@ -69,16 +69,16 @@ class MainMenu(Frame):
         for i in self.main_frame_names:
             self.main_frames[i] = Frame(self)
 
-        self.label_lvl = Label(
+        self.label_level = Label(
             self.main_frames['lvl'],
             text='NPC Level:'
         )
-        self.entry_lvl = Entry(
+        self.entry_level = Entry(
             self.main_frames['lvl'],
             bootstyle = 'danger',
             width = 10,
             justify='center',
-            textvariable = self.var_entry_lvl
+            textvariable = self.var_entry_level
         )
 
         self.label_id = Label(self.main_frames['id'], text = 'Unique NPC ID:')
@@ -190,10 +190,10 @@ class MainMenu(Frame):
                 fill = 'both', padx = 5, pady = 5, expand = True
             )
 
-        self.label_lvl.pack(
+        self.label_level.pack(
             side = 'left', padx = 5, pady = 5, anchor = 'w', expand = True
         )
-        self.entry_lvl.pack(
+        self.entry_level.pack(
             side = 'left', padx = 5, pady = 5, anchor = 'e'
         )
         
