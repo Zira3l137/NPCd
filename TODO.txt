@@ -44,3 +44,7 @@
 10. Visual module:
     NPC Model Fatness: value can be changed by clicking on the axis instead moving a circle. But values are changed by 1.0. I.e. after clicking 0.3 is changed to 1.3 or 0. Make that interval smaller
     Handle `tga` textures.
+    
+Common:
+    - Add warning message box upon writing script if some values are unset
+    - Add warning message box if Rtn_Start wasn't created
