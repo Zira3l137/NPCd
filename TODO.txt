@@ -22,6 +22,7 @@
     +[IMPLEMENTED] Time values entry validation
     +[IMPLEMENTED] 24 hours time track for routine system
     Allow copying multiply entries
+    Adding e.g. 1:00 -> 2:00 and 1:00 -> 2:01 times are allowed.
 
 5. Expand settings module:
     +[IMPLEMENTED] Add GUI for custom routine TA functions parsing
@@ -31,5 +32,15 @@
 
 7. Common part of tool for all modules:
     +[IMPLEMENTED] Add tooltip over `R` button.
+    Tooltips for elements near edges of window, go outside screen
 
 8. Rewrite extract_data method from Profile class in MiscUtils module
+
+9. Localisation:
+    Change SVMs records to English.
+    ?[AFTER RELEASE] Allow easy translations by e.g. `gettext` Python module
+    ?[AFTER RELEASE] Add next SVMs versions, since new translations will be created
+    
+10. Visual module:
+    NPC Model Fatness: value can be changed by clicking on the axis instead moving a circle. But values are changed by 1.0. I.e. after clicking 0.3 is changed to 1.3 or 0. Make that interval smaller
+    Handle `tga` textures.
