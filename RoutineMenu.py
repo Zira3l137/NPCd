@@ -1,6 +1,7 @@
 from tkinter import Listbox
 from tkinter.filedialog import askdirectory
 from datetime import datetime, timedelta
+from typing import Callable
 
 from ttkbootstrap import (
     Window,StringVar,
@@ -657,7 +658,8 @@ class RoutineMenu(Frame):
             if self.time_difference(item_start, item_end) == 0:
                 Messagebox.show_error(
                         'Cannot create element with time span 0',
-                        'Time span equals zero'
+                        'Time span equals zero',
+                        self
                     )
                 raise KeyError
 
@@ -729,25 +731,46 @@ class RoutineMenu(Frame):
             value = value_list[int(value)]
         return value
     
-    def spinbox_time_period(self) -> dict:
-        return {
-            'start_h': self.var_spinbox_time_start[0].get(),
-            'start_m': self.var_spinbox_time_start[1].get(),
-            'end_h': self.var_spinbox_time_end[0].get(),
-            'end_m': self.var_spinbox_time_end[1].get()
-        }
+    def spinbox_time_period(self) -> Callable[[str], dict]:
+        def return_time_period(period='') -> dict:
+            match period:
+                case 'start':
+                    return {
+                        'start_h': self.var_spinbox_time_start[0].get(),
+                        'start_m': self.var_spinbox_time_start[1].get()
+                    }
+                case 'end':
+                    return {
+                        'end_h': self.var_spinbox_time_end[0].get(),
+                        'end_m': self.var_spinbox_time_end[1].get()
+                    }
+                case '':
+                    return {
+                        'start_h': self.var_spinbox_time_start[0].get(),
+                        'start_m': self.var_spinbox_time_start[1].get(),
+                        'end_h': self.var_spinbox_time_end[0].get(),
+                        'end_m': self.var_spinbox_time_end[1].get()
+                    }
+        return return_time_period
 
-    def fetch_time_spans(self) -> list:
+    def fetch_time_spans(self) -> tuple:
         if self.treeview_values():
-            return [
+            start_entries = [
                 (
                     values[1].split()[0],
-                    values[1].split()[1],
+                    values[1].split()[1]
+                )
+                for values in self.treeview_values()
+            ]
+            end_entries = [
+                (
                     values[2].split()[0],
                     values[2].split()[1]
                 )
                 for values in self.treeview_values()
             ]
+            
+            return (start_entries, end_entries)
 
     def new_time_period(self, time_period: dict) -> list[str]:
         return [
@@ -805,10 +828,10 @@ class RoutineMenu(Frame):
             return None
     
     def add_to_schedule(self):
-        spinbox_time_period: dict = self.spinbox_time_period()
-        existent_time_spans: list = self.fetch_time_spans()
+        spinbox_time_period: function = self.spinbox_time_period()
+        existent_time_spans: tuple = self.fetch_time_spans()
         activity: str = self.var_combo_activities.get()
-        start_time, end_time = self.new_time_period(spinbox_time_period)
+        start_time, end_time = self.new_time_period(spinbox_time_period())
         waypoint: str|None = self.get_waypoint()
 
         if self.overall_time.get() == self.TIME_LIMIT:
@@ -818,7 +841,7 @@ class RoutineMenu(Frame):
                 parent = self
             )
             return
-        if '' in tuple(spinbox_time_period.values()):
+        if '' in tuple(spinbox_time_period().values()):
             Messagebox.show_error(
                 'Please set appropriate values for activity time period!',
                 'Time period values are unset',
@@ -826,18 +849,21 @@ class RoutineMenu(Frame):
             )
             return
         if existent_time_spans:
-            if tuple(spinbox_time_period.values()) in existent_time_spans:
+            if any(
+                (
+                    tuple(spinbox_time_period('start').values()) in existent_time_spans[0],
+                    tuple(spinbox_time_period('end').values()) in existent_time_spans[1]
+                )
+            ):
                 Messagebox.show_error(
-                    '''Activity with time span:
-                    {start_h}:{start_m} - {end_h}:{end_m}
-                    already exists!'''.format_map(spinbox_time_period),
+                    '''Activity with time span: {start_h}:{start_m} - {end_h}:{end_m} cannot be added: invalid start or end time values!'''.format_map(spinbox_time_period()),
                     'Invalid activity time span',
                     parent = self
                 )
                 return
         
         try:
-            self.calculate_time(*tuple(spinbox_time_period.values()))
+            self.calculate_time(*tuple(spinbox_time_period().values()))
         except KeyError:
             return
         else:

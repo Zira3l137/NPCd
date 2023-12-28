@@ -2,5 +2,6 @@ Experimental/
 __pycache__/
 build/
 *.bat
+test.py
 
 Data/Textures/Faces/Hum_Head*
