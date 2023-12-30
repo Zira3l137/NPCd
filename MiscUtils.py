@@ -355,7 +355,6 @@ class Profile():
             script += '\n'
             script += '};\n'
         
-        print(script)
         return script
 
 class NPC():

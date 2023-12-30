@@ -3,7 +3,8 @@ from ttkbootstrap import (
     Label, Entry,
     Button, StringVar,
     BooleanVar, Combobox, END,
-    ImageTk, Image
+    ImageTk, Image, ScrolledText,
+    Toplevel
 )
 from ttkbootstrap.tooltip import ToolTip
 from ttkbootstrap.dialogs.dialogs import Messagebox
@@ -32,12 +33,30 @@ class ProfileManager(Frame):
         self.var_entry_profile = StringVar()
         self.var_combo_profile = StringVar()
         self.var_entry_profile_appended = BooleanVar(value=False)
+
+        self.top_script_preview = Toplevel(
+            'Script Preview',
+            topmost=True,
+            size=(560, 512),
+            position=(
+                self.winfo_screenwidth()//2-(560//2),
+                self.winfo_screenheight()//2-(512//2)
+            )
+        )
+        self.top_script_preview.protocol('WM_DELETE_WINDOW', self.preview_script)
+        self.top_script_preview.withdraw()
+
+        self.text_script = ScrolledText(
+            self.top_script_preview,
+            state='disabled'
+        )
         
         self.frame_profile = Frame(self)
         self.combo_profiles = Combobox(
             self.frame_profile,
             values=self.profiles,
-            textvariable=self.var_combo_profile
+            textvariable=self.var_combo_profile,
+            state='readonly'
         )
         self.label_profile = Label(
             self.frame_profile,
@@ -106,7 +125,8 @@ class ProfileManager(Frame):
         self.button_view_info = Button(
             self.frame_profile_manage,
             text='Preview Script',
-            state='disabled'
+            state='disabled',
+            command=lambda *_: self.preview_script()
         )
         self.button_save_file = Button(
             self.frame_profile_manage,
@@ -121,13 +141,14 @@ class ProfileManager(Frame):
 
         self.var_combo_profile.trace_add(
             'write',
-            lambda *_:
-                self.button_extract_info.configure(state='normal')
-                if self.var_combo_profile.get()
-                else self.button_extract_info.configure(state='disabled')
+            lambda *_: self.unlock_buttons()
         )
 
     def widgets_pack(self):
+        self.text_script.pack(
+            fill='both', padx=5, pady=5, expand=True
+        )
+        
         self.frame_profile.pack(
             fill = 'x', padx = 5, pady = 5, anchor = 'n', expand = True
         )
@@ -223,6 +244,12 @@ class ProfileManager(Frame):
             if '_start' in routine.lower():
                 return True
 
+    def insert_text(self, entry: str):
+        self.text_script.configure(state='normal')
+        self.text_script.delete(1.0,END)
+        self.text_script.insert(END,entry)
+        self.text_script.configure(state='disabled')
+    
     def write_script(self):
         data = Profile.extract_data(self.modules)
         missing_data: dict = self.missing_data(data)
@@ -241,19 +268,37 @@ class ProfileManager(Frame):
                 self,
                 True
             )
-        Profile.construct_script(data)
+        script: str = Profile.construct_script(data)
+        self.insert_text(script)
+
+    def preview_script(self):
+        window_state = self.top_script_preview.state()
+        match window_state:
+            case 'normal':
+                self.top_script_preview.withdraw()
+            case 'withdrawn':
+                self.top_script_preview.deiconify()
 
     def refresh_profile_list(self):
         self.profiles = Profile.load_profiles()
         self.combo_profiles.configure(values = self.profiles)
-
 
     def clear_entry_profile(self, condition):
         if not condition.get():
             self.entry_profile.delete(0, END)
             self.entry_profile.configure(justify = 'left')
             condition.set(True)
-            
+    
+    def unlock_buttons(self):
+        state = str()
+        if self.var_combo_profile.get():
+            state = 'normal'
+            self.button_extract_info.configure(state=state)
+            self.button_view_info.configure(state=state)
+        else:
+            state = 'disabled'
+            self.button_extract_info.configure(state=state)
+            self.button_view_info.configure(state=state)
 
 if __name__ == '__main__':
     root = Window(title='test',themename='darkly')
