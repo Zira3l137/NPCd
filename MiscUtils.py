@@ -330,7 +330,10 @@ class Profile():
                             string = f'{data_type} (self, {item[0]}, {item[1]});'
                             strings.append('\t' + string)
         
-        script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)"
+        if solution['guild']:
+            script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)"
+        else:
+            script = f"instance NONE_{solution['name']}_{solution['id']} (NPC_Default)"
         script += ' {\n'
         script += '\n'.join(strings)
         script += '\n};\n'

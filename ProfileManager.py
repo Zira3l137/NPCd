@@ -6,6 +6,7 @@ from ttkbootstrap import (
     ImageTk, Image
 )
 from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.dialogs.dialogs import Messagebox
 
 from MiscUtils import Profile, PathConstants
 
@@ -201,8 +202,45 @@ class ProfileManager(Frame):
             widget.configure(values = profiles)
             widget.set(profiles[0]) if profiles else widget.set('')
 
+    def missing_data(self, data: tuple[dict,dict]) -> dict:
+        data_ = data[0]
+        empty_keys = list()
+        empty_data = dict()
+        
+        for key in data_:
+            if not data_[key]:
+                empty_keys.append(key)
+
+        if empty_keys:
+            for key in empty_keys:
+                empty_data[empty_keys.index(key)] = key
+        
+        return empty_data
+    
+    def rtn_start_exists(self) -> bool:
+        routine_menu = self.modules['Routine']
+        for routine in routine_menu.routines:
+            if '_start' in routine.lower():
+                return True
+
     def write_script(self):
         data = Profile.extract_data(self.modules)
+        missing_data: dict = self.missing_data(data)
+        if missing_data:
+            data_list = ', '.join(list(missing_data.values()))
+            Messagebox.show_warning(
+                f'Following data was not assigned upon writing script:\n{data_list}',
+                'Warning!',
+                self,
+                True
+            )
+        if not self.rtn_start_exists():
+            Messagebox.show_warning(
+                f'Starting routine block for this solution was not created!',
+                'Warning!',
+                self,
+                True
+            )
         Profile.construct_script(data)
 
     def refresh_profile_list(self):
