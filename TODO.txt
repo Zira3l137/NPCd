@@ -1,49 +1,61 @@
-1. Expand main module:
-    +[IMPLEMENTED] For flags, change radio button to dropdown list as for rest of C_NPC properties
-    +[IMPLEMENTED] Add GUI for level
-    +[IMPLEMENTED] Automatically filling NPC ID input with first, free ID
-    
-2. Expand stats module:
-    +[IMPLEMENTED] Add GUI for B_SetAttributesToChapter
-    
-3. Expand inventory module:
-    +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
-    +[IMPLEMENTED] Add GUI for searching items by regular expressions
-    +[IMPLEMENTED] Add tooltips for symbols of items
-    ?[DELAYED] Implement item equipment requirements tracking
-    
-4. Expand routine module:
-    +[IMPLEMENTED] Sort waypoints alphabetically after extracting them
-    +[IMPLEMENTED] Ignore compiled ZENs
-    +[IMPLEMENTED] If user remove activity from routine, select should go to next entry, if exist.
-    Implement time management for routines in routine module (copy-paste activities with automatic time shifting and checking, how many time of 24 hours is used)
-    +[IMPLEMENTED] Time change according to newly added routine components
-    +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
-    +[IMPLEMENTED] Time values entry validation
-    +[IMPLEMENTED] 24 hours time track for routine system
-    Allow copying multiply entries
-    Adding e.g. 1:00 -> 2:00 and 1:00 -> 2:01 times are allowed.
+Features:
 
-5. Expand settings module:
-    +[IMPLEMENTED] Add GUI for custom routine TA functions parsing
+    Work in progress:
 
-6. Any dropdown list:
-    +[IMPLEMENTED] Allow to select entry by clicking any place in dropdown list, not only arrow
+        Common:
 
-7. Common part of tool for all modules:
-    +[IMPLEMENTED] Add tooltip over `R` button.
-    Tooltips for elements near edges of window, go outside screen
+            +[IMPLEMENTED] Add warning message box upon writing script if some values are unset
+            +[IMPLEMENTED] Add warning message box if Rtn_Start wasn't created
+            +[IMPLEMENTED] Add tooltip over `R` button.
+            +[IMPLEMENTED] Allow to select entry by clicking any place in dropdown list, not only arrow
+        
+        Main module:
 
-8. Rewrite extract_data method from Profile class in MiscUtils module
+            +[IMPLEMENTED] For flags, change radio button to dropdown list as for rest of C_NPC properties
+            +[IMPLEMENTED] Add GUI for level
+            +[IMPLEMENTED] Automatically filling NPC ID input with first, free ID
 
-9. Localisation:
-    Change SVMs records to English.
-    ?[AFTER RELEASE] Allow easy translations by e.g. `gettext` Python module
-    ?[AFTER RELEASE] Add next SVMs versions, since new translations will be created
-    
-10. Visual module:
-    +[IMPLEMENTED] Handle `tga` textures.
-    
-Common:
-    +[IMPLEMENTED] Add warning message box upon writing script if some values are unset
-    +[IMPLEMENTED] Add warning message box if Rtn_Start wasn't created
+        Stats module:
+
+            +[IMPLEMENTED] Add GUI for B_SetAttributesToChapter
+
+        Visual module:
+
+            +[IMPLEMENTED] Handle `tga` textures.
+
+        
+
+        Inventory module:
+        
+            +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
+            +[IMPLEMENTED] Add GUI for searching items by regular expressions
+            +[IMPLEMENTED] Add tooltips for symbols of items
+
+        Routine module:
+            +[IMPLEMENTED] Sort waypoints alphabetically after extracting them
+            +[IMPLEMENTED] Ignore compiled ZENs
+            +[IMPLEMENTED] If user remove activity from routine, select should go to next entry, if exist.
+            +[IMPLEMENTED] Time change according to newly added routine components
+            +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
+            +[IMPLEMENTED] Time values entry validation
+            +[IMPLEMENTED] 24 hours time track for routine system
+
+        Settings module:
+
+            +[IMPLEMENTED] Add GUI for custom routine TA functions parsing
+
+
+    After release:
+
+        Routine module:
+
+            Implement copying multiply entries
+
+        Inventory module:
+
+            Implement item equipment requirements tracking
+
+Bugs:
+
+Localisation:
+    Introduce SVMs from different localisations for Voice checking in Main Module
