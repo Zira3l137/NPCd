@@ -64,9 +64,9 @@ class RoutineMenu(Frame):
             'write',
             lambda *_: self.update_npc_id()
         )
-        self.combo_activities_list = [
-            i for i in self.paths.get_activities()['default']
-        ]
+        self.combo_activities_list = list(
+            self.paths.get_activities()['default']
+        )
 
         for i in range(24):
             if i < 10:
@@ -523,8 +523,8 @@ class RoutineMenu(Frame):
 
     def get_routine_name(self):
         name = self.var_entry_routine_name.get()
-        id = self.var_entry_routine_id.get()
-        return f'Rtn_{name}{id}'
+        id_ = self.var_entry_routine_id.get()
+        return f'Rtn_{name}{id_}'
 
     def manage_routine(self, condition):
         id = self.var_entry_routine_id.get().strip('_')
@@ -577,16 +577,16 @@ class RoutineMenu(Frame):
     def extract_waypoints(self):
         worlds = ExtractWaypoints(self.var_entry_directory.get())
         self.wps = worlds.zen_wps
-        self.combo_worlds_list = [i for i in self.wps]
+        self.combo_worlds_list = list(self.wps)
         self.combo_worlds.configure(values = self.combo_worlds_list)
         self.combo_worlds.set(self.combo_worlds_list[0])
         self.var_listbox_waypoints.set(
-            [i for i in self.wps[self.var_combo_worlds.get()]]
+            list(self.wps[self.var_combo_worlds.get()])
         )
 
     def switch_worlds(self):
         self.var_listbox_waypoints.set(
-            [i for i in self.wps[self.var_combo_worlds.get()]]
+            list(self.wps[self.var_combo_worlds.get()])
         )
 
     def select_waypoint(self):
@@ -822,13 +822,11 @@ class RoutineMenu(Frame):
 
     def get_waypoint(self) -> str|None:
         waypoint_chosen = self.var_label_waypoint_input.get()
-        if not waypoint_chosen == 'NONE':
+        if waypoint_chosen != 'NONE':
             return waypoint_chosen
-        else:
-            return None
     
     def add_to_schedule(self):
-        spinbox_time_period: function = self.spinbox_time_period()
+        spinbox_time_period: Callable = self.spinbox_time_period()
         existent_time_spans: tuple = self.fetch_time_spans()
         activity: str = self.var_combo_activities.get()
         start_time, end_time = self.new_time_period(spinbox_time_period())
@@ -855,8 +853,12 @@ class RoutineMenu(Frame):
                     tuple(spinbox_time_period('end').values()) in existent_time_spans[1]
                 )
             ):
+                error_message ='''
+Activity with time span: {start_h}:{start_m} - {end_h}:{end_m}
+cannot be added - invalid start or end time values!
+                '''
                 Messagebox.show_error(
-                    '''Activity with time span: {start_h}:{start_m} - {end_h}:{end_m} cannot be added: invalid start or end time values!'''.format_map(spinbox_time_period()),
+                    error_message.format_map(spinbox_time_period()),
                     'Invalid activity time span',
                     parent = self
                 )
@@ -866,8 +868,6 @@ class RoutineMenu(Frame):
             self.calculate_time(*tuple(spinbox_time_period().values()))
         except KeyError:
             return
-        else:
-            pass
 
         if all((activity, start_time, end_time, waypoint)):
             self.add_routine(
@@ -960,28 +960,25 @@ class RoutineMenu(Frame):
             widget.configure(state=state)
     
     def time_input_validation(self, var: StringVar):
-        if var.get():
-            if not var.get().isdigit():
+        """
+        Validates the input of time values in the format of hours and minutes.
+        Ensures that the input is a valid integer and within the range of valid values for hours (0-23) and minutes (0-59).
+
+        Args:
+            var (StringVar): A StringVar object representing the time value to be validated.
+
+        Returns:
+            None. The method modifies the value of the var object in-place.
+        """
+        value = var.get()
+        if value:
+            if not value.isdigit() or len(value) > 2:
                 var.set('00')
-            else:
-                if len(var.get()) > 2:
+            elif var in [self.var_spinbox_time_start[1], self.var_spinbox_time_end[1]]:
+                if int(value) > 59 or ' ' in value:
                     var.set('00')
-                else:
-                    if var in [
-                        self.var_spinbox_time_start[1],
-                        self.var_spinbox_time_end[1]
-                    ]:
-                        if int(var.get()) > 59:
-                            var.set('00')
-                        else:
-                            if ' ' in var.get():
-                                var.set('00')
-                    else:
-                        if int(var.get()) > 23:
-                            var.set('00')
-                        else:
-                            if ' ' in var.get():
-                                var.set('00')
+            elif int(value) > 23 or ' ' in value:
+                var.set('00')
 
     def treeview_values(self) -> list[tuple] | None:
         children = self.treeview_schedule.get_children('')
@@ -992,10 +989,3 @@ class RoutineMenu(Frame):
             for child in children
         ]
         return values
-
-
-if __name__ == '__main__':
-    root = Window(title = 'Test', themename = 'darkly')
-    root.geometry('980x720')
-    RoutineMenu(root, root).show()
-    root.mainloop()

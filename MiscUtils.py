@@ -109,7 +109,8 @@ class Profile():
     The `Profile` class provides methods for creating and deleting NPC solution files.
 
     Methods:
-    - load_profiles(cls) -> list: Load NPC solutions from paths.SOLUTIONS_PATH as a list of filenames without extensions.
+    - load_profiles(cls) -> list: Load NPC solutions from paths.SOLUTIONS_PATH
+    as a list of filenames without extensions.
     - create_profile(cls, name: str): Create a new NPC solution file.
     - delete_profile(cls, name: str): Delete specified NPC solution file.
     '''
@@ -124,7 +125,8 @@ class Profile():
         without extensions.
 
         Returns:
-        - A list of filenames without extensions, representing the NPC solution files in the specified directory.
+        - A list of filenames without extensions, representing the NPC solution
+        files in the specified directory.
         '''
         return [i.stem for i in paths.SOLUTIONS_PATH.iterdir() if '.json' in str(i)]
 
@@ -144,8 +146,10 @@ class Profile():
             profile.create_profile('npc_solution')
 
         Code Analysis:
-            - Open a file with the specified name and '.json' extension in the specified path using the `open` function.
-            - Use the `dump` function from the `json` module to write an empty string to the file.
+            - Open a file with the specified name and '.json' extension in the
+            specified path using the `open` function.
+            - Use the `dump` function from the `json` module to write an empty
+            string to the file.
             - Close the file.
         '''
         with open(paths.SOLUTIONS_PATH / f'{name}.json', 'w') as profile:
@@ -213,10 +217,10 @@ class Profile():
 
         match attributes_control:
             case 'manual':
-                solution_info['ATR_HITPOINTS_MAX'] = widget['Stats'].var_current_stat[4].get()
-                solution_info['ATR_MANA_MAX'] = widget['Stats'].var_current_stat[5].get()
-                solution_info['ATR_STRENGTH'] = widget['Stats'].var_current_stat[6].get()
-                solution_info['ATR_DEXTERITY'] = widget['Stats'].var_current_stat[7].get()
+                solution_info['ATR_HITPOINTS_MAX'] = widget['Stats'].var_current_stat[4].get() #pylint: disable=line-too-long
+                solution_info['ATR_MANA_MAX'] = widget['Stats'].var_current_stat[5].get() #pylint: disable=line-too-long
+                solution_info['ATR_STRENGTH'] = widget['Stats'].var_current_stat[6].get() #pylint: disable=line-too-long
+                solution_info['ATR_DEXTERITY'] = widget['Stats'].var_current_stat[7].get() #pylint: disable=line-too-long
             case 'auto':
                 solution_info['B_SetAttributesToChapter'] = widget['Stats'].var_spinbox_chapter.get()
 
@@ -327,11 +331,11 @@ class Profile():
                         strings.append('\t' + string)
                     case 'CreateInvItems':
                         for item in solution[data_type]:
-                            string = f'{data_type} (self, {item[0]}, {item[1]});'
+                            string = f'{data_type} (self, {item[0]}, {item[1]});' #pylint: disable=line-too-long
                             strings.append('\t' + string)
         
         if solution['guild']:
-            script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)"
+            script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)" #pylint: disable=line-too-long
         else:
             script = f"instance NONE_{solution['name']}_{solution['id']} (NPC_Default)"
         script += ' {\n'
@@ -356,7 +360,11 @@ class Profile():
 
 class NPC():
     """
-    The `NPC` class provides methods for retrieving and manipulating data related to NPCs (non-player characters) in a game. It includes methods for getting guilds, voices, types, outfits, fight tactics, and actions. It also includes methods for adding and removing overlays, head meshes, and skin textures. Additionally, it has a method for creating NPC routines.
+    The `NPC` class provides methods for retrieving and manipulating data
+    related to NPCs (non-player characters) in a game. It includes methods for
+    getting guilds, voices, types, outfits, fight tactics, and actions. It also
+    includes methods for adding and removing overlays, head meshes, and skin
+    textures. Additionally, it has a method for creating NPC routines.
 
     Example Usage:
         npc = NPC()
@@ -405,14 +413,16 @@ class NPC():
 
         # Create an NPC routine
         routine = npc.create_routine(activity, start_time, end_time, waypoint)
-        print(routine)  # Output: {'activity': ..., 'start_time': ..., 'end_time': ..., 'waypoint': ...}
+        print(routine)  # Output: {'activity': ..., 'start_time': ...,
+        'end_time': ..., 'waypoint': ...}
 
     Main functionalities:
     - Get guilds: Retrieves the default and custom guilds for NPCs.
     - Get voices: Retrieves the default and custom voices for NPCs.
     - Get types: Retrieves the default and custom types for NPCs.
     - Get outfits: Retrieves the default and custom outfits for NPCs.
-    - Get fight tactics: Retrieves the default and custom fight tactics for NPCs.
+    - Get fight tactics: Retrieves the default and custom fight tactics for
+    NPCs.
     - Get actions: Retrieves the default and custom actions for NPCs.
     - Add overlay: Adds a custom overlay for NPCs.
     - Delete overlay: Deletes a custom overlay for NPCs.
@@ -420,22 +430,37 @@ class NPC():
     - Remove head mesh: Removes a custom head mesh for NPCs.
     - Add skin texture: Adds a custom skin texture for NPCs.
     - Remove skin texture: Removes a custom skin texture for NPCs.
-    - Create routine: Creates an NPC routine with specified activity, start time, end time, and waypoint.
+    - Create routine: Creates an NPC routine with specified activity,
+    start time, end time, and waypoint.
 
     Methods:
-    - get_guilds(constants_path: str) -> dict: Retrieves the default and custom guilds for NPCs based on the constants file path.
-    - get_voices(svm_path: str) -> dict: Retrieves the default and custom voices for NPCs based on the SVM file path.
-    - get_types(ai_constants_path: str) -> dict: Retrieves the default and custom types for NPCs based on the AI constants file path.
-    - get_outfits(items_path: str) -> dict: Retrieves the default and custom outfits for NPCs based on the items file path.
-    - get_fight_tactics(ai_constants_path: str) -> dict: Retrieves the default and custom fight tactics for NPCs based on the AI constants file path.
-    - get_actions(ta_path: str) -> dict: Retrieves the default and custom actions for NPCs based on the TA file path.
-    - add_overlay(name: str): Adds a custom overlay for NPCs with the specified name.
-    - delete_overlay(name: str): Deletes a custom overlay for NPCs with the specified name.
-    - add_head_mesh(name: str, gender: int): Adds a custom head mesh for NPCs with the specified name and gender.
-    - remove_head_mesh(name: str, gender: int): Removes a custom head mesh for NPCs with the specified name and gender.
-    - add_skin_tex(name: str, gender: int): Adds a custom skin texture for NPCs with the specified name and gender.
-    - remove_skin_tex(name: str, gender: int): Removes a custom skin texture for NPCs with the specified name and gender.
-    - create_routine(activity: str, start_time: str, end_time: str, waypoint: str) -> dict: Creates an NPC routine with the specified activity, start time, end time, and waypoint.
+    - get_guilds(constants_path: str) -> dict: Retrieves the default and
+    custom guilds for NPCs based on the constants file path.
+    - get_voices(svm_path: str) -> dict: Retrieves the default and custom
+    voices for NPCs based on the SVM file path.
+    - get_types(ai_constants_path: str) -> dict: Retrieves the default and
+    custom types for NPCs based on the AI constants file path.
+    - get_outfits(items_path: str) -> dict: Retrieves the default and custom
+    outfits for NPCs based on the items file path.
+    - get_fight_tactics(ai_constants_path: str) -> dict: Retrieves the default
+    and custom fight tactics for NPCs based on the AI constants file path.
+    - get_actions(ta_path: str) -> dict: Retrieves the default and custom
+    actions for NPCs based on the TA file path.
+    - add_overlay(name: str): Adds a custom overlay for NPCs with the
+    specified name.
+    - delete_overlay(name: str): Deletes a custom overlay for NPCs with the
+    specified name.
+    - add_head_mesh(name: str, gender: int): Adds a custom head mesh for NPCs
+    with the specified name and gender.
+    - remove_head_mesh(name: str, gender: int): Removes a custom head mesh for
+    NPCs with the specified name and gender.
+    - add_skin_tex(name: str, gender: int): Adds a custom skin texture for
+    NPCs with the specified name and gender.
+    - remove_skin_tex(name: str, gender: int): Removes a custom skin texture
+    for NPCs with the specified name and gender.
+    - create_routine(activity: str, start_time: str, end_time: str, waypoint: 
+    str)-> dict: Creates an NPC routine with the specified activity,
+    start time, end time, and waypoint.
 
     Fields:
     None.
@@ -446,7 +471,8 @@ class NPC():
     @classmethod
     def get_guilds(cls, constants_path: str) -> dict:
         """
-        Retrieves the default and custom guilds for NPCs based on the constants file path.
+        Retrieves the default and custom guilds for NPCs based on the constants
+        file path.
 
         Args:
             constants_path (str): The path to the constants file.
@@ -493,7 +519,8 @@ class NPC():
     @classmethod
     def get_voices(cls, svm_path: str) -> dict:
         """
-        Retrieves the default and custom voices for NPCs based on the SVM file path.
+        Retrieves the default and custom voices for NPCs based on the SVM file
+        path.
 
         Args:
             svm_path (str): The path to the SVM file.
@@ -538,7 +565,8 @@ class NPC():
     @classmethod
     def get_types(cls, ai_constants_path: str) -> dict:
         """
-        Retrieves the default and custom types for NPCs based on the AI constants file path.
+        Retrieves the default and custom types for NPCs based on the AI
+        constants file path.
     
         Args:
             ai_constants_path (str): The path to the AI constants file.
@@ -592,7 +620,9 @@ class NPC():
             items_path (str): The path to the items file.
 
         Returns:
-            dict: A dictionary with the default and custom outfits for NPCs. The default outfits are grouped by gender ('male' and 'female'), and the custom outfits are also grouped by gender.
+            dict: A dictionary with the default and custom outfits for NPCs.
+            The default outfits are grouped by gender ('male' and 'female'),
+            and the custom outfits are also grouped by gender.
         """
         if not items_path or not Path(items_path).is_dir():
             return
