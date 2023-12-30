@@ -469,11 +469,14 @@ class VisualMenu(Frame):
             )
 
     def view_face_image(self, face_dir=None):
-        face_image_name = self.listbox_face.get(
-            *self.listbox_face.curselection()
-        )
-        if face_dir is not None:
-            image = Image.open(Path(face_dir) / f'{face_image_name}.png')
+        if self.listbox_face.get(0, END):
+            face_image_name = self.listbox_face.get(
+                    *self.listbox_face.curselection()
+                )
+        else:
+            return
+        if face_dir:
+            image = Image.open(Path(face_dir) / f'{face_image_name}')
         else:
             image = Image.open(self.paths.FACES_PATH / f'{face_image_name}.png')
         face = self.resize_face_image(image)

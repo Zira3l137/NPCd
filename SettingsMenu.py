@@ -136,7 +136,6 @@ class SettingsMenu(Frame):
                 if dir: return 'Scripts/Content/AI/Human/'
                 return 'Human/TA.d'
 
-    
     def toggle_custom_dir(self, caller: str):
         condition = self.vars_checks_main[caller].get()
         state = 'normal' if condition else 'disabled'
@@ -226,7 +225,7 @@ class SettingsMenu(Frame):
                         match gender:
                             case 0:
                                 faces = [
-                                    face.stem for face in faces_dir.iterdir()
+                                    face.name for face in faces_dir.iterdir()
                                     if face.stem.startswith('HUM_HEAD_')
                                     or face.stem.startswith('Hum_Head_')
                                     or face.stem.startswith('hum_head_')
@@ -240,7 +239,7 @@ class SettingsMenu(Frame):
                                 self.modules['Visual'].listbox_face_custom_dir = directory
                             case 1:
                                 faces = [
-                                    face.stem for face in faces_dir.iterdir()
+                                    face.name for face in faces_dir.iterdir()
                                     if face.stem.startswith('HUM_HEAD_')
                                     or face.stem.startswith('Hum_Head_')
                                     or face.stem.startswith('hum_head_')
