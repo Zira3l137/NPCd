@@ -23,6 +23,7 @@ Features:
 
             +[IMPLEMENTED] Handle `tga` textures.
             Bottom of window is not visible in 1366x768 resolution. I.e. I can't see face textures.
+            Select next and previous faces by arrow keys.
 
         
 
@@ -49,6 +50,9 @@ Features:
 
 
     After release:
+    
+        Common:
+            Implement bulk ambient NPCs creating (set which value show be random and then draw that and save to `.d` file)
 
         Routine module:
 
