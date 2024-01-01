@@ -22,6 +22,7 @@ Features:
         Visual module:
 
             +[IMPLEMENTED] Handle `tga` textures.
+            Bottom of window is not visible in 1366x768 resolution. I.e. I can't see face textures.
 
         
 
@@ -31,6 +32,7 @@ Features:
             +[IMPLEMENTED] Add GUI for searching items by regular expressions
             +[IMPLEMENTED] Add tooltips for symbols of items
             Add custom item appending GUI
+            Check whether NPC has enough attributes to wear weapons
 
         Routine module:
             +[IMPLEMENTED] Sort waypoints alphabetically after extracting them
