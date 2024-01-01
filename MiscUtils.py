@@ -193,10 +193,10 @@ class Profile():
         self.stats: object = modules['Stats']
         self.inv: object = modules['Inventory']
         self.routine: object = modules['Routine']
-        self.user_data = self.__fetch_data()
-        self.extracted_data = self.__extract_data()
+        self.user_data = self._fetch_data()
+        self.extracted_data = self._extract_data()
 
-    def __fetch_data(self) -> dict:
+    def _fetch_data(self) -> dict:
         """
         Retrieves data from various modules and returns it as a dictionary.
 
@@ -249,7 +249,7 @@ class Profile():
             'routines': self.routine.routines
         }
 
-    def __extract_data(self) -> tuple[dict, dict]:
+    def _extract_data(self) -> tuple[dict, dict]:
         """
         Extracts relevant data from the user data dictionary and organizes
         it into a solution_info dictionary.
@@ -326,7 +326,7 @@ class Profile():
                     solution_info['daily_routine'] = rtn_name
 
         return (solution_info, routines)
-    
+
     def dump_data(self, profile_name: str):
         """
         Dump the user data into a file in JSON format.
@@ -446,7 +446,6 @@ class Profile():
                 end = ', '.join(entry["end_time"].split())
                 waypoint = entry["waypoint"]
                 script += f'\t{activity} ({start}, {end}, "{waypoint}");\n'
-            script += '\n'
             script += '};\n'
     
         return script

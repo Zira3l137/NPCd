@@ -1,4 +1,4 @@
-from subprocess import Popen
+from subprocess import run
 from json import load
 
 from ttkbootstrap import (
@@ -303,10 +303,7 @@ class ProfileManager(Frame):
     def open_script(self):
         name = self.var_combo_profile.get() + '.json'
         path = self.paths.SOLUTIONS_PATH / name
-        Popen(
-            ['start', path],
-            shell=True
-        )
+        run(['notepad', path])
 
     def refresh_profile_list(self):
         self.profiles = Profile.load_profiles()
@@ -454,6 +451,7 @@ class ProfileManager(Frame):
                     routine.combo_routines.set(routine_list[0])
                     continue
                 data_mapping[key].set(solution[key])
+        self.write_script()
 
 
 if __name__ == '__main__':

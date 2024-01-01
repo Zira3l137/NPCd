@@ -32,7 +32,7 @@ Features:
             +[IMPLEMENTED] Add GUI for searching items by regular expressions
             +[IMPLEMENTED] Add tooltips for symbols of items
             Add custom item appending GUI
-            Check whether NPC has enough attributes to wear weapons
+            Add equipped item requirement checks
 
         Routine module:
             +[IMPLEMENTED] Sort waypoints alphabetically after extracting them

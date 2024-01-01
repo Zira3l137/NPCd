@@ -554,6 +554,9 @@ class RoutineMenu(Frame):
                         values = list(self.routines.keys()),
                         state='readonly'
                     )
+                    for child in self.treeview_schedule.get_children(''):
+                        self.treeview_schedule.delete(child)
+                    self.calculate_time(update=True)
 
     def update_npc_id(self):
         main_id = self.modules['Main'].var_entry_id.get()
@@ -929,7 +932,7 @@ cannot be added - invalid start or end time values!
                             item['waypoint']
                         )
                     )
-                self.calculate_time(update=True)
+            self.calculate_time(update=True)
                 
     def unlock_widgets(self):
         not_empty = self.var_combo_routines.get()
