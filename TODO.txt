@@ -58,6 +58,7 @@ Features:
         Routine module:
 
             Implement copying multiply entries
+            Custom automatically time interval after adding activity
 
         Inventory module:
 
