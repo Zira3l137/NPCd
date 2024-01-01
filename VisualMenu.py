@@ -504,314 +504,324 @@ class VisualMenu(Frame):
     def walk_overlay_manage(self, action, name):
         match action:
             case 'add':
-                if name not in self.combo_walk_overlay_list:
-                    NPC.add_overlay(name)
-                    self.combo_walk_overlay_list = [i for i in
-                        self.paths.get_overlays()['overlay']['default']+
-                        self.paths.get_overlays()['overlay']['custom']
-                    ]
-                    self.combo_walk_overlay.configure(
-                        values = self.combo_walk_overlay_list
-                    )
-                    self.label_overlay_info.configure(
-                        text = f'{name}.mds was added',
-                        foreground = 'green'
-                    )
-                    self.root.after(
-                        3000,
-                        lambda: self.label_overlay_info.configure(text = '')
-                    )
-                else:
-                    self.label_overlay_info.configure(
-                        text = f'{name}.mds already exists!',
-                        foreground = 'red'
-                    )
-                    self.root.after(
-                        3000,
-                        lambda: self.label_overlay_info.configure(text = '')
-                    )
+                if name:
+                    if name not in self.combo_walk_overlay_list:
+                        NPC.add_overlay(name)
+                        self.combo_walk_overlay_list = [i for i in
+                            self.paths.get_overlays()['overlay']['default']+
+                            self.paths.get_overlays()['overlay']['custom']
+                        ]
+                        self.combo_walk_overlay.configure(
+                            values = self.combo_walk_overlay_list
+                        )
+                        self.label_overlay_info.configure(
+                            text = f'{name}.mds was added',
+                            foreground = 'green'
+                        )
+                        self.root.after(
+                            3000,
+                            lambda: self.label_overlay_info.configure(text = '')
+                        )
+                    else:
+                        self.label_overlay_info.configure(
+                            text = f'{name}.mds already exists!',
+                            foreground = 'red'
+                        )
+                        self.root.after(
+                            3000,
+                            lambda: self.label_overlay_info.configure(text = '')
+                        )
             case 'delete':
-                if name not in self.paths.get_overlays()['overlay']['default']:
-                    NPC.delete_overlay(name)
-                    self.combo_walk_overlay_list = [i for i in
-                        self.paths.get_overlays()['overlay']['default']+
-                        self.paths.get_overlays()['overlay']['custom']
-                    ]
-                    self.combo_walk_overlay.configure(
-                        values = self.combo_walk_overlay_list
-                    )
-                    self.combo_walk_overlay.delete(0, END)
-                    self.label_overlay_info.configure(
-                        text = f'{name}.mds was removed',
-                        foreground = 'red'
-                    )
-                    self.root.after(
-                        3000,
-                        lambda: self.label_overlay_info.configure(text = '')
-                    )
-                else:
-                    self.label_overlay_info.configure(
-                        text = f'Cannot remove default overlays!',
-                        foreground = 'red'
-                    )
-                    self.root.after(
-                        3000,
-                        lambda: self.label_overlay_info.configure(text = '')
-                    )
+                if name:
+                    if name not in self.paths.get_overlays()['overlay']['default']:
+                        NPC.delete_overlay(name)
+                        self.combo_walk_overlay_list = [i for i in
+                            self.paths.get_overlays()['overlay']['default']+
+                            self.paths.get_overlays()['overlay']['custom']
+                        ]
+                        self.combo_walk_overlay.configure(
+                            values = self.combo_walk_overlay_list
+                        )
+                        self.combo_walk_overlay.delete(0, END)
+                        self.label_overlay_info.configure(
+                            text = f'{name}.mds was removed',
+                            foreground = 'red'
+                        )
+                        self.root.after(
+                            3000,
+                            lambda: self.label_overlay_info.configure(text = '')
+                        )
+                    else:
+                        self.label_overlay_info.configure(
+                            text = f'Cannot remove default overlays!',
+                            foreground = 'red'
+                        )
+                        self.root.after(
+                            3000,
+                            lambda: self.label_overlay_info.configure(text = '')
+                        )
 
     def head_mesh_manage(self, action, name, gender):
         match gender:
             case 0:
                 match action:
                     case 'add':
-                        if name not in self.combo_head_list_m:
-                            NPC.add_head_mesh(name=name, gender=gender)
-                            self.combo_head_list_m = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['head']['male']['default']
-                                +self.paths.get_globals()['NPC']['head']['male']['custom']
-                            ]
-                            self.combo_head.configure(
-                                values = self.combo_head_list_m
-                            )
-                            self.label_head_info.configure(
-                                text = f'{name} was added',
-                                foreground = 'green'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            self.combo_head.delete(0, END)
-                        else:
-                            self.label_head_info.configure(
-                                text = f'{name} already exists',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            return
+                        if name:
+                            if name not in self.combo_head_list_m:
+                                NPC.add_head_mesh(name=name, gender=gender)
+                                self.combo_head_list_m = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['head']['male']['default']
+                                    +self.paths.get_globals()['NPC']['head']['male']['custom']
+                                ]
+                                self.combo_head.configure(
+                                    values = self.combo_head_list_m
+                                )
+                                self.label_head_info.configure(
+                                    text = f'{name} was added',
+                                    foreground = 'green'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                self.combo_head.delete(0, END)
+                            else:
+                                self.label_head_info.configure(
+                                    text = f'{name} already exists',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                return
                     case 'remove':
-                        if name in self.paths.get_globals()['NPC']['head']['male']['default']:
-                            self.label_head_info.configure(
-                                text = f'Cannot remove default heads!',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            return
-                        if name in self.combo_head_list_m:
-                            NPC.remove_head_mesh(name=name, gender=gender)
-                            self.combo_head_list_m = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['head']['male']['default']
-                                +self.paths.get_globals()['NPC']['head']['male']['custom']
-                            ]
-                            self.combo_head.configure(
-                                values = self.combo_head_list_m
-                            )
-                            self.label_head_info.configure(
-                                text = f'{name} was removed',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            self.combo_head.delete(0, END)
+                        if name:
+                            if name in self.paths.get_globals()['NPC']['head']['male']['default']:
+                                self.label_head_info.configure(
+                                    text = f'Cannot remove default heads!',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                return
+                            if name in self.combo_head_list_m:
+                                NPC.remove_head_mesh(name=name, gender=gender)
+                                self.combo_head_list_m = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['head']['male']['default']
+                                    +self.paths.get_globals()['NPC']['head']['male']['custom']
+                                ]
+                                self.combo_head.configure(
+                                    values = self.combo_head_list_m
+                                )
+                                self.label_head_info.configure(
+                                    text = f'{name} was removed',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                self.combo_head.delete(0, END)
             case 1:
                 match action:
                     case 'add':
-                        if name not in self.combo_head_list_f:
-                            NPC.add_head_mesh(name=name, gender=gender)
-                            self.combo_head_list_f = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['head']['female']['default']
-                                +self.paths.get_globals()['NPC']['head']['female']['custom']
-                            ]
-                            self.combo_head.configure(
-                                values = self.combo_head_list_f
-                            )
-                            self.label_head_info.configure(
-                                text = f'{name} was added',
-                                foreground = 'green'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            self.combo_head.delete(0, END)
-                        else:
-                            self.label_head_info.configure(
-                                text = f'{name} already exists',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            return
+                        if name:
+                            if name not in self.combo_head_list_f:
+                                NPC.add_head_mesh(name=name, gender=gender)
+                                self.combo_head_list_f = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['head']['female']['default']
+                                    +self.paths.get_globals()['NPC']['head']['female']['custom']
+                                ]
+                                self.combo_head.configure(
+                                    values = self.combo_head_list_f
+                                )
+                                self.label_head_info.configure(
+                                    text = f'{name} was added',
+                                    foreground = 'green'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                self.combo_head.delete(0, END)
+                            else:
+                                self.label_head_info.configure(
+                                    text = f'{name} already exists',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                return
                     case 'remove':
-                        if name in self.paths.get_globals()['NPC']['head']['female']['default']:
-                            self.label_head_info.configure(
-                                text = f'Cannot remove default heads!',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            return
-                        if name in self.combo_head_list_f:
-                            NPC.remove_head_mesh(name=name, gender=gender)
-                            self.combo_head_list_f = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['head']['female']['default']
-                                +self.paths.get_globals()['NPC']['head']['female']['custom']
-                            ]
-                            self.combo_head.configure(
-                                values = self.combo_head_list_f
-                            )
-                            self.label_head_info.configure(
-                                text = f'{name} was removed',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_head_info.configure(text = '')
-                            )
-                            self.combo_head.delete(0, END)
+                        if name:
+                            if name in self.paths.get_globals()['NPC']['head']['female']['default']:
+                                self.label_head_info.configure(
+                                    text = f'Cannot remove default heads!',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                return
+                            if name in self.combo_head_list_f:
+                                NPC.remove_head_mesh(name=name, gender=gender)
+                                self.combo_head_list_f = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['head']['female']['default']
+                                    +self.paths.get_globals()['NPC']['head']['female']['custom']
+                                ]
+                                self.combo_head.configure(
+                                    values = self.combo_head_list_f
+                                )
+                                self.label_head_info.configure(
+                                    text = f'{name} was removed',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_head_info.configure(text = '')
+                                )
+                                self.combo_head.delete(0, END)
 
     def skin_tex_manage(self, action, name, gender):
         match gender:
             case 0:
                 match action:
                     case 'add':
-                        if name not in self.combo_skin_list_m:
-                            NPC.add_skin_tex(name=name, gender=gender)
-                            self.combo_skin_list_m = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['skin']['male']['default']
-                                +self.paths.get_globals()['NPC']['skin']['male']['custom']
-                            ]
-                            self.combo_skin.configure(
-                                values = self.combo_skin_list_m
-                            )
-                            self.label_skin_info.configure(
-                                text = f'{name} was added',
-                                foreground = 'green'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            self.combo_skin.delete(0, END)
-                        else:
-                            self.label_skin_info.configure(
-                                text = f'{name} already exists',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            return
+                        if name:
+                            if name not in self.combo_skin_list_m:
+                                NPC.add_skin_tex(name=name, gender=gender)
+                                self.combo_skin_list_m = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['skin']['male']['default']
+                                    +self.paths.get_globals()['NPC']['skin']['male']['custom']
+                                ]
+                                self.combo_skin.configure(
+                                    values = self.combo_skin_list_m
+                                )
+                                self.label_skin_info.configure(
+                                    text = f'{name} was added',
+                                    foreground = 'green'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                self.combo_skin.delete(0, END)
+                            else:
+                                self.label_skin_info.configure(
+                                    text = f'{name} already exists',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                return
                     case 'remove':
-                        if name in self.paths.get_globals()['NPC']['skin']['male']['default']:
-                            self.label_skin_info.configure(
-                                text = f'Cannot remove default skin texture!',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            return
-                        if name in self.combo_skin_list_m:
-                            NPC.remove_skin_tex(name=name, gender=gender)
-                            self.combo_skin_list_m = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['skin']['male']['default']
-                                +self.paths.get_globals()['NPC']['skin']['male']['custom']
-                            ]
-                            self.combo_skin.configure(
-                                values = self.combo_skin_list_m
-                            )
-                            self.label_skin_info.configure(
-                                text = f'{name} was removed',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            self.combo_skin.delete(0, END)
+                        if name:
+                            if name in self.paths.get_globals()['NPC']['skin']['male']['default']:
+                                self.label_skin_info.configure(
+                                    text = f'Cannot remove default skin texture!',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                return
+                            if name in self.combo_skin_list_m:
+                                NPC.remove_skin_tex(name=name, gender=gender)
+                                self.combo_skin_list_m = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['skin']['male']['default']
+                                    +self.paths.get_globals()['NPC']['skin']['male']['custom']
+                                ]
+                                self.combo_skin.configure(
+                                    values = self.combo_skin_list_m
+                                )
+                                self.label_skin_info.configure(
+                                    text = f'{name} was removed',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                self.combo_skin.delete(0, END)
             case 1:
                 match action:
                     case 'add':
-                        if name not in self.combo_skin_list_f:
-                            NPC.add_skin_tex(name=name, gender=gender)
-                            self.combo_skin_list_f = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['skin']['female']['default']
-                                +self.paths.get_globals()['NPC']['skin']['female']['custom']
-                            ]
-                            self.combo_skin.configure(
-                                values = self.combo_skin_list_f
-                            )
-                            self.label_skin_info.configure(
-                                text = f'{name} was added',
-                                foreground = 'green'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            self.combo_skin.delete(0, END)
-                        else:
-                            self.label_skin_info.configure(
-                                text = f'{name} already exists',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            return
+                        if name:
+                            if name not in self.combo_skin_list_f:
+                                NPC.add_skin_tex(name=name, gender=gender)
+                                self.combo_skin_list_f = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['skin']['female']['default']
+                                    +self.paths.get_globals()['NPC']['skin']['female']['custom']
+                                ]
+                                self.combo_skin.configure(
+                                    values = self.combo_skin_list_f
+                                )
+                                self.label_skin_info.configure(
+                                    text = f'{name} was added',
+                                    foreground = 'green'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                self.combo_skin.delete(0, END)
+                            else:
+                                self.label_skin_info.configure(
+                                    text = f'{name} already exists',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                return
                     case 'remove':
-                        if name in self.paths.get_globals()['NPC']['skin']['female']['default']:
-                            self.label_skin_info.configure(
-                                text = f'Cannot remove default skin texture!',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            return
-                        if name in self.combo_skin_list_f:
-                            NPC.remove_skin_tex(name=name, gender=gender)
-                            self.combo_skin_list_f = [
-                                i for i in
-                                self.paths.get_globals()['NPC']['skin']['female']['default']
-                                +self.paths.get_globals()['NPC']['skin']['female']['custom']
-                            ]
-                            self.combo_skin.configure(
-                                values = self.combo_skin_list_f
-                            )
-                            self.label_skin_info.configure(
-                                text = f'{name} was removed',
-                                foreground = 'red'
-                            )
-                            self.root.after(
-                                3000,
-                                lambda: self.label_skin_info.configure(text = '')
-                            )
-                            self.combo_skin.delete(0, END)
+                        if name:
+                            if name in self.paths.get_globals()['NPC']['skin']['female']['default']:
+                                self.label_skin_info.configure(
+                                    text = f'Cannot remove default skin texture!',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                return
+                            if name in self.combo_skin_list_f:
+                                NPC.remove_skin_tex(name=name, gender=gender)
+                                self.combo_skin_list_f = [
+                                    i for i in
+                                    self.paths.get_globals()['NPC']['skin']['female']['default']
+                                    +self.paths.get_globals()['NPC']['skin']['female']['custom']
+                                ]
+                                self.combo_skin.configure(
+                                    values = self.combo_skin_list_f
+                                )
+                                self.label_skin_info.configure(
+                                    text = f'{name} was removed',
+                                    foreground = 'red'
+                                )
+                                self.root.after(
+                                    3000,
+                                    lambda: self.label_skin_info.configure(text = '')
+                                )
+                                self.combo_skin.delete(0, END)
 
 if __name__ == '__main__':
     root = Window(title = 'test', themename = 'darkly')

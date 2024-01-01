@@ -1070,9 +1070,7 @@
                     "Hum_Head_Psionic",
                     "Hum_Head_Thief"
                 ],
-                "custom": [
-                    "Hum_Head_Damianut"
-                ]
+                "custom": []
             },
             "female": {
                 "default": [
