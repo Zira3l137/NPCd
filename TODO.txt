@@ -43,6 +43,7 @@ Features:
             +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
             +[IMPLEMENTED] Time values entry validation
             +[IMPLEMENTED] 24 hours time track for routine system
+            Autoscroll to last added activity (if there are more created activities, that is possible to display)
 
         Settings module:
 
