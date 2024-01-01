@@ -44,6 +44,7 @@ class PathConstants():
         '''
 
         self.CURRENT_PATH: Path = self._get_current_path()
+        self.OUTPUT_PATH: Path = self.CURRENT_PATH / 'Output'
         self.DATA_PATH: Path = self.CURRENT_PATH / 'Data'
 
         self.RESOURCES_PATH: Path = self.DATA_PATH / 'Resources'
@@ -344,6 +345,19 @@ class Profile():
                     with open(path, 'w', encoding='utf-8') as solution:
                         dump(self.user_data, solution, indent=4)
     
+    def dump_script(
+        self,
+        script: str,
+        name: str,
+        encoding: str,
+        output_dir=paths.OUTPUT_PATH,
+    ):
+        script_dir = output_dir / name
+        script_dir.mkdir(exist_ok=True)
+        daedalus_script = script_dir / f'{name}.d'
+        with open(daedalus_script, 'w', encoding=encoding) as output:
+            output.write(script)
+
     def construct_script(self) -> str:
         """
         Constructs a script for the NPC profile based on the extracted data.

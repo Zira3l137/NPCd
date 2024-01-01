@@ -299,10 +299,16 @@ class ProfileManager(Frame):
 
     def save_script(self):
         self.solution.dump_data(self.var_combo_profile.get())
+        self.solution.dump_script(
+            self.script,
+            self.var_combo_profile.get(),
+            'Windows-1251'
+        )
 
     def open_script(self):
-        name = self.var_combo_profile.get() + '.json'
-        path = self.paths.SOLUTIONS_PATH / name
+        profile = self.var_combo_profile.get()
+        name = profile + '.d'
+        path = self.paths.OUTPUT_PATH / profile / name
         run(['notepad', path])
 
     def refresh_profile_list(self):
