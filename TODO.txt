@@ -23,6 +23,7 @@ Features:
 
             +[IMPLEMENTED] Handle `tga` textures.
             Bottom of window is not visible in 1366x768 resolution. I.e. I can't see face textures.
+            Select next and previous faces by arrow keys.
 
         
 
@@ -42,6 +43,7 @@ Features:
             +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
             +[IMPLEMENTED] Time values entry validation
             +[IMPLEMENTED] 24 hours time track for routine system
+            Autoscroll to last added activity (if there are more created activities, that is possible to display)
 
         Settings module:
 
@@ -49,10 +51,14 @@ Features:
 
 
     After release:
+    
+        Common:
+            Implement bulk ambient NPCs creating (set which value show be random and then draw that and save to `.d` file)
 
         Routine module:
 
             Implement copying multiply entries
+            Custom automatically time interval after adding activity
 
         Inventory module:
 
