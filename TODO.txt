@@ -30,6 +30,7 @@ Features:
             +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
             +[IMPLEMENTED] Add GUI for searching items by regular expressions
             +[IMPLEMENTED] Add tooltips for symbols of items
+            Add custom item appending GUI
 
         Routine module:
             +[IMPLEMENTED] Sort waypoints alphabetically after extracting them

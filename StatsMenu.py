@@ -14,7 +14,7 @@ class StatsMenu(Frame):
         self.configure(bootstyle = 'dark')
         self.widgets_init()
         self.widgets_pack()
-        self._option_trace()
+        self.option_trace()
 
     def show(self):
         self.pack(expand = True, fill = 'both', padx = 5, pady = 5)
@@ -108,14 +108,14 @@ class StatsMenu(Frame):
             value='manual',
             text='Edit character attributes manually',
             variable=self.var_radio_option,
-            command=lambda *_: self._option_trace()
+            command=lambda *_: self.option_trace()
         )
         self.radio_auto = Radiobutton(
             self.frame_options,
             value='auto',
             text='Set attributes to chapter',
             variable=self.var_radio_option,
-            command=lambda *_: self._option_trace()
+            command=lambda *_: self.option_trace()
         )
         self.spinbox_chapter = Spinbox(
             self.frame_options,
@@ -271,7 +271,7 @@ class StatsMenu(Frame):
     def _label_set_stat(self, stat, value):
         self.var_current_stat[stat].set(value)
 
-    def _option_trace(self):
+    def option_trace(self):
         option = self.var_radio_option.get()
         match option:
             case 'auto':

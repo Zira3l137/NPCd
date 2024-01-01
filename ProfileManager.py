@@ -1,3 +1,6 @@
+from subprocess import Popen
+from json import load
+
 from ttkbootstrap import (
     Window, Frame,
     Label, Entry,
@@ -52,16 +55,24 @@ class ProfileManager(Frame):
         )
         
         self.frame_profile = Frame(self)
+        self.label_profile = Label(
+            self.frame_profile,
+            text = 'Select NPC Solution:',
+            justify = 'center'
+        )
         self.combo_profiles = Combobox(
             self.frame_profile,
             values=self.profiles,
             textvariable=self.var_combo_profile,
             state='readonly'
         )
-        self.label_profile = Label(
+        self.button_load_solution = Button(
             self.frame_profile,
-            text = 'Select NPC Solution:',
-            justify = 'center'
+            bootstyle = 'info',
+            text = 'Load',
+            width = 6,
+            state='disabled',
+            command=lambda *_: self.load_solution()
         )
         self.entry_profile = Entry(
             self.frame_profile,
@@ -131,12 +142,14 @@ class ProfileManager(Frame):
         self.button_save_file = Button(
             self.frame_profile_manage,
             text='Save File',
-            state='disabled'
+            state='disabled',
+            command=lambda *_: self.save_script()
         )
         self.button_open_file = Button(
             self.frame_profile_manage,
             text='Open File',
-            state='disabled'
+            state='disabled',
+            command=lambda *_: self.open_script()
         )
 
         self.var_combo_profile.trace_add(
@@ -158,6 +171,9 @@ class ProfileManager(Frame):
         self.combo_profiles.pack(
             side = 'left', padx = 5, pady = 5,
             anchor = 'center', expand = True, fill = 'x'
+        )
+        self.button_load_solution.pack(
+            side = 'left', pady = 5, padx = 1, anchor = 'e', expand = True
         )
         self.entry_profile.pack(
             side = 'left', padx = 5, pady = 5,
@@ -251,7 +267,10 @@ class ProfileManager(Frame):
         self.text_script.configure(state='disabled')
     
     def write_script(self):
-        data = Profile.extract_data(self.modules)
+        self.solution = Profile(self.modules)
+        data: tuple[dict, dict] = self.solution.extracted_data
+        self.script: str = self.solution.construct_script()
+
         missing_data: dict = self.missing_data(data)
         if missing_data:
             data_list = ', '.join(list(missing_data.values()))
@@ -268,8 +287,7 @@ class ProfileManager(Frame):
                 self,
                 True
             )
-        script: str = Profile.construct_script(data)
-        self.insert_text(script)
+        self.insert_text(self.script)
 
     def preview_script(self):
         window_state = self.top_script_preview.state()
@@ -278,6 +296,17 @@ class ProfileManager(Frame):
                 self.top_script_preview.withdraw()
             case 'withdrawn':
                 self.top_script_preview.deiconify()
+
+    def save_script(self):
+        self.solution.dump_data(self.var_combo_profile.get())
+
+    def open_script(self):
+        name = self.var_combo_profile.get() + '.json'
+        path = self.paths.SOLUTIONS_PATH / name
+        Popen(
+            ['start', path],
+            shell=True
+        )
 
     def refresh_profile_list(self):
         self.profiles = Profile.load_profiles()
@@ -295,10 +324,137 @@ class ProfileManager(Frame):
             state = 'normal'
             self.button_extract_info.configure(state=state)
             self.button_view_info.configure(state=state)
+            self.button_save_file.configure(state=state)
+            self.button_open_file.configure(state=state)
+            self.button_load_solution.configure(state=state)
         else:
             state = 'disabled'
             self.button_extract_info.configure(state=state)
             self.button_view_info.configure(state=state)
+            self.button_save_file.configure(state=state)
+            self.button_open_file.configure(state=state)
+            self.button_load_solution.configure(state=state)
+
+    def load_solution(self):
+        name = self.var_combo_profile.get() + '.json'
+        path = self.paths.SOLUTIONS_PATH / name
+
+        main: object = self.modules['Main']
+        visual: object = self.modules['Visual']
+        stats: object = self.modules['Stats']
+        inv: object = self.modules['Inventory']
+        routine: object = self.modules['Routine']
+        data_mapping = {
+            #Main
+            'level': main.var_entry_level,
+            'id': main.var_entry_id,
+            'name': main.var_entry_name,
+            'guild': main.var_combo_guild,
+            'voice': main.var_combo_voice,
+            'flags': main.var_combo_flag,
+            'npctype': main.var_combo_type,
+            #Visual
+            'gender': visual.var_radio_gender,
+            'head': visual.var_combo_head,
+            'face': visual.listbox_face,
+            'skin': visual.var_combo_skin,
+            'outfit': visual.var_combo_outfit,
+            'fatness': visual.var_scale_fatness,
+            'walk_overlay': visual.var_combo_walk_overlay,
+            #Stats
+            'atr_mode': stats.var_radio_option,
+            'fight_tactic': stats.var_combo_fight_tactic,
+            'give_talents': stats.var_check_talents,
+            'fight_skill': stats.var_entry_fightskill,
+            'atr_hp': stats.var_current_stat[4],
+            'atr_mp': stats.var_current_stat[5],
+            'atr_str': stats.var_current_stat[6],
+            'atr_dex': stats.var_current_stat[4],
+            'atr_chapter': stats.var_spinbox_chapter,
+            #Inventory
+            'melee': inv.var_label_equipped_melee,
+            'ranged': inv.var_label_equipped_ranged,
+            'items': inv.treeview_inv,
+            'ambient_inv': inv.var_check_add_amb_inv,
+        }
+
+        solution: dict = load(open(path))
+        routine.routines = solution['routines']
+
+        for key in solution:
+            if solution[key]:
+                if key == 'gender':
+                    match solution[key]:
+                        case '0':
+                            visual.radio_gender_m.invoke()
+                        case '1':
+                            visual.radio_gender_f.invoke()
+                    continue
+                if key == 'fight_skill':
+                    if not stats.var_check_fightskill.get():
+                        stats.check_fightskill.invoke()
+                if key == 'fatness':
+                    visual.update_scale_value(solution[key])
+                if key == 'atr_mode':
+                    match solution[key]:
+                        case 'manual':
+                            stats.radio_manual.invoke()
+                            continue
+                        case 'auto':
+                            stats.radio_auto.invoke()
+                            continue
+                if key == 'face':
+                    faces: list = [
+                        face.lower()
+                        for face in
+                        data_mapping[key].get(0,END)
+                    ]
+                    face = f'hum_head_v{solution[key]}_c0'
+                    if face in faces:
+                        cur_value: int = faces.index(face)
+                        data_mapping[key].selection_set(cur_value)
+                    else:
+                        print(f'Face texture: {face} was not found!')
+                        continue
+                    if not visual.listbox_face_custom_dir:
+                        visual.view_face_image()
+                        continue
+                    else:
+                        visual.view_face_image(visual.listbox_face_custom_dir)
+                        continue
+                if 'atr_' in key:
+                    if key != 'atr_mode:':
+                        if key != 'atr_chapter':
+                            if solution['atr_mode'] == 'manual':
+                                data_mapping[key].set(solution[key])
+                                continue
+                            else:
+                                continue
+                        else:
+                            if solution['atr_mode'] == 'manual':
+                                continue
+                            else:
+                                data_mapping[key].set(solution[key])
+                                continue
+                if key == 'items':
+                    items: list[list] = solution[key]
+                    inv.remove_from_inv('all')
+                    for item in items:
+                        data_mapping[key].insert(
+                        parent='',
+                        index='end',
+                        values=(item[0], item[1], item[2])
+                    )
+                    continue
+                if key == 'routines':
+                    routine_list = list(routine.routines.keys())
+                    routine.combo_routines.configure(
+                        values=routine_list
+                    )
+                    routine.combo_routines.set(routine_list[0])
+                    continue
+                data_mapping[key].set(solution[key])
+
 
 if __name__ == '__main__':
     root = Window(title='test',themename='darkly')

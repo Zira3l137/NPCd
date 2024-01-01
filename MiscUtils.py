@@ -105,178 +105,272 @@ class PathConstants():
 paths = PathConstants()
 
 class Profile():
-    '''
-    The `Profile` class provides methods for creating and deleting NPC solution files.
+    """
+    The `Profile` class is responsible for retrieving and manipulating data
+    related to NPC profiles in a game. It provides methods for fetching data,
+    extracting relevant information, constructing scripts, loading profiles,
+    creating new profiles, and deleting profiles.
+
+    Example Usage:
+        # Create an instance of the Profile class
+        profile = Profile(modules)
+
+        # Fetch the user data
+        user_data = profile._fetch_data()
+
+        # Extract the relevant data from the user data
+        extracted_data = profile.extract_data()
+
+        # Construct a script using the extracted data
+        script = profile.construct_script(extracted_data)
+
+        # Load existing NPC profiles
+        profiles = Profile.load_profiles()
+
+        # Create a new NPC profile
+        Profile.create_profile(name)
+
+        # Delete an existing NPC profile
+        Profile.delete_profile(name)
 
     Methods:
-    - load_profiles(cls) -> list: Load NPC solutions from paths.SOLUTIONS_PATH
-    as a list of filenames without extensions.
-    - create_profile(cls, name: str): Create a new NPC solution file.
-    - delete_profile(cls, name: str): Delete specified NPC solution file.
-    '''
+        - `__init__(self, modules: dict)`: Initializes the Profile object with
+        the provided modules.
+        - `_fetch_data(self) -> dict`: Fetches the user data from the various
+        modules and returns it as a dictionary.
+        - `extract_data(self) -> tuple[dict, dict]`: Extracts the relevant
+        data from the user data and returns it as a tuple of dictionaries.
+        - `construct_script(self, data: tuple[dict, dict]) -> str`: Constructs
+        a script using the extracted data and returns it as a string.
+        - `load_profiles(cls) -> list`: Loads existing NPC profiles and
+        returns a list of filenames without extensions.
+        - `create_profile(cls, name: str)`: Creates a new NPC profile with
+        the specified name.
+        - `delete_profile(cls, name: str)`: Deletes the specified NPC profile.
 
-    def __init__(self):
-        pass
-
-    @classmethod
-    def load_profiles(cls) -> list:
-        '''
-        Load NPC solutions from paths.SOLUTIONS_PATH as a list of filenames
-        without extensions.
-
-        Returns:
-        - A list of filenames without extensions, representing the NPC solution
-        files in the specified directory.
-        '''
-        return [i.stem for i in paths.SOLUTIONS_PATH.iterdir() if '.json' in str(i)]
-
-    @classmethod 
-    def create_profile(cls, name: str):
-        '''
-        Create a new NPC solution file.
+    Fields:
+        - `main: object`: Reference to the 'Main' module.
+        - `visual: object`: Reference to the 'Visual' module.
+        - `stats: object`: Reference to the 'Stats' module.
+        - `inv: object`: Reference to the 'Inventory' module.
+        - `routine: object`: Reference to the 'Routine' module.
+        - `user_data`: Dictionary containing the fetched user data.
+    """
+    def __init__(self, modules: dict):
+        """
+        Initializes the Profile object by assigning references to various
+        modules and fetching and extracting user data.
 
         Args:
-            name (str): The name of the NPC solution file to be created.
+            modules (dict): A dictionary containing references to different
+            modules.
+
+        Example Usage:
+            modules = {
+                'Main': main_module,
+                'Visual': visual_module,
+                'Stats': stats_module,
+                'Inventory': inventory_module,
+                'Routine': routine_module
+            }
+            profile = Profile(modules)
+
+        Flow:
+            1. The __init__ method takes a dictionary modules as input.
+            2. It assigns the references to different modules from the modules
+            dictionary to instance variables of the Profile object.
+            3. It calls the private method __fetch_data() to fetch user data
+            and assigns it to the user_data instance variable.
+            4. It calls the private method __extract_data() to extract user
+            data from fetched_data and assigns it to the extracted_data
+            instance variable.
 
         Returns:
             None
+        """
+        self.main: object = modules['Main']
+        self.visual: object = modules['Visual']
+        self.stats: object = modules['Stats']
+        self.inv: object = modules['Inventory']
+        self.routine: object = modules['Routine']
+        self.user_data = self.__fetch_data()
+        self.extracted_data = self.__extract_data()
 
-        Example Usage:
-            profile = Profile()
-            profile.create_profile('npc_solution')
-
-        Code Analysis:
-            - Open a file with the specified name and '.json' extension in the
-            specified path using the `open` function.
-            - Use the `dump` function from the `json` module to write an empty
-            string to the file.
-            - Close the file.
-        '''
-        with open(paths.SOLUTIONS_PATH / f'{name}.json', 'w') as profile:
-            dump('', profile)
-
-    @classmethod
-    def delete_profile(cls, name: str):
-        '''
-        Delete specified NPC solution file.
-
-        Args:
-            name (str): The name of the NPC solution file to be deleted.
+    def __fetch_data(self) -> dict:
+        """
+        Retrieves data from various modules and returns it as a dictionary.
 
         Returns:
-            None
+            dict: A dictionary containing the retrieved data from various modules.
+        """
+        return {
+            #Main
+            'level': self.main.var_entry_level.get(),
+            'id': self.main.var_entry_id.get(),
+            'name': self.main.var_entry_name.get(),
+            'guild': self.main.var_combo_guild.get(),
+            'voice': self.main.var_combo_voice.get(),
+            'flags': self.main.var_combo_flag.get(),
+            'npctype': self.main.var_combo_type.get(),
 
-        Example Usage:
-            profile = Profile()
-            profile.delete_profile('npc_solution')
-        '''
-        remove(paths.SOLUTIONS_PATH / f'{name}.json')
+            #Visual
+            'gender': str(self.visual.var_radio_gender.get()),
+            'head': self.visual.var_combo_head.get(),
+            'face': self.visual.var_listbox_face.get(),
+            'skin': self.visual.var_combo_skin.get(),
+            'outfit': self.visual.var_combo_outfit.get(),
+            'fatness': round(self.visual.var_scale_fatness.get(), 2),
+            'walk_overlay': self.visual.var_combo_walk_overlay.get(),
 
-    @classmethod
-    def extract_data(cls, widget: dict) -> tuple[dict, dict]:
-        '''
-        '''
-        attributes_control: str = widget['Stats'].var_radio_option.get()
-        melee_equipped: bool = bool(
-            widget['Inventory'].var_label_equipped_melee.get()
-        )
-        ranged_equipped: bool = bool(
-            widget['Inventory'].var_label_equipped_ranged.get()
-        )
-        
-        routine_exists: bool = bool(
-            widget['Routine'].routines
-        )
+            #Stats
+            'atr_mode': self.stats.var_radio_option.get(),
+            'fight_tactic': self.stats.var_combo_fight_tactic.get(),
+            'give_talents': self.stats.var_check_talents.get(),
+            'fight_skill': self.stats.var_entry_fightskill.get(),
+            'atr_hp': self.stats.var_current_stat[4].get(),
+            'atr_mp': self.stats.var_current_stat[5].get(),
+            'atr_str': self.stats.var_current_stat[6].get(),
+            'atr_dex': self.stats.var_current_stat[4].get(),
+            'atr_chapter': self.stats.var_spinbox_chapter.get(),
 
+            #Inventory
+            'melee': self.inv.var_label_equipped_melee.get(),
+            'ranged': self.inv.var_label_equipped_ranged.get(),
+            'items': [
+                (
+                    self.inv.treeview_inv.item(item_id)['values'][0],
+                    self.inv.treeview_inv.item(item_id)['values'][1],
+                    self.inv.treeview_inv.item(item_id)['values'][2]
+                ) for item_id in self.inv.treeview_inv.get_children('')
+            ],
+            'ambient_inv': self.inv.var_check_add_amb_inv.get(),
+            
+            #Routine
+            'routines': self.routine.routines
+        }
+
+    def __extract_data(self) -> tuple[dict, dict]:
+        """
+        Extracts relevant data from the user data dictionary and organizes
+        it into a solution_info dictionary.
+
+        :return: A tuple containing the solution_info dictionary and the
+        routines dictionary.
+        """
+        data: dict = self.user_data
+        attributes_control: str = data['atr_mode']
         solution_info = dict()
+    
+        #Main
+        for key in data:
+            if key == 'npctype':
+                solution_info[key] = data[key]
+                break
+            if key == 'voice':
+                solution_info[key] = data[key].replace('SVM_','')
+                continue
+            solution_info[key] = data[key]
 
-        solution_info['level'] = widget['Main'].var_entry_level.get()
-        solution_info['id'] = widget['Main'].var_entry_id.get()
-        solution_info['name'] = widget['Main'].var_entry_name.get()
-        solution_info['guild'] = widget['Main'].var_combo_guild.get()
-        solution_info['voice'] = widget['Main'].var_combo_voice.get().replace('SVM_','')
-        solution_info['flags'] = widget['Main'].var_combo_flag.get()
-        solution_info['npctype'] = widget['Main'].var_combo_type.get()
-        
+        #Visual
         visual_params = list()
-        visual_params.append(widget['Visual'].var_radio_gender.get())
-        visual_params.append(widget['Visual'].var_combo_head.get())
-        visual_params.append(widget['Visual'].var_listbox_face.get())
-        visual_params.append(widget['Visual'].var_combo_skin.get())
-        visual_params.append(widget['Visual'].var_combo_outfit.get())
+        for key in data:
+            if key not in solution_info:
+                if key == 'outfit':
+                    visual_params.append(data[key])
+                    break
+                visual_params.append(data[key])
+        solution_info['B_SetNpcVisual'] = visual_params 
+        for key in data:
+            if key == 'fatness':
+                solution_info['Mdl_SetModelFatness'] = data[key]
+                continue
+            if key == 'walk_overlay':
+                solution_info['Mdl_ApplyOverlayMds'] = data[key]
+                continue       
 
-        solution_info['B_SetNpcVisual'] = visual_params
-
-        solution_info['Mdl_SetModelFatness'] = round(widget['Visual'].var_scale_fatness.get(), 2)
-        solution_info['Mdl_ApplyOverlayMds'] = widget['Visual'].var_combo_walk_overlay.get()
-
-        solution_info['fight_tactic'] = widget['Stats'].var_combo_fight_tactic.get() 
-        solution_info['B_GiveNpcTalents'] = widget['Stats'].var_check_talents.get()
-        solution_info['B_SetFightSkills'] = widget['Stats'].var_entry_fightskill.get()
-
+        #Stats
+        solution_info['fight_tactic'] = data['fight_tactic']
+        solution_info['B_GiveNpcTalents'] = data['give_talents']
+        solution_info['B_SetFightSkills'] = data['fight_skill']
 
         match attributes_control:
             case 'manual':
-                solution_info['ATR_HITPOINTS_MAX'] = widget['Stats'].var_current_stat[4].get() #pylint: disable=line-too-long
-                solution_info['ATR_MANA_MAX'] = widget['Stats'].var_current_stat[5].get() #pylint: disable=line-too-long
-                solution_info['ATR_STRENGTH'] = widget['Stats'].var_current_stat[6].get() #pylint: disable=line-too-long
-                solution_info['ATR_DEXTERITY'] = widget['Stats'].var_current_stat[7].get() #pylint: disable=line-too-long
+                solution_info['ATR_HITPOINTS_MAX'] = data['atr_hp']
+                solution_info['ATR_HITPOINTS'] = data['atr_hp']
+                solution_info['ATR_MANA_MAX'] = data['atr_mp']
+                solution_info['ATR_MANA'] = data['atr_mp']
+                solution_info['ATR_STRENGTH'] = data['atr_str']
+                solution_info['ATR_DEXTERITY'] = data['atr_dex']
             case 'auto':
-                solution_info['B_SetAttributesToChapter'] = widget['Stats'].var_spinbox_chapter.get()
+                solution_info['B_SetAttributesToChapter'] = data['atr_chapter']
 
-        melee = str()
-        ranged = str()
-        
-        if melee_equipped:
-            melee = ' '.join(widget['Inventory'].var_label_equipped_melee.get().split()[1::])
-            solution_info['EquipItem'] = melee
-        if ranged_equipped:
-            ranged = ' '.join(widget['Inventory'].var_label_equipped_ranged.get().split()[1::])
-            solution_info['EquipItem'] = ranged
-        if melee_equipped and ranged_equipped:
-            solution_info['EquipItem'] = [
-                melee,
-                ranged
-            ]
+        #Inventory
+        solution_info['EquipItem'] = list()
+        solution_info['CreateInvItems'] = list()
+    
+        for element in (data['melee'], data['ranged']):
+            if element:
+                solution_info['EquipItem'].append(
+                    ' '.join(element.split()[1::])
+                )
 
-        item_ids = widget['Inventory'].treeview_inv.get_children('')
-        items = list()
-        for item_id in item_ids:
-            items.append(
-                [
-                    widget['Inventory'].treeview_inv.item(item_id)['values'][1],
-                    widget['Inventory'].treeview_inv.item(item_id)['values'][2]
-                ]
-            )
+        items = [(instance, qty) for _, instance, qty in data['items']]
+        for item in items:
+            solution_info['CreateInvItems'].append(item)
 
-        solution_info['CreateInvItems'] = items
-        solution_info['B_CreateAmbientInv'] = widget['Inventory'].var_check_add_amb_inv.get()
-
-        if routine_exists:
-            for rtn_name in widget['Routine'].routines.keys():
+        #Routine
+        routines = data['routines']
+        if routines:
+            for rtn_name in routines:
                 if 'start_' in rtn_name.lower():
                     solution_info['daily_routine'] = rtn_name
 
-        return (solution_info, widget['Routine'].routines)
+        return (solution_info, routines)
     
-    @classmethod
-    def construct_script(cls, data: tuple[dict, dict]) -> str:
-        routines: dict = data[1]
-        solution: dict = data[0]
+    def dump_data(self, profile_name: str):
+        """
+        Dump the user data into a file in JSON format.
 
+        Args:
+            profile_name (str): The name of the profile to be dumped.
+
+        Returns:
+            None
+
+        """
+        for path in paths.SOLUTIONS_PATH.iterdir():
+            if path.is_file():
+                if path.stem == profile_name:
+                    with open(path, 'w', encoding='utf-8') as solution:
+                        dump(self.user_data, solution, indent=4)
+    
+    def construct_script(self) -> str:
+        """
+        Constructs a script for the NPC profile based on the extracted data.
+
+        Returns:
+            str: The constructed script for the NPC profile.
+
+        Example Usage:
+            profile = Profile(modules)
+            script = profile.construct_script()
+            print(script)
+        """
+        solution, routines = self.extracted_data
         strings = list()
+
         for data_type in solution:
             if not any(
                 [
-                    'B_SetAttributesToChapter' in data_type,
-                    'B_GiveNpcTalents' in data_type,
-                    'B_SetFightSkills' in data_type,
-                    'EquipItem' in data_type,
-                    'B_CreateAmbientInv' in data_type,
-                    'Mdl_SetModelFatness' in data_type,
-                    'Mdl_ApplyOverlayMds' in data_type,
-                    'B_SetNpcVisual' in data_type,
-                    'CreateInvItems' in data_type
+                    data_type == 'B_SetAttributesToChapter',
+                    data_type == 'B_GiveNpcTalents',
+                    data_type == 'B_SetFightSkills',
+                    data_type == 'EquipItem',
+                    data_type == 'B_CreateAmbientInv',
+                    data_type == 'Mdl_SetModelFatness',
+                    data_type == 'Mdl_ApplyOverlayMds',
+                    data_type == 'B_SetNpcVisual',
+                    data_type == 'CreateInvItems'
                 ]
             ):
                 if 'ATR_' in data_type:
@@ -333,7 +427,7 @@ class Profile():
                         for item in solution[data_type]:
                             string = f'{data_type} (self, {item[0]}, {item[1]});' #pylint: disable=line-too-long
                             strings.append('\t' + string)
-        
+    
         if solution['guild']:
             script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)" #pylint: disable=line-too-long
         else:
@@ -341,7 +435,7 @@ class Profile():
         script += ' {\n'
         script += '\n'.join(strings)
         script += '\n};\n'
-        
+    
         for routine_name in routines:
             script += '\n'
             script += f'func void {routine_name} ()'
@@ -354,8 +448,64 @@ class Profile():
                 script += f'\t{activity} ({start}, {end}, "{waypoint}");\n'
             script += '\n'
             script += '};\n'
-        
+    
         return script
+
+    @classmethod
+    def load_profiles(cls) -> list:
+        '''
+        Load NPC solutions from paths.SOLUTIONS_PATH as a list of filenames
+        without extensions.
+
+        Returns:
+        - A list of filenames without extensions, representing the NPC solution
+        files in the specified directory.
+        '''
+        return [
+            i.stem for i in paths.SOLUTIONS_PATH.iterdir() if '.json' in str(i)
+        ]
+
+    @classmethod 
+    def create_profile(cls, name: str):
+        '''
+        Create a new NPC solution file.
+
+        Args:
+            name (str): The name of the NPC solution file to be created.
+
+        Returns:
+            None
+
+        Example Usage:
+            profile = Profile()
+            profile.create_profile('npc_solution')
+
+        Code Analysis:
+            - Open a file with the specified name and '.json' extension in the
+            specified path using the `open` function.
+            - Use the `dump` function from the `json` module to write an empty
+            string to the file.
+            - Close the file.
+        '''
+        with open(paths.SOLUTIONS_PATH / f'{name}.json', 'w') as profile:
+            dump('', profile)
+
+    @classmethod
+    def delete_profile(cls, name: str):
+        '''
+        Delete specified NPC solution file.
+
+        Args:
+            name (str): The name of the NPC solution file to be deleted.
+
+        Returns:
+            None
+
+        Example Usage:
+            profile = Profile()
+            profile.delete_profile('npc_solution')
+        '''
+        remove(paths.SOLUTIONS_PATH / f'{name}.json')
 
 class NPC():
     """

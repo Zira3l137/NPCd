@@ -4,4 +4,5 @@ build/
 *.bat
 test.py
 
+Data/Solutions/*.json
 Data/Textures/Faces/Hum_Head*

@@ -487,11 +487,19 @@ class VisualMenu(Frame):
             anchor = 'center',
             image = self.face_image
         )
-        self.var_listbox_face.set(
-            face_image_name.
-            split('_')[2].
-            replace('V', '')
-        )
+        if not '.' in face_image_name:
+            self.var_listbox_face.set(
+                face_image_name.
+                split('_')[2].
+                replace('V', '')
+            )
+        else:
+            self.var_listbox_face.set(
+                face_image_name.
+                split('.')[0].
+                split('_')[2].
+                replace('V', '')
+            )
 
     def walk_overlay_manage(self, action, name):
         match action:
