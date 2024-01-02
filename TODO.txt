@@ -63,6 +63,7 @@ Features:
         Inventory module:
 
             Implement item equipment requirements tracking
+            Increment amount of given item by double-click.
 
 Bugs:
 
