@@ -1,15 +1,16 @@
 # NPCd
 NPC script writing tool for Piranha Bytes Gothic &amp; Gothic 2 games.
 
-MainMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/2e2c5861-e16e-4d45-b5e6-f864b471f3d6)
+MainMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/c05de75f-9355-4b9a-b419-8adbffbd2fc5)
 
-VisualMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/e5ea7497-6f60-4264-afb0-4a6bba058ed9)
+VisualMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/08ec44b8-3612-47b1-a426-3fc38dfb3f85)
 
-StatsMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/7e163677-3495-4d05-b3ff-ce49e096a879)
+StatsMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/8de23051-77e6-4818-9001-a2b2bffd2136)
 
-InventoryMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/d88f6c35-64ce-4e37-8635-5db11e98b22d)
+InventoryMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/5b02a309-76f1-45ab-9422-1d94d9bef098)
 
-RoutineMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/f256622e-c15b-416f-a07b-7791a5a7afa3)
+RoutineMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/0cfe9c85-ed67-4355-be2c-b1f52a4c69d2)
+
 
 
 
