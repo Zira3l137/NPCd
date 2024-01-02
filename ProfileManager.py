@@ -381,7 +381,12 @@ class ProfileManager(Frame):
             'ambient_inv': inv.var_check_add_amb_inv,
         }
 
-        solution: dict = load(open(path))
+        solution: dict = (
+            load(open(path))
+            if isinstance(load(open(path)), dict)
+            else None
+        )
+        if not solution: return
         routine.routines = solution['routines']
 
         for key in solution:
