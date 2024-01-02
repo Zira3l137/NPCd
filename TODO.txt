@@ -8,6 +8,7 @@ Features:
             +[IMPLEMENTED] Add warning message box if Rtn_Start wasn't created
             +[IMPLEMENTED] Add tooltip over `R` button.
             +[IMPLEMENTED] Allow to select entry by clicking any place in dropdown list, not only arrow
+            Write a function that will adjust the size of window according to the screen of user
         
         Main module:
 
