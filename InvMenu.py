@@ -100,6 +100,10 @@ class InventoryMenu(Frame):
             '<Button1-ButtonRelease>',
             lambda *_: self.on_click_treeview('inv')
         )
+        self.treeview_items.bind(
+            '<Double-Button-1>',
+            lambda *_: self.set_to_inv()
+        )
         self.treeview_items.heading('des', text = 'Description')
         self.treeview_items.column('des', width = 250, anchor = 'center')
         self.treeview_items.heading('inst', text = 'Instance')
@@ -247,6 +251,10 @@ class InventoryMenu(Frame):
         self.treeview_inv.bind(
             '<Button1-ButtonRelease>',
             lambda *_: self.on_click_treeview('items')
+        )
+        self.treeview_inv.bind(
+            '<Double-Button-1>',
+            lambda *_: self.remove_from_inv('single')
         )
         self.scrollbar_treeview_inv.configure(
             command = self.treeview_inv.yview
