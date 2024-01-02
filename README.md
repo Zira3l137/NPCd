@@ -5,7 +5,7 @@ MainMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/c05
 
 VisualMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/08ec44b8-3612-47b1-a426-3fc38dfb3f85)
 
-StatsMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/8de23051-77e6-4818-9001-a2b2bffd2136)
+StatsMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/f5fe3cfc-bdb4-497d-9c44-eb64404c3161)
 
 InventoryMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/5b02a309-76f1-45ab-9422-1d94d9bef098)
 
