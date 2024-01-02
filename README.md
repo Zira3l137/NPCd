@@ -9,6 +9,7 @@ StatsMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/7e
 
 InventoryMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/d88f6c35-64ce-4e37-8635-5db11e98b22d)
 
-RoutineMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/b6efa92e-748e-482f-a64c-edddb306fdc1)
+RoutineMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/f256622e-c15b-416f-a07b-7791a5a7afa3)
+
 
 
