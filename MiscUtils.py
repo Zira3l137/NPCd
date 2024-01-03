@@ -21,7 +21,9 @@ class PathConstants():
 
     Fields:
     - CURRENT_PATH: Represents the current working directory.
+    - OUTPUT_PATH: Represents the output directory.
     - DATA_PATH: Represents the path to the 'Data' directory.
+
     - RESOURCES_PATH: Represents the path to the 'Resources' directory.
     - SOLUTIONS_PATH: Represents the path to the 'Solutions' directory.
     - SOUNDS_PATH: Represents the path to the 'Sounds' directory.
@@ -107,56 +109,41 @@ paths = PathConstants()
 
 class Profile():
     """
-    The `Profile` class is responsible for retrieving and manipulating data
-    related to NPC profiles in a game. It provides methods for fetching data,
-    extracting relevant information, constructing scripts, loading profiles,
-    creating new profiles, and deleting profiles.
+    The 'Profile' class represents a user profile and provides methods
+    for initializing the profile, fetching and extracting user data, dumping
+    the data into a file, dumping the generated script for the profile into a
+    file, constructing the script based on the extracted data, loading
+    profiles from a directory, creating a new profile, and deleting a profile.
 
     Example Usage:
-        # Create an instance of the Profile class
+        modules = {
+            'Main': main_module,
+            'Visual': visual_module,
+            'Stats': stats_module,
+            'Inventory': inventory_module,
+            'Routine': routine_module
+        }
         profile = Profile(modules)
-
-        # Fetch the user data
-        user_data = profile._fetch_data()
-
-        # Extract the relevant data from the user data
-        extracted_data = profile.extract_data()
-
-        # Construct a script using the extracted data
-        script = profile.construct_script(extracted_data)
-
-        # Load existing NPC profiles
+        profile.dump_data("profile_name")
+        script = profile.construct_script()
+        profile.dump_script(script, "profile_name", "utf-8")
         profiles = Profile.load_profiles()
+        Profile.create_profile("npc_solution")
+        Profile.delete_profile("profile_name")
 
-        # Create a new NPC profile
-        Profile.create_profile(name)
+    Inputs:
+    - modules (dict): A dictionary containing references to different modules.
+    - profile_name (str): The name of the profile to be dumped or created.
 
-        # Delete an existing NPC profile
-        Profile.delete_profile(name)
+    Outputs:
+    - None (for methods that don't return anything)
+    - A dictionary of user data (for the `_fetch_data` method)
+    - A tuple containing a solution_info dictionary and a routines dictionary (for the `_extract_data` method)
+    - A constructed script for the profile (for the `construct_script` method)
+    - A list of filenames without extensions (for the `load_profiles` method)
 
-    Methods:
-        - `__init__(self, modules: dict)`: Initializes the Profile object with
-        the provided modules.
-        - `_fetch_data(self) -> dict`: Fetches the user data from the various
-        modules and returns it as a dictionary.
-        - `extract_data(self) -> tuple[dict, dict]`: Extracts the relevant
-        data from the user data and returns it as a tuple of dictionaries.
-        - `construct_script(self, data: tuple[dict, dict]) -> str`: Constructs
-        a script using the extracted data and returns it as a string.
-        - `load_profiles(cls) -> list`: Loads existing NPC profiles and
-        returns a list of filenames without extensions.
-        - `create_profile(cls, name: str)`: Creates a new NPC profile with
-        the specified name.
-        - `delete_profile(cls, name: str)`: Deletes the specified NPC profile.
-
-    Fields:
-        - `main: object`: Reference to the 'Main' module.
-        - `visual: object`: Reference to the 'Visual' module.
-        - `stats: object`: Reference to the 'Stats' module.
-        - `inv: object`: Reference to the 'Inventory' module.
-        - `routine: object`: Reference to the 'Routine' module.
-        - `user_data`: Dictionary containing the fetched user data.
     """
+
     def __init__(self, modules: dict):
         """
         Initializes the Profile object by assigning references to various
@@ -345,13 +332,46 @@ class Profile():
                     with open(path, 'w', encoding='utf-8') as solution:
                         dump(self.user_data, solution, indent=4)
     
-    def dump_script(
-        self,
-        script: str,
-        name: str,
-        encoding: str,
-        output_dir=paths.OUTPUT_PATH,
-    ):
+    def dump_script(self, script: str, name: str, encoding: str, output_dir=paths.OUTPUT_PATH):
+        """
+        Dump the generated script for an NPC profile into a file in JSON format.
+
+        Args:
+            script (str): The generated script for the NPC profile.
+            name (str): The name of the profile to be dumped.
+            encoding (str): The encoding to be used when writing the script file.
+            output_dir (optional, default: paths.OUTPUT_PATH): The directory where the script file will be saved.
+
+        Returns:
+            None
+
+        Raises:
+            None
+
+        Example Usage:
+            profile = Profile(modules)
+            script = profile.construct_script()
+            profile.dump_script(script, "profile_name", "utf-8")
+
+        The `dump_script` method is responsible for dumping a generated script for an NPC profile into a file in JSON format.
+
+        Inputs:
+        - `script` (str): The generated script for the NPC profile.
+        - `name` (str): The name of the profile to be dumped.
+        - `encoding` (str): The encoding to be used when writing the script file.
+        - `output_dir` (optional, default: `paths.OUTPUT_PATH`): The directory where the script file will be saved.
+
+        Flow:
+        1. The method takes the `script`, `name`, `encoding`, and `output_dir` as inputs.
+        2. It creates a directory with the specified `name` under the `output_dir` if it doesn't already exist.
+        3. It creates a file path for the script file by combining the `script_dir` and the `name` with the ".d" extension.
+        4. It opens the script file in write mode with the specified `encoding`.
+        5. It writes the `script` content to the script file.
+        6. The method finishes execution.
+
+        Outputs:
+        - None
+        """
         script_dir = output_dir / name
         script_dir.mkdir(exist_ok=True)
         daedalus_script = script_dir / f'{name}.d'
@@ -626,9 +646,7 @@ class NPC():
 
     Fields:
     None.
-    """
-    def __init__(self):
-        pass       
+    """      
     
     @classmethod
     def get_guilds(cls, constants_path: str) -> dict:

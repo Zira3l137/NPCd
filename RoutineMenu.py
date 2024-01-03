@@ -966,16 +966,6 @@ cannot be added - invalid start or end time values!
             widget.configure(state=state)
     
     def time_input_validation(self, var: StringVar):
-        """
-        Validates the input of time values in the format of hours and minutes.
-        Ensures that the input is a valid integer and within the range of valid values for hours (0-23) and minutes (0-59).
-
-        Args:
-            var (StringVar): A StringVar object representing the time value to be validated.
-
-        Returns:
-            None. The method modifies the value of the var object in-place.
-        """
         value = var.get()
         if value:
             if not value.isdigit() or len(value) > 2:
