@@ -1,5 +1,5 @@
 from ttkbootstrap import (
-    Window, StringVar,
+    StringVar,
     BooleanVar, Button, Frame,
     Label, Spinbox, Radiobutton,
     Treeview, Scrollbar, END,
@@ -256,6 +256,14 @@ class InventoryMenu(Frame):
             '<Double-Button-1>',
             lambda *_: self.remove_from_inv('single')
         )
+        self.treeview_inv.bind(
+            '<Button3-ButtonRelease>',
+            lambda *_: self.change_quantity('+')
+        )
+        self.treeview_inv.bind(
+            '<Button2-ButtonRelease>',
+            lambda *_: self.change_quantity('-')
+        )
         self.scrollbar_treeview_inv.configure(
             command = self.treeview_inv.yview
         )
@@ -343,7 +351,6 @@ class InventoryMenu(Frame):
         if not self.var_current_cat.get() == cat:
             self.var_current_cat.set(cat)
 
-
     def control_button_state(self):
         condition = self.var_selection_empty.get()
         condition_selection = self.treeview_items.selection()
@@ -429,19 +436,20 @@ class InventoryMenu(Frame):
                 )
 
     def remove_from_inv(self, action):
-        match action:
-            case 'single':
-                selected_item = self.treeview_inv.selection()[0]
-                selected_items = self.treeview_inv.selection()
-                if len(selected_items) > 1:
-                    for unit in selected_items:
-                        self.treeview_inv.delete(unit)
-                else:
-                    self.treeview_inv.delete(selected_item)
-            case 'all':
-                all_items = self.treeview_inv.get_children('')
-                for every_item in all_items:
-                    self.treeview_inv.delete(every_item)
+        if self.treeview_inv.get_children(''):
+            match action:
+                case 'single':
+                    selected_item = self.treeview_inv.selection()[0]
+                    selected_items = self.treeview_inv.selection()
+                    if len(selected_items) > 1:
+                        for unit in selected_items:
+                            self.treeview_inv.delete(unit)
+                    else:
+                        self.treeview_inv.delete(selected_item)
+                case 'all':
+                    all_items = self.treeview_inv.get_children('')
+                    for every_item in all_items:
+                        self.treeview_inv.delete(every_item)
     
     def validate_request(self, request: str) -> list[(str)]:
         search_results = list()
@@ -464,8 +472,7 @@ class InventoryMenu(Frame):
                     search_results.append(name)
 
         return search_results
-
-    
+   
     def match_to_search(self):
         names = list()
         instances = list()
@@ -517,8 +524,37 @@ class InventoryMenu(Frame):
                 if ' ' in var.get():
                     var.set(0)
 
-if __name__ == '__main__':
-    root = Window(title = 'Test', themename = 'darkly')
-    root.geometry('980x720')
-    InventoryMenu(root).show()
-    root.mainloop()
+    def change_quantity(self, key: str):
+        if self.treeview_inv.get_children(''):
+            selection = self.treeview_inv.selection()
+            match key:
+                case '+':
+                    for item_id in selection:
+                        item = self.treeview_inv.item(item_id)
+                        quantity = int(item['values'][2])
+                        if quantity != 1000:
+                            quantity += 1
+                        else:
+                            quantity = 1
+                        self.treeview_inv.item(
+                            item_id, values=(
+                                self.treeview_inv.item(item_id)['values'][0],
+                                self.treeview_inv.item(item_id)['values'][1],
+                                quantity
+                            )
+                        )
+                case '-':
+                    for item_id in selection:
+                        item = self.treeview_inv.item(item_id)
+                        quantity = int(item['values'][2])
+                        if quantity != 1:
+                            quantity -= 1
+                        else:
+                            quantity = 1000
+                        self.treeview_inv.item(
+                            item_id, values=(
+                                self.treeview_inv.item(item_id)['values'][0],
+                                self.treeview_inv.item(item_id)['values'][1],
+                                quantity
+                            )
+                        )

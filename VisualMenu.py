@@ -1,7 +1,7 @@
 from tkinter import  Listbox, END
 
 from ttkbootstrap import (
-    Window, StringVar, IntVar,
+    StringVar, IntVar,
     DoubleVar, Button, Frame,
     Label, Combobox, Radiobutton,
     Scale, Scrollbar, Canvas
@@ -287,6 +287,14 @@ class VisualMenu(Frame):
                 else self.view_face_image(
                     face_dir=self.listbox_face_custom_dir
                 )
+        )
+        self.listbox_face.bind(
+            '<Left>',
+            lambda *_: self.face_text_active_switch('left')
+        )
+        self.listbox_face.bind(
+            '<Right>',
+            lambda *_: self.face_text_active_switch('right')
         )
         self.scrollbar_listbox_face = Scrollbar(
             self.visual_frames['face'],
@@ -823,8 +831,31 @@ class VisualMenu(Frame):
                                 )
                                 self.combo_skin.delete(0, END)
 
-if __name__ == '__main__':
-    root = Window(title = 'test', themename = 'darkly')
-    root.geometry('768x680')
-    VisualMenu(root, root).show()
-    root.mainloop()
+    def face_text_active_switch(self, key: str):
+        if self.listbox_face.get(0, END):
+            match key:
+                case 'left':
+                    selection = self.listbox_face.curselection()[0]
+                    if selection:
+                        selection -= 1
+                    else:
+                        selection = self.listbox_face.size() - 1
+                    self.listbox_face.selection_clear(0, END)
+                    self.listbox_face.selection_set(selection)
+                    if self.listbox_face_custom_dir:
+                        self.view_face_image(self.listbox_face_custom_dir)
+                    else:
+                        self.view_face_image()
+                case 'right':
+                    selection = self.listbox_face.curselection()[0]
+                    last = self.listbox_face.size() - 1
+                    if selection != last:
+                        selection += 1
+                    else:
+                        selection = 0
+                    self.listbox_face.selection_clear(0, END)
+                    self.listbox_face.selection_set(selection)
+                    if self.listbox_face_custom_dir:
+                        self.view_face_image(self.listbox_face_custom_dir)
+                    else:
+                        self.view_face_image()                 

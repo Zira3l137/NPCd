@@ -4,13 +4,13 @@ from datetime import datetime, timedelta
 from typing import Callable
 
 from ttkbootstrap import (
-    Window,StringVar,
+    StringVar,Image,
     BooleanVar,Button,
     Frame,Label,
     Entry,Combobox,
     Spinbox,Scrollbar,
     Treeview,END,ImageTk,
-    Image,IntVar
+    IntVar
 )
 
 from ttkbootstrap.dialogs.dialogs import Messagebox
@@ -821,6 +821,9 @@ class RoutineMenu(Frame):
                     user_input['waypoint']
                 )
             )
+        )
+        self.treeview_schedule.see(
+            self.treeview_schedule.selection()[0]
         )
 
     def get_waypoint(self) -> str|None:

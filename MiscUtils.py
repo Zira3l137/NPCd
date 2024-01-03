@@ -807,16 +807,16 @@ class NPC():
             lines = data.readlines()
             for line in lines:
                 if any(
-                    'INSTANCE' in line,
-                    'instance' in line
+                    (
+                        'INSTANCE' in line,
+                        'instance' in line
+                    )
                 ) and any(
-                    '(C_ITEM)' in line,
-                    '(C_Item)' in line
-                ) and not all(
-                    [
-                        'ITAR_DJG_BABE' in line
-                    ]
-                ):
+                    (
+                        '(C_ITEM)' in line,
+                        '(C_Item)' in line
+                    )
+                ) and not 'ITAR_DJG_BABE' in line:
                     outfit = line.split()[1].replace('(C_ITEM)','')
                     outfit = outfit.replace('(C_Item)','')
                     if outfit.lower() not in default:
@@ -829,11 +829,15 @@ class NPC():
             lines = data.readlines()
             for line in lines:
                 if any(
-                    'INSTANCE' in line,
-                    'instance' in line
+                    (
+                        'INSTANCE' in line,
+                        'instance' in line
+                    )
                 ) and any(
-                    '(C_ITEM)' in line,
-                    '(C_Item)' in line
+                    (
+                        '(C_ITEM)' in line,
+                        '(C_Item)' in line
+                    )
                 ):
                     outfit = line.split()[1].replace('(C_ITEM)','')
                     outfit = outfit.replace('(C_Item)','')
@@ -1157,7 +1161,6 @@ class NPC():
         }
         return cls.routines
     
-
 class ExtractWaypoints():
     """
     A class for extracting waypoints from uncompiled ZEN files.
@@ -1184,8 +1187,6 @@ class ExtractWaypoints():
         self.zen_wps : dict = self.extract_waypoints(
             self.zen_files, self.zen_filenames
         )
-
-        
 
     def check_files(self, file_path: Path) -> dict:
         """

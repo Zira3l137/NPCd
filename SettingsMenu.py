@@ -1,5 +1,5 @@
 from ttkbootstrap import (
-    StringVar, Window,
+    StringVar,
     Frame, Entry,
     Checkbutton, Button,
     BooleanVar, END
@@ -339,11 +339,3 @@ class SettingsMenu(Frame):
                     self.modules['Routine'].combo_activities.configure(
                         values = self.modules['Routine'].combo_activities_list
                     )
-
-                            
-
-if __name__ == '__main__':
-    root = Window(title='Settings Menu', themename='darkly')
-    root.geometry('512x512')
-    SettingsMenu(root).show()
-    root.mainloop()

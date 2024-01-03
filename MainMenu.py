@@ -3,7 +3,7 @@ from winsound import PlaySound, SND_ALIAS
 from random import choice
 
 from ttkbootstrap import (
-    StringVar, Window,
+    StringVar,
     Frame, Label,
     Entry, Combobox,
     Button, ImageTk, Image
@@ -265,8 +265,8 @@ class MainMenu(Frame):
             PlaySound(sound_file, SND_ALIAS)
         else:
             Messagebox.show_error(
-                '''Specified voice type was not found. Make sure
-to choose correct path for custom sound files.''',
+                'Specified voice type was not found.'
+                + 'Make sure to choose correct path for custom sound files.',
                 'Error'
             )
 
@@ -298,9 +298,3 @@ to choose correct path for custom sound files.''',
             else:
                 if ' ' in var.get():
                     var.set(0)
-
-if __name__ == '__main__':
-    root = Window(title='test', themename='darkly')
-    root.geometry('536x512')
-    MainMenu(root, PathConstants().SOUNDS_PATH).show()
-    root.mainloop()

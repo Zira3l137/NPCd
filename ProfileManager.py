@@ -2,7 +2,7 @@ from subprocess import run
 from json import load
 
 from ttkbootstrap import (
-    Window, Frame,
+    Frame,
     Label, Entry,
     Button, StringVar,
     BooleanVar, Combobox, END,
@@ -463,10 +463,3 @@ class ProfileManager(Frame):
                     continue
                 data_mapping[key].set(solution[key])
         self.write_script()
-
-
-if __name__ == '__main__':
-    root = Window(title='test',themename='darkly')
-    root.geometry('640x512')
-    ProfileManager(root)
-    root.mainloop()

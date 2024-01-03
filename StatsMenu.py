@@ -1,5 +1,5 @@
 from ttkbootstrap import (
-    Window, IntVar, Button,
+    IntVar, Button,
     Frame, BooleanVar, Label,
     Checkbutton, Entry, Combobox,
     StringVar, Radiobutton, Spinbox
@@ -322,8 +322,3 @@ class StatsMenu(Frame):
                 if ' ' in var.get():
                     var.set('')
 
-if __name__ == '__main__':
-    root = Window(title = 'test', themename = 'darkly')
-    root.geometry('768x300')
-    StatsMenu(root).show()
-    root.mainloop()

@@ -1333,8 +1333,22 @@
                 ]
             },
             "custom": {
-                "male": [],
-                "female": []
+                "male": [
+                    "ITAR_FemNovL",
+                    "ITAR_Anya",
+                    "ITAR_Cass",
+                    "ITAR_Gachimuchi",
+                    "ITAR_DJG_Babe",
+                    "ITAR_Fake_RANGER"
+                ],
+                "female": [
+                    "ITAR_FemNovL",
+                    "ITAR_Anya",
+                    "ITAR_Cass",
+                    "ITAR_Gachimuchi",
+                    "ITAR_DJG_Babe",
+                    "ITAR_Fake_RANGER"
+                ]
             }
         },
         "fight_tactic": {

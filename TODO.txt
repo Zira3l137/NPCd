@@ -8,7 +8,7 @@ Features:
             +[IMPLEMENTED] Add warning message box if Rtn_Start wasn't created
             +[IMPLEMENTED] Add tooltip over `R` button.
             +[IMPLEMENTED] Allow to select entry by clicking any place in dropdown list, not only arrow
-            Write a function that will adjust the size of window according to the screen of user
+            +[IMPLEMENTED] Write a function that will adjust the size of window according to the screen of user
         
         Main module:
 
@@ -23,8 +23,7 @@ Features:
         Visual module:
 
             +[IMPLEMENTED] Handle `tga` textures.
-            Bottom of window is not visible in 1366x768 resolution. I.e. I can't see face textures.
-            Select next and previous faces by arrow keys.
+            +[IMPLEMENTED] Select next and previous faces by arrow keys.
 
         
 
@@ -33,8 +32,8 @@ Features:
             +[IMPLEMENTED] Add GUI for B_CreateAmbientInv
             +[IMPLEMENTED] Add GUI for searching items by regular expressions
             +[IMPLEMENTED] Add tooltips for symbols of items
+            +[IMPLEMENTED] Increment amount of given item by double-click.
             Add custom item appending GUI
-            Add equipped item requirement checks
 
         Routine module:
             +[IMPLEMENTED] Sort waypoints alphabetically after extracting them
@@ -44,7 +43,7 @@ Features:
             +[IMPLEMENTED] Last routine component available in the list selection after deleting previous one
             +[IMPLEMENTED] Time values entry validation
             +[IMPLEMENTED] 24 hours time track for routine system
-            Autoscroll to last added activity (if there are more created activities, that is possible to display)
+            +[IMPLEMENTED] Autoscroll to last added activity (if there are more created activities, that is possible to display)
 
         Settings module:
 
@@ -58,13 +57,11 @@ Features:
 
         Routine module:
 
-            Implement copying multiply entries
-            Custom automatically time interval after adding activity
+            Implement copying multiple entries
 
         Inventory module:
 
             Implement item equipment requirements tracking
-            Increment amount of given item by double-click.
 
 Bugs:
 

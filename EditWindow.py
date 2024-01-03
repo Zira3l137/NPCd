@@ -17,7 +17,7 @@ class EditWindow(Frame):
     def __init__(self, parent, root):
         super().__init__(parent)
         self.configure(bootstyle='primary')
-        self.root = root
+        self.root: Window = root
         self.paths = PathConstants()
         self.widgets_init()
         self.widgets_pack()
@@ -36,12 +36,12 @@ class EditWindow(Frame):
         self.tabs = dict()
         self.menus = dict()
         self.tab_names = {
-            'Main': '768x640',
-            'Visual': '768x780',
-            'Stats': '784x600',
-            'Inventory': '1280x800',
-            'Routine': '960x640',
-            'Settings': '768x640'
+            'Main': (40,60),
+            'Visual': (42,74),
+            'Stats': (41,56),
+            'Inventory': (67,74),
+            'Routine': (50,60),
+            'Settings': (40,60)
         }
         for n, i in enumerate(list(self.tab_names.keys())):
             self.tabs[n] = Radiobutton(
@@ -71,24 +71,32 @@ class EditWindow(Frame):
         self.menus['Settings'] = SettingsMenu(self.frame_menu, self)
     
     def widgets_pack(self):
-        self.frame_tabs.pack(fill='x', padx=5, pady=5, anchor='n')
+        self.frame_tabs.pack(fill='x', padx=5, pady=5)
         for i in self.tabs:
             self.tabs[i].pack(
                 side='left', fill='x', expand=True, padx=5, pady=5
             )
         self.frame_menu.pack(
-            expand=True, fill='both', padx=2, pady=2, anchor='n'
+            expand=True, fill='both', padx=5, pady=5, anchor='n'
         )
 
     def switch_tab(self, tab, current=None):
         self.menus[tab].show()
-        self.root.geometry(self.tab_names[tab])
+        self.root.geometry(self.get_tab_res(tab))
         if current is not None and current != tab:
             self.menus[current].hide()
         self.var_current_tab.set(tab)
 
-if __name__ == '__main__':
-    root = Window(title='test', themename='darkly')
-    root.geometry('512x512')
-    EditWindow(root, root)
-    root.mainloop()
+    def get_screen_res(self) -> tuple[int,int]:
+        return (
+            self.root.winfo_screenwidth(),
+            self.root.winfo_screenheight()
+        )
+    
+    def get_tab_res(self, tab: str) -> str:
+        screen_res = self.get_screen_res()
+        return '{w}x{h}'.format(
+            w=(screen_res[0]*self.tab_names[tab][0])//100,
+            h=(screen_res[1]*self.tab_names[tab][1])//100
+        )
+
