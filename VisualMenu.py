@@ -1,4 +1,5 @@
 from tkinter import  Listbox, END
+from random import choice, uniform
 
 from ttkbootstrap import (
     StringVar, IntVar,
@@ -8,9 +9,7 @@ from ttkbootstrap import (
 )
 
 from PIL import Image, ImageTk
-
 from MiscUtils import NPC, PathConstants
-
 from pathlib import Path
 
 class VisualMenu(Frame):
@@ -114,6 +113,12 @@ class VisualMenu(Frame):
             value = 1,
             command = lambda: self.widgets_unlock(self.var_radio_gender.get()),
             bootstyle = 'danger'
+        )
+
+        self.button_randomize = Button(
+            self.visual_frames['gender'],
+            text='Randomize',
+            command=lambda *_: self.randomize()
         )
 
         self.label_outfit = Label(
@@ -326,6 +331,9 @@ class VisualMenu(Frame):
             side = 'left', fill = 'x', expand = True, padx = 5, pady = 5
         )
         self.radio_gender_f.pack(
+            side = 'left', fill = 'x', expand = True, padx = 5, pady = 5
+        )
+        self.button_randomize.pack(
             side = 'left', fill = 'x', expand = True, padx = 5, pady = 5
         )
         
@@ -859,3 +867,52 @@ class VisualMenu(Frame):
                         self.view_face_image(self.listbox_face_custom_dir)
                     else:
                         self.view_face_image()                 
+
+    def randomize(self):
+        self.var_radio_gender.set(choice([0,1]))
+        gender = self.var_radio_gender.get()
+        self.widgets_unlock(gender)
+        match gender:
+            case 0:
+                self.var_combo_outfit.set(choice(self.combo_outfit_list_m))
+                self.var_combo_head.set(choice(self.combo_head_list_m))
+                self.var_combo_skin.set(choice(self.combo_skin_list_m))
+                self.var_combo_walk_overlay.set(
+                    choice(self.combo_walk_overlay_list)
+                )
+                self.var_scale_fatness.set(uniform(0.9,1.5))
+                self.update_scale_value(self.var_scale_fatness.get())
+                face = choice(self.listbox_face.get(0,END))
+                self.var_listbox_face.set(
+                    face
+                )
+                self.listbox_face.selection_clear(0,END)
+                self.listbox_face.selection_set(
+                    list(self.listbox_face.get(0,END)).index(face)
+                )
+                if self.listbox_face_custom_dir:
+                    self.view_face_image(self.listbox_face_custom_dir)
+                else:
+                    self.view_face_image()
+            case 1:
+                self.var_combo_outfit.set(choice(self.combo_outfit_list_f))
+                self.var_combo_outfit.set(choice(self.combo_outfit_list_f))
+                self.var_combo_head.set(choice(self.combo_head_list_f))
+                self.var_combo_skin.set(choice(self.combo_skin_list_f))
+                self.var_combo_walk_overlay.set(
+                    choice(self.combo_walk_overlay_list)
+                )
+                self.var_scale_fatness.set(uniform(0.9,1.5))
+                self.update_scale_value(self.var_scale_fatness.get())
+                face = choice(self.listbox_face.get(0,END))
+                self.var_listbox_face.set(
+                    face
+                )
+                self.listbox_face.selection_clear(0,END)
+                self.listbox_face.selection_set(
+                    list(self.listbox_face.get(0,END)).index(face)
+                )
+                if self.listbox_face_custom_dir:
+                    self.view_face_image(self.listbox_face_custom_dir)
+                else:
+                    self.view_face_image()
