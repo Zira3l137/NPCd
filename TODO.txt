@@ -44,6 +44,7 @@ Features:
             +[IMPLEMENTED] Time values entry validation
             +[IMPLEMENTED] 24 hours time track for routine system
             +[IMPLEMENTED] Autoscroll to last added activity (if there are more created activities, that is possible to display)
+            +[IMPLEMENTED] Implement copying multiple entries
 
         Settings module:
 
@@ -53,11 +54,8 @@ Features:
     After release:
     
         Common:
+
             Implement bulk ambient NPCs creating (set which value show be random and then draw that and save to `.d` file)
-
-        Routine module:
-
-            Implement copying multiple entries
 
         Inventory module:
 
