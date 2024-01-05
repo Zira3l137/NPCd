@@ -11,6 +11,6 @@ InventoryMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/11275901
 
 RoutineMenu module: ![image](https://github.com/Zira3l137/NPCd/assets/112759016/0cfe9c85-ed67-4355-be2c-b1f52a4c69d2)
 
-
-
-
+## Special thanks to:
+- Damianut: for testing and inspiring me to continue working on this application, also
+for a lot of quality of life improvement ideas.
