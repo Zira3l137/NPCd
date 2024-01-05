@@ -1071,34 +1071,18 @@ class RoutineMenu(Frame):
         """
         Adds a routine to the schedule.
 
-        This method performs various checks and validations before
-        adding the routine.
+        Args:
+            internal (tuple, optional): A tuple containing internal values
+            for the activity, start time, end time, and waypoint. If provided,
+            these values will be used instead of fetching them from the UI.
 
-        Inputs:
-        - None
+        Raises:
+            KeyError: If the overall time in the schedule has reached the
+            limit of 24 hours.
 
-        Flow:
-        1. Get the time period from the spinbox widget.
-        2. Fetch the existing time spans from the schedule.
-        3. Get the selected activity from the combo box.
-        4. Calculate the start and end time based on the selected time period.
-        5. Get the selected waypoint.
-        6. Check if the overall time in the schedule has reached the limit
-        of 24 hours. If so, display an error message and return.
-        7. Check if the time period values are set. If not, display an error
-        message and return.
-        8. Check if the new time span conflicts with any existing time spans.
-        If so, display an error message and return.
-        9. Calculate the time for the routine based on the selected time
-        period.
-        10. Check if all the necessary inputs (activity, start time,
-        end time, and waypoint) are set. If not, display an error message
-        and return.
-        11. Add the routine to the schedule.
-        12. Adjust the overall time in the schedule.
-
-        Outputs:
-        - None
+        Returns:
+            None: The method adds the routine to the schedule and updates
+            the overall time.
         """
         existent_time_spans: tuple = self.fetch_time_spans()
         if not internal:
@@ -1128,7 +1112,7 @@ class RoutineMenu(Frame):
                 'Time period error',
                 parent = self
             )
-            return
+            raise KeyError
         if not internal:
             if '' in tuple(spinbox_time_period().values()):
                 Messagebox.show_error(
@@ -1148,8 +1132,8 @@ class RoutineMenu(Frame):
                     )
                 ):
                     error_message ='''
-        Activity with time span: {start_h}:{start_m} - {end_h}:{end_m}
-        cannot be added - invalid start or end time values!
+    Activity with time span: {start_h}:{start_m} - {end_h}:{end_m}
+    cannot be added - invalid start or end time values!
                     '''
                     Messagebox.show_error(
                         error_message.format_map(spinbox_time_period()),
@@ -1157,23 +1141,7 @@ class RoutineMenu(Frame):
                         parent = self
                     )
                     return
-            else:
-                if any(
-                    (
-                        spinbox_time_period[0] in existent_time_spans[0],
-                        spinbox_time_period[1] in existent_time_spans[1]
-                    )
-                ):
-                    error_message ='''
-        Activities cannot be added - invalid start or end time values!
-                    '''
-                    Messagebox.show_error(
-                        error_message,
-                        'Invalid activity time span',
-                        parent = self
-                    )
-                    return 
-    
+
         if not internal:
             try:
                 self.calculate_time(*tuple(spinbox_time_period().values()))
@@ -1359,6 +1327,29 @@ class RoutineMenu(Frame):
         return values
 
     def format_time(self, time: str, reverse=False) -> str:
+        """
+        Format a time string in either a forward or reverse format.
+
+        Args:
+            time (str): A time string in the format 'start end' or 'start:end'.
+            reverse (bool, optional): A flag indicating whether to format
+            the time string in reverse order. Defaults to False.
+
+        Returns:
+            str: A formatted time string in either 'start:end' or 'start end'
+            format, depending on the value of `reverse`.
+
+        Example Usage:
+            routine_menu = RoutineMenu(parent, edit_window)
+            formatted_time = routine_menu.format_time('10 20', reverse=False)
+            print(formatted_time)  # Output: '10:20'
+
+            formatted_time_reverse = routine_menu.format_time(
+                '10:20',
+                reverse=True
+            )
+            print(formatted_time_reverse)  # Output: '10 20'
+        """
         if not reverse:
             digits = time.split()
             start = digits[0]
@@ -1371,17 +1362,44 @@ class RoutineMenu(Frame):
             return f'{start} {end}'
 
     def time_to_minutes(self, time_str):
+        """
+        Converts a time string in the format "HH:MM" to the equivalent
+        number of minutes.
+
+        Args:
+            time_str (str): A time string in the format "HH:MM".
+
+        Returns:
+            int: The total number of minutes represented by the input
+            time string.
+        """
         t = datetime.strptime(time_str, "%H:%M")
         return t.hour*60 + t.minute
-    
+
     def minutes_to_time(self, minutes):
+        """
+        Convert minutes to a formatted time string.
+
+        Args:
+            minutes (int): The number of minutes.
+
+        Returns:
+            str: A formatted time string in the format "HH:MM".
+        """
         hours = minutes // 60
         if hours == 24:
             hours = 0
         minutes = minutes % 60
         return f"{hours:02d}:{minutes:02d}"
-    
+
     def last_action_minutes(self) -> int:
+        """
+        Calculate the number of minutes since the last action in a list
+        of actions.
+
+        Returns:
+            int: The number of minutes since the last action.
+        """
         actions: list[tuple] | None = self.treeview_values()
         if actions:
             last_item = actions[-1]
@@ -1397,21 +1415,37 @@ class RoutineMenu(Frame):
         index=0
     ) -> list[list, int]:
         """
-        Recalculates the time spans of actions in a list of actions.
+        Recalculates the time spans for a list of actions based on a given
+        base time.
 
         Args:
-            actions (list[list]): A list of actions, where each action is
-            represented as a list containing a list of time values and a
-            summand value.
-            base (int, optional): The base time value to start calculating
-            the time spans from. Defaults to 0.
+            actions (list[list]): A list of actions, where each action is a
+            list containing a sublist of time values and a summand (duration).
+            base (int, optional): The base time in minutes from which to
+            calculate the start and end times. Defaults to 0.
             index (int, optional): The index of the current action in the
             list. Defaults to 0.
 
         Returns:
-            list[list]: Updated `actions` list with the start and end times
-            of each action recalculated based on the base time value and the
-            summand value.
+            list[list, int]: The updated list of actions with the start and
+            end times recalculated based on the base time.
+    
+        Raises:
+            KeyError: If the end time exceeds 23:59.
+
+        Example Usage:
+            routine_menu = RoutineMenu(parent, edit_window)
+            actions = [
+                [['00:00', '00:00'], 30],
+                [['00:00', '00:00'], 45],
+                [['00:00', '00:00'], 60]
+            ]
+            base_time = 0
+            index = 0
+            updated_actions = routine_menu.recalculate_time_spans(
+                actions, base_time, index
+            )
+            print(updated_actions)
         """
         end_point = len(actions)-1
         index_ = index
@@ -1430,6 +1464,8 @@ class RoutineMenu(Frame):
         actions_[index_][0] = values
         if index_ < end_point:
             index_ += 1
+            if int(values[2].split()[0]) > 23:
+                raise KeyError
             formatted_base = self.format_time(values[2])
             converted_base = self.time_to_minutes(formatted_base)
             return self.recalculate_time_spans(
@@ -1439,8 +1475,12 @@ class RoutineMenu(Frame):
             )
         else:
             return actions_
-    
+
     def copy_actions(self):
+        """
+        Copies selected actions from a treeview and stores them in a buffer
+        along with the time difference between their start and end times.
+        """
         actions: list[tuple] | None = self.treeview_values()
         if actions:
             selection: list[str] = [
@@ -1466,16 +1506,38 @@ class RoutineMenu(Frame):
                     selection_minute_difference
                 )
             ]
-    
+
     def paste_actions(self):
+        """
+        Paste a set of actions into the schedule.
+
+        This method recalculates the time spans of the actions based on the
+        last action in the schedule and adds them to the schedule.
+
+        :return: None
+        """
         last_action_minutes: int = self.last_action_minutes()
-        new_actions: list = [
-            values
-            for values, _
-            in self.recalculate_time_spans(
+        new_actions: list = []
+        try:
+            recalculated_entries = self.recalculate_time_spans(
                 self.buffer,
                 last_action_minutes
             )
-        ]
-        for action in new_actions:
-            self.add_to_schedule(action)
+        except KeyError:
+            Messagebox.show_error(
+                '''
+                Failed to paste entries, because of 24 hour exceeding
+                time spans.
+                ''',
+                'Time span error',
+                self
+            )
+            return
+        else:
+            for values, _ in recalculated_entries:
+                new_actions.append(values)
+            for action in new_actions:
+                try:
+                    self.add_to_schedule(action)
+                except KeyError:
+                    return

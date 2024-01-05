@@ -40,7 +40,7 @@ class EditWindow(Frame):
             'Visual': (42,74),
             'Stats': (41,56),
             'Inventory': (67,74),
-            'Routine': (50,60),
+            'Routine': (50,65),
             'Settings': (40,60)
         }
         for n, i in enumerate(list(self.tab_names.keys())):
