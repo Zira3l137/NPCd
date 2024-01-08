@@ -210,7 +210,8 @@ class ProfileManager(Frame):
             side = 'left', pady = 5, padx = 1, anchor = 'e', expand = True
         )
         self.btn_refresh_list.pack(
-            side = 'left', pady = 5, padx = 1, anchor = 'e', expand = True
+            side = 'left', pady = 5, padx = 1, anchor = 'e', expand = True,
+            fill='y'
         )
 
         self.frame_profile_manage.pack(

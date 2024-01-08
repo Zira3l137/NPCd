@@ -1200,7 +1200,7 @@ class ExtractWaypoints():
         zen_filenames (list): The filenames of the valid ZEN files.
         zen_wps (dict): The extracted waypoints from the ZEN files, stored in a dictionary.
     """
-
+    
     def __init__(self, path: str):
         """
         Initializes an instance of ExtractWaypoints.
