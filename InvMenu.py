@@ -198,21 +198,21 @@ class InventoryMenu(Frame):
         )
         self.button_set_to_inv = Button(
             self.frame_items_manage_inventory_quantity,
-            width = 8,
+            width = 6,
             text = 'Set',
             command = lambda *_: self.set_to_inv(),
             bootstyle = 'success'
         )
         self.button_remove_from_inv = Button(
             self.frame_items_manage_inventory_quantity,
-            width = 8,
+            width = 6,
             text = 'Remove',
             command = lambda *_: self.remove_from_inv('single'),
             bootstyle = 'warning'
         )
         self.button_clear_inv = Button(
             self.frame_items_manage_inventory_quantity,
-            width = 8,
+            width = 6,
             text = 'Clear',
             command = lambda *_: self.remove_from_inv('all'),
             bootstyle = 'danger'

@@ -2,6 +2,7 @@ Experimental/
 __pycache__/
 build/
 *.bat
+*.ico
 test.py
 
 Data/Solutions/*.json

@@ -36,12 +36,12 @@ class EditWindow(Frame):
         self.tabs = dict()
         self.menus = dict()
         self.tab_names = {
-            'Main': (40,60),
-            'Visual': (42,74),
-            'Stats': (41,56),
-            'Inventory': (67,74),
+            'Main': (50,60),
+            'Visual': (50,74),
+            'Stats': (50,56),
+            'Inventory': (55,74),
             'Routine': (50,65),
-            'Settings': (40,60)
+            'Settings': (50,60)
         }
         for n, i in enumerate(list(self.tab_names.keys())):
             self.tabs[n] = Radiobutton(

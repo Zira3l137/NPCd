@@ -1,7 +1,20 @@
+import sys
+from pathlib import Path
+
 from ttkbootstrap import Window
 
 from ProfileManager import ProfileManager
 from EditWindow import EditWindow
+
+if hasattr(sys, 'frozen') and hasattr(sys, "_MEIPASS"):
+    CURRENT_PATH = Path(sys.executable).resolve().parent
+else:
+    CURRENT_PATH = Path.cwd()
+
+if (CURRENT_PATH/'NPCd.ico').is_file():
+    ICON = str(CURRENT_PATH/'NPCd.ico')
+else:
+    ICON = ''
 
 class Root(Window):
     def __init__(
@@ -12,6 +25,7 @@ class Root(Window):
         **kwargs
     ):
         super().__init__(themename=theme, title=title, **kwargs)
+        self.iconbitmap(ICON)
         pos_x = (self.winfo_screenwidth()//2) - (resolution[0]//2)
         pos_y = (self.winfo_screenheight()//2) - (resolution[1]//2)
         self.geometry(f'{resolution[0]}x{resolution[1]}+{pos_x}+{pos_y}')

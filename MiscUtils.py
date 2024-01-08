@@ -448,7 +448,7 @@ class Profile():
                         string = f'{data_type} (self, "{solution[data_type]}.mds");'
                         strings.append('\t' + string)
                     case 'B_SetNpcVisual':
-                        string = '{d} (self, {g}, {h}, {f}, {s}, {o});'.format(
+                        string = '{d} (self, {g}, "{h}", {f}, {s}, {o});'.format(
                             d = data_type,
                             g = solution[data_type][0],
                             h = solution[data_type][1],
@@ -459,13 +459,24 @@ class Profile():
                         strings.append('\t' + string)
                     case 'CreateInvItems':
                         for item in solution[data_type]:
-                            string = f'{data_type} (self, {item[0]}, {item[1]});' #pylint: disable=line-too-long
+                            string = '{data} (self, {name}, {qty});'.format(
+                                data=data_type,
+                                name=item[0],
+                                qty=item[1]
+                            )
                             strings.append('\t' + string)
     
         if solution['guild']:
-            script = f"instance {solution['guild'].split('_')[1]}_{solution['name']}_{solution['id']} (NPC_Default)" #pylint: disable=line-too-long
+            script = "instance {guild}_{id}_{name} (NPC_Default)".format(
+                guild=solution['guild'].split('_')[1],
+                id=solution['id'],
+                name=solution['name']
+            )     
         else:
-            script = f"instance NONE_{solution['name']}_{solution['id']} (NPC_Default)"
+            script = "instance NONE_{id}_{name} (NPC_Default)".format(
+                id=solution['id'],
+                name=solution['name']
+            )
         script += ' {\n'
         script += '\n'.join(strings)
         script += '\n};\n'
